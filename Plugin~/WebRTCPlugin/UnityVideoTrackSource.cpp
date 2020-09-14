@@ -1,9 +1,8 @@
 #include "pch.h"
+#include "../NvCodec/Utils/NvCodecUtils.h"
 #include "UnityVideoTrackSource.h"
-
-#include <mutex>
-
-#include "Codec/IEncoder.h"
+#include "GraphicsDevice/IGraphicsDevice.h"
+#include "VideoFrameBufferCreatorInterface.h"
 
 namespace unity
 {
@@ -11,12 +10,13 @@ namespace webrtc
 {
 
 UnityVideoTrackSource::UnityVideoTrackSource(
-    bool is_screencast,
-    absl::optional<bool> needs_denoising) :
-    AdaptedVideoTrackSource(/*required_alignment=*/1),
-    is_screencast_(is_screencast),
-    needs_denoising_(needs_denoising),
-    encoder_(nullptr)
+    IGraphicsDevice* device, NativeTexPtr ptr, uint32_t destMemoryType,
+    bool is_screencast, absl::optional<bool> needs_denoising)
+    : AdaptedVideoTrackSource(/*required_alignment=*/1)
+    , is_screencast_(is_screencast)
+    , needs_denoising_(needs_denoising)
+    , m_bufferCreator(VideoFrameBufferCreatorInterface::Create(
+        device, ptr, device->GetGfxRenderer(), destMemoryType))
 {
 //  DETACH_FROM_THREAD(thread_checker_);
 }
@@ -28,23 +28,37 @@ UnityVideoTrackSource::~UnityVideoTrackSource()
     }
 }
 
-void UnityVideoTrackSource::Init(void* frame)
+void UnityVideoTrackSource::Init()
 {
-    frame_ = frame;
+    // todo::(kazuki) change compiler vc to clang
+#if defined(__clang__)
+    DETACH_FROM_THREAD(thread_checker_);
+#endif
+    std::unique_lock<std::shared_mutex> lock(m_mutex);
+    m_bufferCreator->Init();
+}
+
+UnityVideoTrackSource::~UnityVideoTrackSource()
+{
+    {
+        std::unique_lock<std::shared_mutex> lock(m_mutex);
+    }
 }
 
 UnityVideoTrackSource::SourceState UnityVideoTrackSource::state() const
 {
-  // TODO(nisse): What's supposed to change this state?
-  return MediaSourceInterface::SourceState::kLive;
+    // TODO(nisse): What's supposed to change this state?
+    return MediaSourceInterface::SourceState::kLive;
 }
 
-bool UnityVideoTrackSource::remote() const {
-  return false;
+bool UnityVideoTrackSource::remote() const
+{
+    return false;
 }
 
-bool UnityVideoTrackSource::is_screencast() const {
-  return is_screencast_;
+bool UnityVideoTrackSource::is_screencast() const
+{
+    return is_screencast_;
 }
 
 absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
@@ -52,47 +66,34 @@ absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
     return needs_denoising_;
 }
 
-CodecInitializationResult UnityVideoTrackSource::GetCodecInitializationResult() const
+void UnityVideoTrackSource::OnFrameCaptured(
+    int64_t timestamp_us)
 {
-    if (encoder_ == nullptr)
+    // todo::(kazuki) change compiler vc to clang
+#if defined(__clang__)
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+#endif
+    const std::unique_lock<std::shared_mutex> lock(m_mutex, std::try_to_lock);
+    if (!lock)
     {
-        return CodecInitializationResult::NotInitialized;
+        // currently encoding
+        return;
     }
-    return encoder_->GetCodecInitializationResult();
-}
 
-void UnityVideoTrackSource::SetEncoder(IEncoder* encoder)
-{
-    encoder_ = encoder;
-    encoder_->CaptureFrame.connect(
-        this,
-        &UnityVideoTrackSource::DelegateOnFrame);
-}
+    const rtc::scoped_refptr<VideoFrameBuffer> buffer =
+        m_bufferCreator->CreateBuffer(m_mutex);
 
+    const int64_t now_us = rtc::TimeMicros();
+    const int64_t translated_camera_time_us =
+        timestamp_aligner_.TranslateTimestamp(timestamp_us,
+            now_us);
 
-void UnityVideoTrackSource::OnFrameCaptured(int64_t timestamp_us)
-{
-    // todo::(kazuki)
-    // OnFrame(frame);
-    std::unique_lock<std::mutex> lock(m_mutex, std::try_to_lock);
-    if (!lock.owns_lock()) {
-        return;
-    }
-    if (encoder_ == nullptr)
-    {
-        LogPrint("encoder is null");
-        return;
-    }
-    if (!encoder_->CopyBuffer(frame_))
-    {
-        LogPrint("Copy texture buffer is failed");
-        return;
-    }
-    if (!encoder_->EncodeFrame(timestamp_us))
-    {
-        LogPrint("Encode frame is failed");
-        return;
-    }
+    webrtc::VideoFrame::Builder builder =
+        webrtc::VideoFrame::Builder()
+        .set_video_frame_buffer(buffer)
+        .set_timestamp_us(translated_camera_time_us);
+
+    OnFrame(builder.build());
 }
 
 } // end namespace webrtc

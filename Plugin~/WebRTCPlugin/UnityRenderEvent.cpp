@@ -6,6 +6,7 @@
 
 #include "Context.h"
 #include "ScopedProfiler.h"
+#include "UnityVideoTrackSource.h"
 #include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsDevice.h"
 #include "GraphicsDevice/GraphicsUtility.h"
@@ -20,6 +21,9 @@ enum class VideoStreamRenderEventID
     Encode = 1,
     Finalize = 2
 };
+
+using namespace unity::webrtc;
+using namespace ::webrtc;
 
 namespace unity
 {
@@ -275,6 +279,10 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
         return;
     }
 
+    if(!s_context->ExistsVideoSource(source))
+    {
+        return;
+    }
     switch(event)
     {
         case VideoStreamRenderEventID::Initialize:
@@ -308,8 +316,6 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
         }
         case VideoStreamRenderEventID::Finalize:
         {
-            s_context->FinalizeEncoder(s_mapEncoder[track].get());
-            s_mapEncoder.erase(track);
             return;
         }
         default: {

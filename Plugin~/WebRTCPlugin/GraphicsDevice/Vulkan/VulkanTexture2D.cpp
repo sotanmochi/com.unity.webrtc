@@ -43,6 +43,7 @@ void VulkanTexture2D::Shutdown()
 //---------------------------------------------------------------------------------------------------------------------
 
 bool VulkanTexture2D::Init(const VkPhysicalDevice physicalDevice, const VkDevice device) {
+    m_physicalDevice = physicalDevice;
     m_device = device;
 
     const bool EXPORT_HANDLE = true;

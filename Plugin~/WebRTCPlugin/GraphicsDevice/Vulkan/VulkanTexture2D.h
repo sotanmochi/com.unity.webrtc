@@ -32,10 +32,12 @@ public:
     inline VkDeviceSize GetTextureImageMemorySize() const;
     inline VkFormat     GetTextureFormat() const;
 
+
 private:
     VkImage             m_textureImage;
     VkDeviceMemory      m_textureImageMemory;
     VkDeviceSize        m_textureImageMemorySize;
+    VkPhysicalDevice    m_physicalDevice;
     VkDevice            m_device;
 
 #if CUDA_PLATFORM
@@ -47,6 +49,7 @@ private:
 
     const VkAllocationCallbacks* m_allocator = nullptr;
 
+    UnityVulkanImage m_unityVulkanImage;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

@@ -9,7 +9,8 @@ namespace unity
 namespace webrtc
 {
 
-class D3D11GraphicsDevice : public IGraphicsDevice{
+class D3D11GraphicsDevice : public IGraphicsDevice
+{
 public:
     D3D11GraphicsDevice(ID3D11Device* nativeDevice);
     virtual ~D3D11GraphicsDevice();
@@ -25,6 +26,7 @@ public:
 
     virtual bool IsCudaSupport() override { return m_isCudaSupport; }
     virtual CUcontext GetCuContext() override { return m_cudaContext.GetContext(); }
+    virtual NV_ENC_BUFFER_FORMAT GetEncodeBufferFormat() override { return NV_ENC_BUFFER_FORMAT_ARGB; }
 private:
     ID3D11Device* m_d3d11Device;
     ID3D11DeviceContext* m_d3d11Context;
@@ -37,6 +39,7 @@ private:
 
 void* D3D11GraphicsDevice::GetEncodeDevicePtrV() { return reinterpret_cast<void*>(m_d3d11Device); }
 GraphicsDeviceType D3D11GraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_D3D11; }
+UnityGfxRenderer D3D11GraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererD3D11; }
 
 } // end namespace webrtc
 } // end namespace unity

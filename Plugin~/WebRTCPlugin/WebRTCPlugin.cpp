@@ -253,12 +253,12 @@ extern "C"
         return context->GetInitializationResult(track);
     }
 
-    UNITY_INTERFACE_EXPORT void ContextSetVideoEncoderParameter(
-        Context* context, MediaStreamTrackInterface* track, int width, int height,
-        UnityRenderingExtTextureFormat textureFormat, void* textureHandle)
-    {
-        context->SetEncoderParameter(track, width, height, textureFormat, textureHandle);
-    }
+//    UNITY_INTERFACE_EXPORT void ContextSetVideoEncoderParameter(
+//        Context* context, MediaStreamTrackInterface* track, int width, int height,
+//        UnityRenderingExtTextureFormat textureFormat, void* textureHandle)
+//    {
+//        context->SetEncoderParameter(track, width, height, textureFormat, textureHandle);
+//    }
 
     UNITY_INTERFACE_EXPORT MediaStreamInterface* ContextCreateMediaStream(Context* context, const char* streamId)
     {
@@ -286,9 +286,9 @@ extern "C"
         context->StopMediaStreamTrack(track);
     }
 
-    UNITY_INTERFACE_EXPORT webrtc::VideoTrackSourceInterface* ContextCreateVideoTrackSource(Context* context)
+    UNITY_INTERFACE_EXPORT webrtc::VideoTrackSourceInterface* ContextCreateVideoTrackSource(Context* context, uint32_t memoryType)
     {
-        return context->CreateVideoSource();
+        return context->CreateVideoSource(memoryType);
     }
 
     UNITY_INTERFACE_EXPORT webrtc::AudioSourceInterface* ContextCreateAudioTrackSource(Context* context)
@@ -358,6 +358,11 @@ extern "C"
     UNITY_INTERFACE_EXPORT AudioTrackInterface** MediaStreamGetAudioTracks(MediaStreamInterface* stream, size_t* length)
     {
         return ConvertPtrArrayFromRefPtrArray<AudioTrackInterface>(stream->GetAudioTracks(), length);
+    }
+
+    UNITY_INTERFACE_EXPORT VideoTrackSourceInterface* ContextGetVideoSource(Context* context, MediaStreamTrackInterface* track)
+    {
+        return context->FindVideoTrack(track)->GetSource();
     }
 
     UNITY_INTERFACE_EXPORT TrackKind MediaStreamTrackGetKind(MediaStreamTrackInterface* track)

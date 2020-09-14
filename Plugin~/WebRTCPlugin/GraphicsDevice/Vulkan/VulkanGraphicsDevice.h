@@ -13,7 +13,8 @@ namespace webrtc
 
 namespace webrtc = ::webrtc;
 
-class VulkanGraphicsDevice : public IGraphicsDevice{
+class VulkanGraphicsDevice : public IGraphicsDevice
+{
 public:
     VulkanGraphicsDevice( IUnityGraphicsVulkan* unityVulkan, const VkInstance instance,
         const VkPhysicalDevice physicalDevice, const VkDevice device,
@@ -29,13 +30,25 @@ public:
     std::unique_ptr<UnityVulkanImage> AccessTexture(void* ptr) const;
 
     virtual bool CopyResourceV(ITexture2D* dest, ITexture2D* src) override;
+
+    virtual NativeTexPtr ConvertNativeFromUnityPtr(void* tex) override;
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <param name="nativeTexturePtr"> a pointer of UnityVulkanImage </param>
+    /// <returns></returns>
     virtual bool CopyResourceFromNativeV(ITexture2D* dest, void* nativeTexturePtr) override;
     inline virtual GraphicsDeviceType GetDeviceType() const override;
+    inline virtual UnityGfxRenderer GetGfxRenderer() const override;
+
     virtual rtc::scoped_refptr<webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
 
 #if CUDA_PLATFORM
     virtual bool IsCudaSupport() override { return m_isCudaSupport; }
     virtual CUcontext GetCuContext() override { return m_cudaContext.GetContext(); }
+    virtual NV_ENC_BUFFER_FORMAT GetEncodeBufferFormat() override { return NV_ENC_BUFFER_FORMAT_ARGB; }
 #endif
 private:
 
@@ -67,6 +80,5 @@ void* VulkanGraphicsDevice::GetEncodeDevicePtrV()
 #endif
 }
 GraphicsDeviceType VulkanGraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_VULKAN; }
-
 } // end namespace webrtc
 } // end namespace unity

@@ -1,6 +1,6 @@
 #include "pch.h"
+#include "NvCodecUtils.h"
 #include "GraphicsDeviceTestBase.h"
-
 #include "PlatformBase.h"
 #include "GraphicsDevice/GraphicsDevice.h"
 
@@ -313,6 +313,8 @@ void DestroyDeviceVulkan(void* pGfxDevice)
 }
 
 #endif
+
+
 #if defined(SUPPORT_METAL)  // Metal
 
 void* CreateDeviceMetal()
@@ -340,7 +342,7 @@ void* CreateDeviceOpenGL()
 
 #endif
 
-IUnityInterface* CreateUnityInterface(UnityGfxRenderer renderer) {
+void* CreateArg(UnityGfxRenderer renderer) {
 
     switch(renderer)
     {
@@ -350,7 +352,7 @@ IUnityInterface* CreateUnityInterface(UnityGfxRenderer renderer) {
 #endif
 #if defined(SUPPORT_D3D12)
     case kUnityGfxRendererD3D12:
-        return nullptr;
+        return pCommandQueue.Get();
 #endif
 #if defined(SUPPORT_OPENGL_CORE)
     case kUnityGfxRendererOpenGLCore:
@@ -377,6 +379,10 @@ void* CreateGfxDevice(UnityGfxRenderer renderer)
 #if defined(SUPPORT_D3D12)
     case kUnityGfxRendererD3D12:
         return CreateDeviceD3D12();
+#endif
+#if defined(SUPPORT_VULKAN)
+    case kUnityGfxRendererVulkan:
+        return CreateDeviceVulkan();
 #endif
 #if defined(SUPPORT_OPENGL_CORE)
     case kUnityGfxRendererOpenGLCore:

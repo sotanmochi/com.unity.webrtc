@@ -1,9 +1,16 @@
 #include "pch.h"
 #include "D3D12GraphicsDevice.h"
+#include <cuda.h>
+#include <cudaD3D11.h>
+#include <wrl/client.h>
+
 #include "D3D12Texture2D.h"
 #include "D3D12Constants.h" //DEFAULT_HEAP_PROPS
-
+#include "NvCodecUtils.h"
 #include "GraphicsDevice/GraphicsUtility.h"
+#include "GraphicsDevice/D3D11/D3D11Texture2D.h"
+
+using namespace Microsoft::WRL;
 
 namespace unity
 {
@@ -174,15 +181,21 @@ D3D12Texture2D* D3D12GraphicsDevice::CreateSharedD3D12Texture(uint32_t w, uint32
     const D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COPY_DEST;
 
     ID3D12Resource* nativeTex = nullptr;
-    ThrowIfFailed(m_d3d12Device->CreateCommittedResource(&D3D12_DEFAULT_HEAP_PROPS, flags, &desc, initialState,
+    ThrowIfFailed(m_d3d12Device->CreateCommittedResource(
+        &D3D12_DEFAULT_HEAP_PROPS, flags, &desc, initialState,
         nullptr, IID_PPV_ARGS(&nativeTex)));
 
+    if (nativeTex == nullptr)
+        return nullptr;
+
     ID3D11Texture2D* sharedTex = nullptr;
-    HANDLE handle = nullptr;   
-    ThrowIfFailed(m_d3d12Device->CreateSharedHandle(nativeTex, nullptr, GENERIC_ALL, nullptr, &handle));
+    HANDLE handle = nullptr;
+    ThrowIfFailed(m_d3d12Device->CreateSharedHandle(
+        nativeTex, nullptr, GENERIC_ALL, nullptr, &handle));
 
     //ID3D11Device::OpenSharedHandle() doesn't accept handles created by d3d12. OpenSharedHandle1() is needed.
-    ThrowIfFailed(m_d3d11Device->OpenSharedResource1(handle, IID_PPV_ARGS(&sharedTex)));
+    ThrowIfFailed(m_d3d11Device->OpenSharedResource1(
+        handle, IID_PPV_ARGS(&sharedTex)));
 
     return new D3D12Texture2D(w,h,nativeTex, handle, sharedTex);
 }
@@ -258,6 +271,55 @@ rtc::scoped_refptr<webrtc::I420Buffer> D3D12GraphicsDevice::ConvertRGBToI420(ITe
     readbackResource->Unmap(0,&emptyRange);
 
     return i420_buffer; 
+}
+
+ID3D11Texture2D* D3D12GraphicsDevice::GetTempTexture(
+    uint32_t w, uint32_t h)
+{
+    ID3D11Texture2D* texture = nullptr;
+    D3D11_TEXTURE2D_DESC desc = { 0 };
+    desc.Width = w;
+    desc.Height = h;
+    desc.MipLevels = 1;
+    desc.ArraySize = 1;
+    desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    desc.SampleDesc.Count = 1;
+    desc.Usage = D3D11_USAGE_DEFAULT;
+    desc.BindFlags = 0;
+    desc.CPUAccessFlags = 0;
+    if(!ck(m_d3d11Device->CreateTexture2D(&desc, NULL, &texture)))
+    {
+        return nullptr;
+    }
+    return texture;
+}
+
+CUcontext D3D12GraphicsDevice::GetCuContext()
+{
+    if (!ck(cuInit(0)))
+    {
+        return nullptr;
+    }
+
+    ComPtr<IDXGIDevice> pDXGIDevice = nullptr;
+    if (!ck(m_d3d11Device->QueryInterface(IID_PPV_ARGS(&pDXGIDevice))))
+    {
+        return nullptr;
+    }
+    ComPtr<IDXGIAdapter> pDXGIAdapter = nullptr;
+    if (!ck(pDXGIDevice->GetAdapter(&pDXGIAdapter)))
+    {
+        return nullptr;
+    }
+    if (!ck(cuD3D11GetDevice(&m_device, pDXGIAdapter.Get())))
+    {
+        return nullptr;
+    }
+    if (!ck(cuCtxCreate(&m_context, 0, m_device)))
+    {
+        return nullptr;
+    }
+    return m_context;
 }
 
 } // end namespace webrtc

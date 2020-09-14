@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "GpuResourceBuffer.h"
 #include "GraphicsDeviceTestBase.h"
 #include "Codec/EncoderFactory.h"
 #include "Codec/IEncoder.h"
@@ -32,6 +34,9 @@ public:
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
+            m_device,
+            m_texture->GetNativeTexturePtrV(),
+            GPU_MEMORY | CPU_MEMORY,
             /*is_screencast=*/ false,
             /*needs_denoising=*/ absl::nullopt);
         m_trackSource->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
@@ -39,7 +44,6 @@ public:
         m_trackSource->SetEncoder(encoder_.get());
 
         EXPECT_NE(nullptr, m_device);
-        EXPECT_NE(nullptr, encoder_);
 
         context = std::make_unique<Context>();
     }
@@ -48,7 +52,6 @@ public:
         m_trackSource->RemoveSink(&mock_sink_);
     }
 protected:
-    std::unique_ptr<IEncoder> encoder_;
     std::unique_ptr<Context> context;
     std::unique_ptr<ITexture2D> m_texture;
 
@@ -70,6 +73,11 @@ protected:
     }
 };
 
+TEST_P(VideoTrackSourceTest, Init)
+{
+    m_trackSource->Init();
+}
+
 TEST_P(VideoTrackSourceTest, CreateVideoSourceProxy)
 {
     std::unique_ptr<rtc::Thread> workerThread = rtc::Thread::Create();
@@ -87,14 +95,23 @@ TEST_P(VideoTrackSourceTest, CreateVideoSourceProxy)
 #if !defined(SUPPORT_METAL)
 TEST_P(VideoTrackSourceTest, SendTestFrame)
 {
-    int width = 256;
-    int height = 256;
     EXPECT_CALL(mock_sink_, OnFrame(_))
-        .WillOnce(Invoke([width, height](const webrtc::VideoFrame& frame) {
+        .WillOnce(Invoke([](const webrtc::VideoFrame& frame) {
             EXPECT_EQ(width, frame.width());
             EXPECT_EQ(height, frame.height());
+
+            GpuResourceBuffer* buffer
+                = static_cast<GpuResourceBuffer*>(frame.video_frame_buffer().get());
+            EXPECT_NE(buffer, nullptr);
+            rtc::scoped_refptr<I420BufferInterface> i420Buffer = buffer->ToI420();
+            EXPECT_NE(i420Buffer, nullptr);
+            CUarray array = buffer->ToArray();
+            EXPECT_NE(array, nullptr);
     }));
-    SendTestFrame(width, height);
+    m_trackSource->Init();
+    const int64_t timestamp_us =
+        webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
+    m_trackSource->OnFrameCaptured(timestamp_us);
 }
 #endif
 

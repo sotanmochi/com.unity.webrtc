@@ -1,6 +1,13 @@
 #include "pch.h"
 #include "UnityVideoEncoderFactory.h"
+
+#if CUDA_PLATFORM
+#include <cuda.h>
+#endif
+
 #include "DummyVideoEncoder.h"
+#include "H264HardwareEncoder.h"
+#include "GraphicsDevice/GraphicsUtility.h"
 
 #if UNITY_OSX || UNITY_IOS
 #import "sdk/objc/components/video_codec/RTCDefaultVideoEncoderFactory.h"
@@ -44,11 +51,11 @@ namespace webrtc
 #endif
     }
 
-    UnityVideoEncoderFactory::UnityVideoEncoderFactory(IVideoEncoderObserver* observer)
-    : internal_encoder_factory_(CreateEncoderFactory())
+    UnityVideoEncoderFactory::UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice)
+    : m_gfxDevice(gfxDevice)
+    , internal_encoder_factory_(CreateEncoderFactory())
 
     {
-        m_observer = observer;
     }
     
     UnityVideoEncoderFactory::~UnityVideoEncoderFactory() = default;
@@ -96,9 +103,12 @@ namespace webrtc
     std::unique_ptr<webrtc::VideoEncoder> UnityVideoEncoderFactory::CreateVideoEncoder(const webrtc::SdpVideoFormat& format)
     {
 #if CUDA_PLATFORM
-        if (IsFormatSupported(GetHardwareEncoderFormats(), format))
+        if (IsFormatSupported(GetHardwareEncoderFormats(), format) &&
+            GraphicsUtility::IsHWCodecSupportedDevice()))
         {
-            return std::make_unique<DummyVideoEncoder>(m_observer);
+            CUcontext context = m_gfxDevice->GetCuContext();
+            NV_ENC_BUFFER_FORMAT format = m_gfxDevice->GetEncodeBufferFormat();
+            return std::make_unique<H264HardwareEncoder>(context, CU_MEMORYTYPE_ARRAY, format);
         }
 #endif
         return internal_encoder_factory_->CreateVideoEncoder(format);

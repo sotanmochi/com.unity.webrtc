@@ -4,16 +4,16 @@
 
 #include <array>
 
-#if defined(SUPPORT_D3D11)
+#if defined(_WIN32)
 #include <cudaD3D11.h>
 #include <wrl/client.h>
 #endif
 
-#if defined(SUPPORT_VULKAN)
-#include "GraphicsDevice/Vulkan/VulkanUtility.h"
-#endif
 
-#if defined(SUPPORT_D3D11)
+#include "NvCodecUtils.h"
+#include "GraphicsDevice/Vulkan/VulkanUtility.h"
+
+#if defined(_WIN32)
 using namespace Microsoft::WRL;
 #endif
 
@@ -24,6 +24,8 @@ namespace webrtc
 
 static void* s_hModule = nullptr;
 
+CudaContext::CudaContext() : m_context(nullptr) {
+}
 //---------------------------------------------------------------------------------------------------------------------
 CUresult LoadModule() {
     // dll check
@@ -43,44 +45,7 @@ CUresult LoadModule() {
     }
     return CUDA_SUCCESS;
 }
-CudaContext::CudaContext() : m_context(nullptr) {
-}
-
 //---------------------------------------------------------------------------------------------------------------------
-
-CUresult CudaContext::FindCudaDevice(const uint8_t* uuid, CUdevice* cuDevice)
-{
-    CUdevice _cuDevice = 0;
-    CUresult result = CUDA_SUCCESS;
-    int numDevices = 0;
-    result = cuDeviceGetCount(&numDevices);
-    if (result != CUDA_SUCCESS) {
-        return result;
-    }
-    CUuuid id = {};
-
-    //Loop over the available devices and identify the CUdevice  corresponding to the physical device in use by
-    //this Vulkan instance. This is required because there is no other way to match GPUs across API boundaries.
-    for (int i = 0; i < numDevices; i++) {
-        result = cuDeviceGet(&_cuDevice, i);
-        if (result != CUDA_SUCCESS) {
-            return result;
-        }
-        result = cuDeviceGetUuid(&id, _cuDevice);
-        if (result != CUDA_SUCCESS) {
-            return result;
-        }
-
-        if (!std::memcmp(static_cast<const void *>(&id),
-                         static_cast<const void *>(uuid),
-                         sizeof(CUuuid))) {
-            if(cuDevice != nullptr)
-                *cuDevice = _cuDevice;
-            return CUDA_SUCCESS;
-        }
-    }
-    return CUDA_ERROR_NO_DEVICE;
-}
 
 CUresult CudaContext::Init(const VkInstance instance, VkPhysicalDevice physicalDevice) {
 
@@ -90,30 +55,52 @@ CUresult CudaContext::Init(const VkInstance instance, VkPhysicalDevice physicalD
         return result;
     }
 
-    CUdevice cuDevice = 0;
-    bool foundDevice = false;
+    CUdevice dev;
+    bool foundDevice = true;
 
     result = cuInit(0);
     if (result != CUDA_SUCCESS) {
         return result;
     }
 
-    std::array<uint8_t, VK_UUID_SIZE> deviceUUID{};
+    int numDevices = 0;
+    result = cuDeviceGetCount(&numDevices);
+    if (result != CUDA_SUCCESS) {
+        return result;
+    }
+
+    CUuuid id = {};
+    std::array<uint8_t, VK_UUID_SIZE> deviceUUID;
     if (!VulkanUtility::GetPhysicalDeviceUUIDInto(instance, physicalDevice, &deviceUUID)) {
         return CUDA_ERROR_INVALID_DEVICE;
     }
 
-    result = FindCudaDevice(deviceUUID.data(), &cuDevice);
-    if(result != CUDA_SUCCESS)
-    {
-        return result;
+    //Loop over the available devices and identify the CUdevice  corresponding to the physical device in use by
+    //this Vulkan instance. This is required because there is no other way to match GPUs across API boundaries.
+    for (int i = 0; i < numDevices; i++) {
+        cuDeviceGet(&dev, i);
+
+        cuDeviceGetUuid(&id, dev);
+
+        if (!std::memcmp(static_cast<const void *>(&id),
+                static_cast<const void *>(deviceUUID.data()),
+                sizeof(CUuuid))) {
+            foundDevice = true;
+            break;
+        }
     }
-    result = cuCtxCreate(&m_context, 0, cuDevice);
+
+    if (!foundDevice) {
+        return CUDA_ERROR_NO_DEVICE;
+ 
+    }
+
+    result = cuCtxCreate(&m_context, 0, dev);
     return result;
 }
 //---------------------------------------------------------------------------------------------------------------------
 
-#if defined(SUPPORT_D3D11)
+#if defined(_WIN32)
 CUresult CudaContext::Init(ID3D11Device* device) {
 
     // dll check
@@ -131,116 +118,49 @@ CUresult CudaContext::Init(ID3D11Device* device) {
     if (result != CUDA_SUCCESS) {
         return result;
     }
-    if(numDevices == 0) {
-        return CUDA_ERROR_NO_DEVICE;
-    }
 
     ComPtr<IDXGIDevice> pDxgiDevice = nullptr;
-    HRESULT hr = device->QueryInterface(IID_PPV_ARGS(&pDxgiDevice));
-    if (hr != S_OK) {
+    if (!ck(device->QueryInterface(IID_PPV_ARGS(&pDxgiDevice))))
+    {
         return CUDA_ERROR_NO_DEVICE;
     }
     ComPtr<IDXGIAdapter> pDxgiAdapter = nullptr;
-    hr = pDxgiDevice->GetAdapter(&pDxgiAdapter);
-    if (hr != S_OK) {
-        return CUDA_ERROR_NO_DEVICE;
-    }
-    CUdevice cuDevice;
-    result = cuD3D11GetDevice(&cuDevice, pDxgiAdapter.Get());
-    if (result != CUDA_SUCCESS) {
-        return CUDA_ERROR_NO_DEVICE;
-    }
-    return cuCtxCreate(&m_context, 0, cuDevice);
-}
-#endif
-//---------------------------------------------------------------------------------------------------------------------
-
-#if defined(SUPPORT_D3D12)
-CUresult CudaContext::Init(ID3D12Device* device) {
-
-    CUresult result = LoadModule();
-    if (result != CUDA_SUCCESS) {
-        return result;
-    }
-
-    result = cuInit(0);
-    if (result != CUDA_SUCCESS) {
-        return result;
-    }
-    int numDevices = 0;
-    result = cuDeviceGetCount(&numDevices);
-    if (result != CUDA_SUCCESS) {
-        return result;
-    }
-
-    LUID luid = device->GetAdapterLuid();
-
-    CUdevice cuDevice = 0;
-    bool deviceFound = false;
-
-    for (int32_t deviceIndex = 0; deviceIndex < numDevices; deviceIndex++)
+    if (!ck(pDxgiDevice->GetAdapter(&pDxgiAdapter)))
     {
-        result = cuDeviceGet(&cuDevice, deviceIndex);
-        if (result != CUDA_SUCCESS) {
-            return result;
-        }
-        char luid_[8];
-        unsigned int nodeMask;
-        result = cuDeviceGetLuid(luid_,&nodeMask, cuDevice);
-        if (result != CUDA_SUCCESS) {
-            return result;
-        }
-        if (memcmp(&luid.LowPart, luid_, sizeof(luid.LowPart)) == 0 &&
-            memcmp(&luid.HighPart, luid_ + sizeof(luid.LowPart), sizeof(luid.HighPart)) == 0)
-        {
-            deviceFound = true;
-            break;
-        }
+        return CUDA_ERROR_NO_DEVICE;
+    }
+    CUdevice dev;
+    if (!ck(cuD3D11GetDevice(&dev, pDxgiAdapter.Get())))
+    {
+        return CUDA_ERROR_NO_DEVICE;
     }
 
-    if(!deviceFound)
-        return CUDA_ERROR_NO_DEVICE;
-    return cuCtxCreate(&m_context, 0, cuDevice);
+    result = cuCtxCreate(&m_context, 0, dev);
+    return result;
 }
 #endif
-
 //---------------------------------------------------------------------------------------------------------------------
 
-// todo(kazuki):: not supported on windows
-// #if defined(SUPPORT_OPENGL_UNIFIED)
-#if defined(UNITY_LINUX)
-CUresult CudaContext::InitGL() {
+CUcontext CudaContext::GetContextOnThread() const
+{
+    RTC_DCHECK(m_context);
 
-    // dll check
-    CUresult result = LoadModule();
-    if (result != CUDA_SUCCESS) {
-        return result;
+    CUcontext current;
+    if (!ck(cuCtxGetCurrent(&current)))
+    {
+        throw;
     }
-
-    result = cuInit(0);
-    if (result != CUDA_SUCCESS) {
-        return result;
+    if(m_context == current)
+    {
+        return m_context;
     }
-
-    int numDevices;
-    result = cuDeviceGetCount(&numDevices);
-    if (CUDA_SUCCESS != result) {
-        return result;
+    if (!ck(cuCtxSetCurrent(m_context)))
+    {
+        throw;
     }
-    if (numDevices == 0) {
-        return CUDA_ERROR_NO_DEVICE;
-    }
-
-    // TODO:: check GPU capability 
-    int cuDevId = 0;
-    CUdevice cuDevice = 0;
-    result = cuDeviceGet(&cuDevice, cuDevId);
-    if (CUDA_SUCCESS != result) {
-        return result;
-    }
-    return cuCtxCreate(&m_context, 0, cuDevice);
+    return m_context;
 }
-#endif
+
 //---------------------------------------------------------------------------------------------------------------------
 
 void CudaContext::Shutdown() {

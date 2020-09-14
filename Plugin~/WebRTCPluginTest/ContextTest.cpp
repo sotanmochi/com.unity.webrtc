@@ -1,4 +1,9 @@
 #include "pch.h"
+
+#include <cuda.h>
+
+#include "NvCodecUtils.h"
+#include "rtc_base/bind.h"
 #include "GraphicsDeviceTestBase.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
@@ -12,6 +17,8 @@ namespace unity
 {
 namespace webrtc
 {
+
+using namespace ::webrtc;
 
 class ContextTest : public GraphicsDeviceTestBase
 {
@@ -32,6 +39,7 @@ protected:
         context = std::make_unique<Context>();
         callback_videoframeresize = &OnFrameSizeChange;
     }
+
     void TearDown() override {
         GraphicsDeviceTestBase::TearDown();
     }
@@ -60,7 +68,7 @@ TEST_P(ContextTest, CreateAndDeleteMediaStream) {
 TEST_P(ContextTest, CreateAndDeleteVideoTrack) {
     const std::unique_ptr<ITexture2D> tex(m_device->CreateDefaultTextureV(width, height, m_textureFormat));
     EXPECT_NE(nullptr, tex.get());
-    const auto source = context->CreateVideoSource();
+    const auto source = context->CreateVideoSource(GPU_MEMORY | CPU_MEMORY);
     const auto track = context->CreateVideoTrack("video", source);
     EXPECT_NE(nullptr, track);
     EXPECT_TRUE(context->InitializeEncoder(encoder_.get(), track));
@@ -90,7 +98,7 @@ TEST_P(ContextTest, AddAndRemoveAudioTrackToMediaStream) {
 TEST_P(ContextTest, AddAndRemoveVideoTrackToMediaStream) {
     const std::unique_ptr<ITexture2D> tex(m_device->CreateDefaultTextureV(width, height, m_textureFormat));
     const auto stream = context->CreateMediaStream("videostream");
-    const auto source = context->CreateVideoSource();
+    const auto source = context->CreateVideoSource(GPU_MEMORY | CPU_MEMORY);
     const auto track = context->CreateVideoTrack("video", source);
     const auto videoTrack = reinterpret_cast<webrtc::VideoTrackInterface*>(track);
     stream->AddTrack(videoTrack);
