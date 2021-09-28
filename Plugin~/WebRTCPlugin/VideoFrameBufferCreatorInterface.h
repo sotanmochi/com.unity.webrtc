@@ -75,6 +75,7 @@ private:
 };
 #endif
 
+#if defined(UNITY_LINUX) || defined(UNITY_ANDROID) || defined(UNITY_WIN)
 class VideoFrameBufferCreatorVulkan : public VideoFrameBufferCreatorInterface
 {
 public:
@@ -94,6 +95,7 @@ private:
     VulkanGraphicsDevice* m_vulkanDevice;
     rtc::scoped_refptr<I420Buffer> m_dummyBuffer;
 };
+#endif
 
 #if defined(UNITY_MAC)
 class VideoFrameBufferCreatorMetal : VideoFrameBufferCreatorInterface
@@ -108,7 +110,7 @@ public:
 }
 #endif
 
-#if defined(UNITY_LINUX)
+#if defined(UNITY_LINUX) || defined(UNITY_ANDROID)
 class VideoFrameBufferCreatorOpenGL : public VideoFrameBufferCreatorInterface
 {
 public:
