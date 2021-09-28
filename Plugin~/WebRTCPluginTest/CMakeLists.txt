@@ -4,65 +4,29 @@ target_sources(WebRTCLibTest
   PRIVATE
     pch.cpp
     pch.h
+    CudaDeviceTest.cpp
     ContextTest.cpp
     GraphicsDeviceTest.cpp
     GraphicsDeviceTestBase.cpp
     GraphicsDeviceTestBase.h
 )
 
-<<<<<<< HEAD
 # todo(kazuki):: fix linker error on macOS and iOS
 if(NOT (macOS OR iOS))
-target_sources(WebRTCLibTest
-  PRIVATE
-    VideoRendererTest.cpp
-    VideoTrackSourceTest.cpp
-)    
+  target_sources(WebRTCLibTest
+    PRIVATE
+      VideoRendererTest.cpp
+      VideoTrackSourceTest.cpp
+  )    
 endif()
 
 if(Windows OR Linux)
   add_subdirectory(NvCodec)
-=======
-# Apple/Unix specific source files
-if(MSVC)
-  file(GLOB append_source
-    ../WebRTCPlugin/GraphicsDevice/Vulkan/*.h
-    ../WebRTCPlugin/GraphicsDevice/Vulkan/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/D3D11/*.h
-    ../WebRTCPlugin/GraphicsDevice/D3D11/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/D3D12/*.h
-    ../WebRTCPlugin/GraphicsDevice/D3D12/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/Cuda/*.h
-    ../WebRTCPlugin/GraphicsDevice/Cuda/*.cpp
-    ../WebRTCPlugin/Codec/NvCodec/*.cpp
-    ../WebRTCPlugin/Codec/NvCodec/*.h
+  target_sources(WebRTCLibTest
+    PRIVATE
+      GPUResourceBufferTest.cpp
+      H264HardwareEncoderTest.cpp
   )
-  list (APPEND sources ${append_source})
-elseif(APPLE)
-  file(GLOB append_source
-    ../libcxx/debug.cpp
-    ../WebRTCPlugin/*.mm
-    ../WebRTCPlugin/GraphicsDevice/Metal/*.h
-    ../WebRTCPlugin/GraphicsDevice/Metal/*.mm
-    #Codec/VideoToolbox/VTEncoderMetal.mm
-    #Codec/VideoToolbox/VTEncoderMetal.h
-  )
-  list (APPEND sources ${append_source})
-elseif(UNIX)
-  file(GLOB append_source
-    NvCodec/*.h
-    NvCodec/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/OpenGL/*.h
-    ../WebRTCPlugin/GraphicsDevice/OpenGL/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/Vulkan/*.h
-    ../WebRTCPlugin/GraphicsDevice/Vulkan/*.cpp
-    ../WebRTCPlugin/GraphicsDevice/Cuda/*.h
-    ../WebRTCPlugin/GraphicsDevice/Cuda/*.cpp
-    ../WebRTCPlugin/Codec/NvCodec/*.cpp
-    ../WebRTCPlugin/Codec/NvCodec/*.h
-  )
-  list (APPEND sources ${append_source})
->>>>>>> a8e16951... [skip ci] experimental: delegate performing of hardware encoder to worker thread
 endif()
 
 include(FetchContent)

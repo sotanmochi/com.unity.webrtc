@@ -11,4 +11,5 @@ target_sources(WebRTCLib
     VulkanTexture2D.h
     VulkanUtility.cpp
     VulkanUtility.h
+    VideoFrameBufferCreatorVulkan.cpp
 )

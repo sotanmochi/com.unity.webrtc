@@ -1,9 +1,0 @@
-diff a/Plugin~/WebRTCPlugin/UnityRenderEvent.cpp b/Plugin~/WebRTCPlugin/UnityRenderEvent.cpp	(rejected hunks)
-@@ -2,6 +2,7 @@
- 
- #include <IUnityGraphics.h>
- #include <IUnityProfiler.h>
-+#include <IUnityGraphicsVulkan.h>
- 
- #include "Context.h"
- #include "GraphicsDevice/GraphicsDevice.h"

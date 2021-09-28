@@ -6,4 +6,5 @@ target_sources(WebRTCLib
     D3D12ResourceFootprint.h
     D3D12Texture2D.cpp
     D3D12Texture2D.h
+    VideoFrameBufferCreatorD3D12.cpp
 )

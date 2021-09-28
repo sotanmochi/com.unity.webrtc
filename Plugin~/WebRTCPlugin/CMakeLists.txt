@@ -8,8 +8,6 @@ target_sources(WebRTCLib
     DataChannelObject.h
     DummyAudioDevice.cpp
     DummyAudioDevice.h
-    DummyVideoEncoder.cpp
-    DummyVideoEncoder.h
     AudioTrackSinkAdapter.h
     AudioTrackSinkAdapter.cpp
     Logger.cpp
@@ -46,6 +44,8 @@ target_sources(WebRTCLib
     WebRTCPlugin.h
     UnityLogStream.h
     UnityLogStream.cpp
+    VideoFrameBufferCreatorInterface.cpp
+    VideoFrameBufferCreatorInterface.h
 )
 
 if(iOS OR macOS)
@@ -53,6 +53,16 @@ if(iOS OR macOS)
     PRIVATE
       ../libcxx/debug.cpp
   )
+endif()
+
+if(Windows OR Linux)
+  target_sources(WebRTCLib
+    PRIVATE
+      H264HardwareEncoder.cpp
+      H264HardwareEncoder.h
+      GPUResourceBuffer.cpp
+      GPUResourceBuffer.h
+    )
 endif()
 
 add_subdirectory(Codec)

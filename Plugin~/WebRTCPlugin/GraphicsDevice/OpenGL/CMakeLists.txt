@@ -4,4 +4,5 @@ target_sources(WebRTCLib
     OpenGLGraphicsDevice.h
     OpenGLTexture2D.cpp
     OpenGLTexture2D.h
+    VideoFrameBufferCreatorOpenGL.cpp
 )

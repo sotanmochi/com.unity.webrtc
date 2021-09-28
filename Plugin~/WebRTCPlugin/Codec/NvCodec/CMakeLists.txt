@@ -4,6 +4,8 @@ target_sources(WebRTCLib
     NvEncoder.h
     NvEncoderCuda.cpp
     NvEncoderCuda.h
+    NvEncoderCudaWithCUarray.cpp
+    NvEncoderCudaWithCUarray.h
 )
 
 if(Windows)
@@ -13,6 +15,9 @@ if(Windows)
       NvEncoderD3D11.h
       NvEncoderD3D12.cpp
       NvEncoderD3D12.h
+# todo(kazuki):      
+#      NvEncoderGL.cpp
+#      NvEncoderGL.h
   )
 endif()
 

@@ -4,6 +4,7 @@ target_sources(WebRTCLib
     D3D11GraphicsDevice.h
     D3D11Texture2D.cpp
     D3D11Texture2D.h
+    VideoFrameBufferCreatorD3D11.cpp
 )
 
 
