@@ -43,7 +43,7 @@ namespace webrtc
         return nullptr;
     }
 
-    Context* ContextManager::CreateContext(int uid, UnityEncoderType encoderType, bool forTest)
+    Context* ContextManager::CreateContext(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
     {
         auto it = s_instance.m_contexts.find(uid);
         if (it != s_instance.m_contexts.end())
@@ -51,7 +51,7 @@ namespace webrtc
             DebugLog("Using already created context with ID %d", uid);
             return nullptr;
         }
-        auto ctx = new Context(uid, encoderType, forTest);
+        auto ctx = new Context(uid, gfxDevice, encoderType, forTest);
         s_instance.m_contexts[uid].reset(ctx);
         return ctx;
     }
@@ -189,7 +189,7 @@ namespace webrtc
     }
 #pragma warning(pop)
 
-    Context::Context(int uid, UnityEncoderType encoderType, bool forTest)
+    Context::Context(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
         : m_uid(uid)
         , m_workerThread(rtc::Thread::CreateWithSocketServer())
         , m_signalingThread(rtc::Thread::CreateWithSocketServer())
@@ -208,7 +208,7 @@ namespace webrtc
                     m_taskQueueFactory.get());
             });
 
-        IGraphicsDevice* gfxDevice = GraphicsUtility::GetGraphicsDevice();
+        //IGraphicsDevice* gfxDevice = GraphicsUtility::GetGraphicsDevice();
 
         std::unique_ptr<webrtc::VideoEncoderFactory> videoEncoderFactory =
             std::make_unique<UnityVideoEncoderFactory>(gfxDevice);
@@ -321,9 +321,9 @@ namespace webrtc
         return m_mapMediaStreamObserver[stream].get();
     }
 
-    VideoTrackSourceInterface* Context::CreateVideoSource(NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType)
+    VideoTrackSourceInterface* Context::CreateVideoSource(NativeTexPtr ptr, IGraphicsDevice* device, UnityRenderingExtTextureFormat format, uint32_t memoryType)
     {
-        IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
+        //IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
 
         const rtc::scoped_refptr<UnityVideoTrackSource> source =
             new rtc::RefCountedObject<UnityVideoTrackSource>(

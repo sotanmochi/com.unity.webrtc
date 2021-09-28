@@ -240,7 +240,9 @@ extern "C"
             return false;
         }
 #endif
-        return EncoderFactory::GetHardwareEncoderSupport();
+        // todo(kazuki): 
+        //return EncoderFactory::GetHardwareEncoderSupport();
+        return true;
     }
 
     UNITY_INTERFACE_EXPORT UnityEncoderType ContextGetEncoderType(Context* context)
@@ -286,9 +288,11 @@ extern "C"
         context->StopMediaStreamTrack(track);
     }
 
-    UNITY_INTERFACE_EXPORT webrtc::VideoTrackSourceInterface* ContextCreateVideoTrackSource(Context* context, uint32_t memoryType)
+    UNITY_INTERFACE_EXPORT webrtc::VideoTrackSourceInterface* ContextCreateVideoTrackSource(
+        Context* context, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType)
     {
-        return context->CreateVideoSource(memoryType);
+        IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
+        return context->CreateVideoSource(ptr, device, format, memoryType);
     }
 
     UNITY_INTERFACE_EXPORT webrtc::AudioSourceInterface* ContextCreateAudioTrackSource(Context* context)
@@ -360,9 +364,9 @@ extern "C"
         return ConvertPtrArrayFromRefPtrArray<AudioTrackInterface>(stream->GetAudioTracks(), length);
     }
 
-    UNITY_INTERFACE_EXPORT VideoTrackSourceInterface* ContextGetVideoSource(Context* context, MediaStreamTrackInterface* track)
+    UNITY_INTERFACE_EXPORT VideoTrackSourceInterface* ContextGetVideoSource(Context* context, VideoTrackInterface* track)
     {
-        return context->FindVideoTrack(track)->GetSource();
+        return track->GetSource();
     }
 
     UNITY_INTERFACE_EXPORT TrackKind MediaStreamTrackGetKind(MediaStreamTrackInterface* track)
@@ -450,7 +454,8 @@ extern "C"
             DebugLog("Already created context with ID %d", uid);
             return ctx;
         }
-        ctx = ContextManager::GetInstance()->CreateContext(uid, encoderType, forTest);
+        IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
+        ctx = ContextManager::GetInstance()->CreateContext(uid, device, encoderType, forTest);
         return ctx;
     }
 

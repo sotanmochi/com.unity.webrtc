@@ -24,7 +24,7 @@ namespace webrtc
         static ContextManager* GetInstance() { return &s_instance; }
      
         Context* GetContext(int uid) const;
-        Context* CreateContext(int uid, UnityEncoderType encoderType, bool forTest);
+        Context* CreateContext(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest);
         void DestroyContext(int uid);
         void SetCurContext(Context*);
         bool Exists(Context* context);
@@ -51,7 +51,11 @@ namespace webrtc
     {
     public:
         
-        explicit Context(int uid = -1, UnityEncoderType encoderType = UnityEncoderHardware, bool forTest = false);
+        explicit Context(
+            int uid = -1,
+            IGraphicsDevice* gfxDevice = nullptr,
+            UnityEncoderType encoderType = UnityEncoderHardware,
+            bool forTest = false);
         ~Context();
 
         // Utility
@@ -91,7 +95,8 @@ namespace webrtc
         void DeleteAudioTrackSinkAdapter(AudioTrackSinkAdapter* sink);
 
         // Video Source
-        webrtc::VideoTrackSourceInterface* CreateVideoSource(NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
+        webrtc::VideoTrackSourceInterface* CreateVideoSource(
+            NativeTexPtr ptr, IGraphicsDevice* device, UnityRenderingExtTextureFormat format, uint32_t memoryType);
 
         // MediaStreamTrack
         webrtc::VideoTrackInterface* CreateVideoTrack(const std::string& label, webrtc::VideoTrackSourceInterface* source);

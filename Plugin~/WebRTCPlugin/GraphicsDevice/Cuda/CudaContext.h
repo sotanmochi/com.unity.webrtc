@@ -30,5 +30,7 @@ private:
 
 };
 
+inline CUcontext CudaContext::GetContext() const { return m_context; }
+
 } // end namespace webrtc
 } // end namespace unity

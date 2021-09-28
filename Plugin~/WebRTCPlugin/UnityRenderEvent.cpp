@@ -32,7 +32,7 @@ namespace webrtc
     IUnityInterfaces* s_UnityInterfaces = nullptr;
     IUnityGraphics* s_Graphics = nullptr;
     Context* s_context = nullptr;
-    std::map<const MediaStreamTrackInterface*, std::unique_ptr<IEncoder>> s_mapEncoder;
+//    std::map<const MediaStreamTrackInterface*, std::unique_ptr<IEncoder>> s_mapEncoder;
     std::map<const uint32_t, std::shared_ptr<UnityVideoRenderer>> s_mapVideoRenderer;
     std::unique_ptr <Clock> s_clock;
 
@@ -121,7 +121,7 @@ static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType ev
         /// First time, s_UnityInterfaces return UnityGfxRenderer as kUnityGfxRendererNull.
         /// The actual value of UnityGfxRenderer is returned on second time.
 
-        s_mapEncoder.clear();
+//        s_mapEncoder.clear();
         s_mapVideoRenderer.clear();
 
         UnityGfxRenderer renderer =
@@ -152,7 +152,7 @@ static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType ev
     }
     case kUnityGfxDeviceEventShutdown:
     {
-        s_mapEncoder.clear();
+//        s_mapEncoder.clear();
         s_mapVideoRenderer.clear();
 
         if (s_gfxDevice != nullptr)
@@ -279,27 +279,28 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
         return;
     }
 
-    if(!s_context->ExistsVideoSource(source))
-    {
-        return;
-    }
+    //if(!s_context->ExistsVideoSource(source))
+    //{
+    //    return;
+    //}
+
     switch(event)
     {
         case VideoStreamRenderEventID::Initialize:
         {
-            const VideoEncoderParameter* param = s_context->GetEncoderParameter(track);
+            //const VideoEncoderParameter* param = s_context->GetEncoderParameter(track);
             const UnityEncoderType encoderType = s_context->GetEncoderType();
             UnityVideoTrackSource* source = s_context->GetVideoSource(track);
             UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
-            void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
-                param->textureHandle, s_gfxDevice.get(), gfxRenderer);
-            source->Init(ptr);
-            s_mapEncoder[track] = EncoderFactory::GetInstance().Init(
-                param->width, param->height, s_gfxDevice.get(), encoderType, param->textureFormat);
-            if (!s_context->InitializeEncoder(s_mapEncoder[track].get(), track))
-            {
-                // DebugLog("Encoder initialization failed.");
-            }
+            //void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
+            //    param->textureHandle, s_gfxDevice.get(), gfxRenderer);
+            source->Init();
+            //s_mapEncoder[track] = EncoderFactory::GetInstance().Init(
+            //    param->width, param->height, s_gfxDevice.get(), encoderType, param->textureFormat);
+            //if (!s_context->InitializeEncoder(s_mapEncoder[track].get(), track))
+            //{
+            //    // DebugLog("Encoder initialization failed.");
+            //}
             return;
         }
         case VideoStreamRenderEventID::Encode:

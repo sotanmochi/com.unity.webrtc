@@ -80,5 +80,6 @@ void* VulkanGraphicsDevice::GetEncodeDevicePtrV()
 #endif
 }
 GraphicsDeviceType VulkanGraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_VULKAN; }
+UnityGfxRenderer VulkanGraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererVulkan; }
 } // end namespace webrtc
 } // end namespace unity

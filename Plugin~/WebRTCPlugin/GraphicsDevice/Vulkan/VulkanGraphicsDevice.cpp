@@ -149,6 +149,20 @@ bool VulkanGraphicsDevice::CopyResourceV(ITexture2D* dest, ITexture2D* src) {
 }
 
 //---------------------------------------------------------------------------------------------------------------------
+NativeTexPtr VulkanGraphicsDevice::ConvertNativeFromUnityPtr(void* tex)
+{
+    std::unique_ptr<UnityVulkanImage> unityVulkanImage = std::make_unique<UnityVulkanImage>();
+    VkImageSubresource subResource{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 0 };
+    if (!m_unityVulkan->AccessTexture(tex, &subResource, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        VK_PIPELINE_STAGE_TRANSFER_BIT, VK_ACCESS_TRANSFER_READ_BIT, kUnityVulkanResourceAccess_PipelineBarrier,
+        unityVulkanImage.get()))
+    {
+        return nullptr;
+    }
+    return unityVulkanImage.release();
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 bool VulkanGraphicsDevice::CopyResourceFromNativeV(
     ITexture2D* dest, void* nativeTexturePtr) {
     if (nullptr == dest || nullptr == nativeTexturePtr)

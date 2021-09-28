@@ -34,6 +34,7 @@ public:
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
             m_device,
             m_texture->GetNativeTexturePtrV(),
+            m_textureFormat,
             GPU_MEMORY | CPU_MEMORY,
             /*is_screencast=*/ false,
             /*needs_denoising=*/ absl::nullopt);
