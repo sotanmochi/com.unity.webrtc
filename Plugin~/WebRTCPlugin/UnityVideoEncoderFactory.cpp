@@ -103,8 +103,9 @@ namespace webrtc
     std::unique_ptr<webrtc::VideoEncoder> UnityVideoEncoderFactory::CreateVideoEncoder(const webrtc::SdpVideoFormat& format)
     {
 #if CUDA_PLATFORM
-        if (IsFormatSupported(GetHardwareEncoderFormats(), format) &&
-            GraphicsUtility::IsHWCodecSupportedDevice()))
+        if (IsFormatSupported(GetHardwareEncoderFormats(), format)
+//            && GraphicsUtility::IsHWCodecSupportedDevice()
+            )
         {
             CUcontext context = m_gfxDevice->GetCuContext();
             NV_ENC_BUFFER_FORMAT format = m_gfxDevice->GetEncodeBufferFormat();

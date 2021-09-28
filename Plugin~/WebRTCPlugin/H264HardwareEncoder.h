@@ -63,7 +63,7 @@ private:
 
     EncodedImageCallback* m_encodedCompleteCallback = nullptr;
     EncodedImage m_encodedImage;
-    RTPFragmentationHeader m_fragHeader;
+//    RTPFragmentationHeader m_fragHeader;
     H264BitstreamParser m_h264BitstreamParser;
     std::unique_ptr<BitrateAdjuster> m_bitrateAdjuster;
     RateStatistics m_encode_fps;

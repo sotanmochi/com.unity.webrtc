@@ -244,7 +244,7 @@ namespace webrtc
                 {
                     m_audioDevice = nullptr;
                 });
-            m_mapIdAndEncoder.clear();
+            //m_mapIdAndEncoder.clear();
             m_mapClients.clear();
 
             // check count of refptr to avoid to forget disposing
@@ -253,7 +253,7 @@ namespace webrtc
             m_mapRefPtr.clear();
             m_mapMediaStreamObserver.clear();
             m_mapSetSessionDescriptionObserver.clear();
-            m_mapVideoEncoderParameter.clear();
+            //m_mapVideoEncoderParameter.clear();
             m_mapDataChannels.clear();
             m_mapVideoRenderer.clear();
 
@@ -291,8 +291,9 @@ namespace webrtc
     CodecInitializationResult Context::GetInitializationResult(MediaStreamTrackInterface* track)
     {
         UnityVideoTrackSource* source = GetVideoSource(track);
-        if (source != nullptr)
-            return source->GetCodecInitializationResult();
+        // todo(kazuki):
+        //if (source != nullptr)
+        //    return source->GetCodecInitializationResult();
         return CodecInitializationResult::NotInitialized;
     }
 

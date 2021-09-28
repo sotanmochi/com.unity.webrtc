@@ -1,8 +1,8 @@
 target_sources(WebRTCLib
   PRIVATE
-    EncoderFactory.cpp
-    EncoderFactory.h
-    IEncoder.h
+#    EncoderFactory.cpp
+#    EncoderFactory.h
+#    IEncoder.h
 )
 
 add_subdirectory(SoftwareCodec)
