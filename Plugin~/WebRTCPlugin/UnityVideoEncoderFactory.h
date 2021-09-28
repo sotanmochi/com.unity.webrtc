@@ -23,6 +23,7 @@ namespace webrtc
         virtual std::vector<SdpVideoFormat> GetHardwareEncoderFormats() const;
 
         UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice);
+        ~UnityVideoEncoderFactory();
     private:
         IGraphicsDevice* m_gfxDevice;
         const std::unique_ptr<VideoEncoderFactory> internal_encoder_factory_;

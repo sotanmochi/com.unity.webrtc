@@ -2,8 +2,8 @@
 #include "GraphicsDeviceTestBase.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
-#include "Codec/EncoderFactory.h"
-#include "Codec/IEncoder.h"
+//#include "Codec/EncoderFactory.h"
+//#include "Codec/IEncoder.h"
 
 using namespace ::webrtc;
 

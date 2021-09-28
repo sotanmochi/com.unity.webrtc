@@ -2,8 +2,6 @@
 
 #include "GpuResourceBuffer.h"
 #include "GraphicsDeviceTestBase.h"
-#include "Codec/EncoderFactory.h"
-#include "Codec/IEncoder.h"
 #include "Context.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
@@ -30,7 +28,7 @@ class VideoTrackSourceTest : public GraphicsDeviceTestBase
 {
 public:
     VideoTrackSourceTest() :
-        encoder_(EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat)),
+        //encoder_(EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat)),
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
@@ -40,8 +38,8 @@ public:
             /*is_screencast=*/ false,
             /*needs_denoising=*/ absl::nullopt);
         m_trackSource->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
-        m_trackSource->Init(m_texture->GetNativeTexturePtrV());
-        m_trackSource->SetEncoder(encoder_.get());
+        m_trackSource->Init();
+        //m_trackSource->SetEncoder(encoder_.get());
 
         EXPECT_NE(nullptr, m_device);
 

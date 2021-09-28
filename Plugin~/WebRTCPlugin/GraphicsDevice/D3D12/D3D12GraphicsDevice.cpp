@@ -294,33 +294,5 @@ ID3D11Texture2D* D3D12GraphicsDevice::GetTempTexture(
     return texture;
 }
 
-CUcontext D3D12GraphicsDevice::GetCuContext()
-{
-    if (!ck(cuInit(0)))
-    {
-        return nullptr;
-    }
-
-    ComPtr<IDXGIDevice> pDXGIDevice = nullptr;
-    if (!ck(m_d3d11Device->QueryInterface(IID_PPV_ARGS(&pDXGIDevice))))
-    {
-        return nullptr;
-    }
-    ComPtr<IDXGIAdapter> pDXGIAdapter = nullptr;
-    if (!ck(pDXGIDevice->GetAdapter(&pDXGIAdapter)))
-    {
-        return nullptr;
-    }
-    if (!ck(cuD3D11GetDevice(&m_device, pDXGIAdapter.Get())))
-    {
-        return nullptr;
-    }
-    if (!ck(cuCtxCreate(&m_context, 0, m_device)))
-    {
-        return nullptr;
-    }
-    return m_context;
-}
-
 } // end namespace webrtc
 } // end namespace unity

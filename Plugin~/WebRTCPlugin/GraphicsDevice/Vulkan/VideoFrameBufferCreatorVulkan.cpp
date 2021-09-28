@@ -13,8 +13,8 @@ namespace webrtc
 {
 
 VideoFrameBufferCreatorVulkan::VideoFrameBufferCreatorVulkan(
-    IGraphicsDevice* device, void* frame, uint32_t destMemoryType)
-    : VideoFrameBufferCreatorInterface(device, frame, destMemoryType)
+    IGraphicsDevice* device, void* frame, UnityRenderingExtTextureFormat format, uint32_t destMemoryType)
+    : VideoFrameBufferCreatorInterface(device, frame, format, destMemoryType)
     , m_image(static_cast<UnityVulkanImage*>(frame))
     , m_gpuReadTexture(nullptr)
     , m_vulkanDevice(static_cast<VulkanGraphicsDevice*>(device))
@@ -23,7 +23,7 @@ VideoFrameBufferCreatorVulkan::VideoFrameBufferCreatorVulkan(
     m_width = m_image->extent.width;
     m_height = m_image->extent.height;
 
-    std::unique_ptr<ITexture2D> tex(device->CreateDefaultTextureV(m_width, m_height));
+    std::unique_ptr<ITexture2D> tex(device->CreateDefaultTextureV(m_width, m_height, m_format));
     m_gpuReadTexture = std::move(tex);
     m_dummyBuffer = I420Buffer::Create(m_width, m_height);
 }

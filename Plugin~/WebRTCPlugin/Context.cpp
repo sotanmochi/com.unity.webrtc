@@ -5,12 +5,12 @@
 #include "UnityAudioEncoderFactory.h"
 #include "UnityAudioDecoderFactory.h"
 
-#if defined(UNITY_WIN) || defined(UNITY_LINUX)
-#include "Codec/NvCodec/NvEncoder.h"
-#endif
+//#if defined(UNITY_WIN) || defined(UNITY_LINUX)
+//#include "Codec/NvCodec/NvEncoder.h"
+//#endif
 
 #include "AudioTrackSinkAdapter.h"
-#include "DummyVideoEncoder.h"
+//#include "DummyVideoEncoder.h"
 #include "MediaStreamObserver.h"
 #include "SetSessionDescriptionObserver.h"
 #include "UnityAudioTrackSource.h"
@@ -214,7 +214,7 @@ namespace webrtc
             std::make_unique<UnityVideoEncoderFactory>(gfxDevice);
 
         std::unique_ptr<webrtc::VideoDecoderFactory> videoDecoderFactory =
-            std::make_unique<UnityVideoDecoderFactory>();
+            std::make_unique<UnityVideoDecoderFactory>(forTest);
 
         rtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory = CreateAudioEncoderFactory();
         rtc::scoped_refptr<AudioDecoderFactory>  audioDecoderFactory = CreateAudioDecoderFactory();
@@ -321,13 +321,13 @@ namespace webrtc
         return m_mapMediaStreamObserver[stream].get();
     }
 
-    VideoTrackSourceInterface* Context::CreateVideoSource(NativeTexPtr ptr, uint32_t destMemoryType)
+    VideoTrackSourceInterface* Context::CreateVideoSource(NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType)
     {
         IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
 
         const rtc::scoped_refptr<UnityVideoTrackSource> source =
             new rtc::RefCountedObject<UnityVideoTrackSource>(
-                device, ptr, destMemoryType, false, absl::nullopt);
+                device, ptr, format, memoryType, false, absl::nullopt);
 
         AddRefPtr(source);
         return source;

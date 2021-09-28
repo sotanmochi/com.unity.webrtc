@@ -7,7 +7,7 @@
 #include "Context.h"
 #include "ScopedProfiler.h"
 #include "UnityVideoTrackSource.h"
-#include "Codec/EncoderFactory.h"
+//#include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsDevice.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 

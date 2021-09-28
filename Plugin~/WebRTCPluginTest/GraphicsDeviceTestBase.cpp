@@ -342,9 +342,9 @@ void* CreateDeviceOpenGL()
 
 #endif
 
-void* CreateArg(UnityGfxRenderer renderer) {
+IUnityInterface* CreateUnityInterface(UnityGfxRenderer renderer) {
 
-    switch(renderer)
+    switch (renderer)
     {
 #if defined(SUPPORT_D3D11)
     case kUnityGfxRendererD3D11:
@@ -352,7 +352,7 @@ void* CreateArg(UnityGfxRenderer renderer) {
 #endif
 #if defined(SUPPORT_D3D12)
     case kUnityGfxRendererD3D12:
-        return pCommandQueue.Get();
+        return nullptr;
 #endif
 #if defined(SUPPORT_OPENGL_CORE)
     case kUnityGfxRendererOpenGLCore:
@@ -379,10 +379,6 @@ void* CreateGfxDevice(UnityGfxRenderer renderer)
 #if defined(SUPPORT_D3D12)
     case kUnityGfxRendererD3D12:
         return CreateDeviceD3D12();
-#endif
-#if defined(SUPPORT_VULKAN)
-    case kUnityGfxRendererVulkan:
-        return CreateDeviceVulkan();
 #endif
 #if defined(SUPPORT_OPENGL_CORE)
     case kUnityGfxRendererOpenGLCore:

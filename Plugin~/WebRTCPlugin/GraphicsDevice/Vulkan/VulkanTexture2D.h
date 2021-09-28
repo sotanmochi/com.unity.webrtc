@@ -48,8 +48,6 @@ private:
     UnityVulkanImage    m_unityVulkanImage;
 
     const VkAllocationCallbacks* m_allocator = nullptr;
-
-    UnityVulkanImage m_unityVulkanImage;
 };
 
 //---------------------------------------------------------------------------------------------------------------------

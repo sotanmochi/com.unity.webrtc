@@ -6,7 +6,7 @@
 #include "UnityLogStream.h"
 #include "Context.h"
 #include "UnityAudioTrackSource.h"
-#include "Codec/EncoderFactory.h"
+//#include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 
 #if defined(SUPPORT_VULKAN)

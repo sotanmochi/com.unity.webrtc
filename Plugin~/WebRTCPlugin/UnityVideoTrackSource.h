@@ -1,7 +1,7 @@
 #pragma once
 
 #include <shared_mutex>
-// #include "Codec/IEncoder.h"
+#include "GraphicsDevice/IGraphicsDevice.h"
 #include "rtc_base/timestamp_aligner.h"
 
 
@@ -42,7 +42,7 @@ class UnityVideoTrackSource :
         //};
 
     UnityVideoTrackSource(
-        IGraphicsDevice* device, NativeTexPtr ptr, uint32_t destMemoryType,
+        IGraphicsDevice* device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType,
         bool is_screencast, absl::optional<bool> needs_denoising);
     ~UnityVideoTrackSource() override;
 

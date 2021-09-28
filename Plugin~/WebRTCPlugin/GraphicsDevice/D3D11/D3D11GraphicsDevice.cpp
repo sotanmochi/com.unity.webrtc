@@ -128,9 +128,5 @@ rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D*
     return i420_buffer;
 }
 
-CUcontext D3D11GraphicsDevice::GetCuContext()
-{
-    return m_cudaContext.GetContextOnThread();
-}
 } //end namespace webrtc
 } //end namespace unity

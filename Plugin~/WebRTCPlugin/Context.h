@@ -6,7 +6,6 @@
 #include "PeerConnectionObject.h"
 #include "UnityVideoRenderer.h"
 #include "UnityVideoTrackSource.h"
-// #include "Codec/IEncoder.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 
 using namespace ::webrtc;
@@ -92,7 +91,7 @@ namespace webrtc
         void DeleteAudioTrackSinkAdapter(AudioTrackSinkAdapter* sink);
 
         // Video Source
-        webrtc::VideoTrackSourceInterface* CreateVideoSource(uint32_t destMemoryType);
+        webrtc::VideoTrackSourceInterface* CreateVideoSource(NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
 
         // MediaStreamTrack
         webrtc::VideoTrackInterface* CreateVideoTrack(const std::string& label, webrtc::VideoTrackSourceInterface* source);

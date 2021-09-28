@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #include "UnityVideoTrackSource.h"
-#include "GraphicsDevice/IGraphicsDevice.h"
 #include "VideoFrameBufferCreatorInterface.h"
 
 namespace unity
@@ -10,22 +9,15 @@ namespace webrtc
 {
 
 UnityVideoTrackSource::UnityVideoTrackSource(
-    IGraphicsDevice* device, NativeTexPtr ptr, uint32_t destMemoryType,
-    bool is_screencast, absl::optional<bool> needs_denoising)
+    IGraphicsDevice* device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format,
+    uint32_t memoryType, bool is_screencast, absl::optional<bool> needs_denoising)
     : AdaptedVideoTrackSource(/*required_alignment=*/1)
     , is_screencast_(is_screencast)
     , needs_denoising_(needs_denoising)
     , m_bufferCreator(VideoFrameBufferCreatorInterface::Create(
-        device, ptr, device->GetGfxRenderer(), destMemoryType))
+        device, ptr, device->GetGfxRenderer(), format, memoryType))
 {
 //  DETACH_FROM_THREAD(thread_checker_);
-}
-
-UnityVideoTrackSource::~UnityVideoTrackSource()
-{
-    {
-        std::unique_lock<std::mutex> lock(m_mutex);
-    }
 }
 
 void UnityVideoTrackSource::Init()

@@ -43,8 +43,7 @@ protected:
             : test_(test) {}
 
         Result OnEncodedImage(const EncodedImage& frame,
-            const CodecSpecificInfo* codec_specific_info,
-            const RTPFragmentationHeader* fragmentation)
+            const CodecSpecificInfo* codec_specific_info)
         {
             return Result(Result::OK);
         }

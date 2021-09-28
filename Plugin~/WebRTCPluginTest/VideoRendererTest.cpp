@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "GraphicsDeviceTestBase.h"
-#include "Codec/EncoderFactory.h"
-#include "Codec/IEncoder.h"
+//#include "Codec/EncoderFactory.h"
+//#include "Codec/IEncoder.h"
 #include "Context.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
@@ -23,7 +23,7 @@ class VideoRendererTest : public GraphicsDeviceTestBase
 {
 public:
     VideoRendererTest() :
-        encoder_(EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat)),
+//        encoder_(EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat)),
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
@@ -32,10 +32,10 @@ public:
         m_callback = &OnFrameSizeChange;
         m_renderer = std::make_unique<UnityVideoRenderer>(1, m_callback, true);
         m_trackSource->AddOrUpdateSink(m_renderer.get(), rtc::VideoSinkWants());
-        m_trackSource->SetEncoder(encoder_.get());
+//        m_trackSource->SetEncoder(encoder_.get());
 
         EXPECT_NE(nullptr, m_device);
-        EXPECT_NE(nullptr, encoder_);
+//        EXPECT_NE(nullptr, encoder_);
 
         context = std::make_unique<Context>();
     }
@@ -44,7 +44,7 @@ public:
         m_trackSource->RemoveSink(m_renderer.get());
     }
 protected:
-    std::unique_ptr<IEncoder> encoder_;
+//    std::unique_ptr<IEncoder> encoder_;
     std::unique_ptr<Context> context;
     std::unique_ptr<ITexture2D> m_texture;
 
@@ -70,8 +70,8 @@ protected:
 
     void SendTestFrame(int width, int height)
     {
-        auto builder = CreateBlackFrameBuilder(width, height);
-        m_trackSource->DelegateOnFrame(builder.build());
+//        auto builder = CreateBlackFrameBuilder(width, height);
+//        m_trackSource->DelegateOnFrame(builder.build());
     }
 };
 

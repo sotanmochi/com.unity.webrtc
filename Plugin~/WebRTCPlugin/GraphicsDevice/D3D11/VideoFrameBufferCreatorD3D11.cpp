@@ -14,8 +14,8 @@ namespace webrtc
 {
 
 VideoFrameBufferCreatorD3D11::VideoFrameBufferCreatorD3D11(
-    IGraphicsDevice* device, NativeTexPtr ptr, uint32_t destMemoryType)
-    : VideoFrameBufferCreatorInterface(device, ptr, destMemoryType)
+    IGraphicsDevice* device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t destMemoryType)
+    : VideoFrameBufferCreatorInterface(device, ptr, format, destMemoryType)
     , m_resource(nullptr)
     , m_mappedArray(nullptr)
     , m_dummyBuffer(nullptr)
@@ -32,7 +32,7 @@ void VideoFrameBufferCreatorD3D11::Init()
 {
     if(m_useCpu)
     {
-        std::unique_ptr<ITexture2D> tex2(m_device->CreateCPUReadTextureV(m_width, m_height));
+        std::unique_ptr<ITexture2D> tex2(m_device->CreateCPUReadTextureV(m_width, m_height, m_format));
         m_cpuReadTexture = std::move(tex2);
     }
 
@@ -43,7 +43,7 @@ void VideoFrameBufferCreatorD3D11::Init()
             throw;
         }
 
-        std::unique_ptr<ITexture2D> tex(m_device->CreateDefaultTextureV(m_width, m_height));
+        std::unique_ptr<ITexture2D> tex(m_device->CreateDefaultTextureV(m_width, m_height, m_format));
         m_gpuReadTexture = std::move(tex);
 
         ID3D11Texture2D* pD3DResource =

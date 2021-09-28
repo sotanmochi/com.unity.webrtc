@@ -6,37 +6,37 @@ namespace webrtc
 {
 
     namespace webrtc = ::webrtc;
-    enum class CodecInitializationResult
+    enum class codecinitializationresult
     {
-        NotInitialized,
-        Success,
-        DriverNotInstalled,
-        DriverVersionDoesNotSupportAPI,
-        APINotFound,
-        EncoderInitializationFailed
+        notinitialized,
+        success,
+        drivernotinstalled,
+        driverversiondoesnotsupportapi,
+        apinotfound,
+        encoderinitializationfailed
     };
 
-    class IEncoder {
+    class iencoder {
     public:
-        virtual ~IEncoder() {};        
-        virtual void InitV() = 0;   //Can throw exception. 
-        virtual void SetRates(uint32_t bitRate, int64_t frameRate) = 0;
-        virtual void UpdateSettings() = 0;
-        virtual bool CopyBuffer(void* frame) = 0;
-        virtual bool EncodeFrame(int64_t timestamp_us) = 0;
-        virtual bool IsSupported() const = 0;
-        virtual void SetIdrFrame() = 0;
-        virtual uint64 GetCurrentFrameCount() const = 0;
-        sigslot::signal1<const webrtc::VideoFrame&> CaptureFrame;
+        virtual ~iencoder() {};        
+        virtual void initv() = 0;   //can throw exception. 
+        virtual void setrates(uint32_t bitrate, int64_t framerate) = 0;
+        virtual void updatesettings() = 0;
+        virtual bool copybuffer(void* frame) = 0;
+        virtual bool encodeframe(int64_t timestamp_us) = 0;
+        virtual bool issupported() const = 0;
+        virtual void setidrframe() = 0;
+        virtual uint64 getcurrentframecount() const = 0;
+        sigslot::signal1<const webrtc::videoframe&> captureframe;
 
-        // todo(kazuki): remove this virtual method after refactoring DummyVideoEncoder
-        virtual void SetEncoderId(const uint32_t id) { m_encoderId = id;  }
-        virtual uint32_t Id() const { return m_encoderId; }
+        // todo(kazuki): remove this virtual method after refactoring dummyvideoencoder
+        virtual void setencoderid(const uint32_t id) { m_encoderid = id;  }
+        virtual uint32_t id() const { return m_encoderid; }
 
-        CodecInitializationResult GetCodecInitializationResult() const { return m_initializationResult; }
+        codecinitializationresult getcodecinitializationresult() const { return m_initializationresult; }
     protected:
-        CodecInitializationResult m_initializationResult = CodecInitializationResult::NotInitialized;
-        uint32_t m_encoderId;
+        codecinitializationresult m_initializationresult = codecinitializationresult::notinitialized;
+        uint32_t m_encoderid;
     };
     
 } // end namespace webrtc

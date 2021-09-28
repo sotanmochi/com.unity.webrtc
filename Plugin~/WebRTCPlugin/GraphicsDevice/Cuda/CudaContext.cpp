@@ -141,7 +141,7 @@ CUresult CudaContext::Init(ID3D11Device* device) {
 #endif
 //---------------------------------------------------------------------------------------------------------------------
 
-CUcontext CudaContext::GetContextOnThread() const
+CUcontext CudaContext::GetContext() const
 {
     RTC_DCHECK(m_context);
 

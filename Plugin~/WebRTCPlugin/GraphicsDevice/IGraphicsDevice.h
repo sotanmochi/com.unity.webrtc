@@ -10,7 +10,7 @@ namespace unity
 {
 namespace webrtc
 {
-typedef void* NativeTexPtr;
+using NativeTexPtr = void*;
 class ITexture2D;
 
 class IGraphicsDevice

@@ -234,7 +234,6 @@ namespace webrtc
     int32_t H264HardwareEncoder::ProcessEncodedFrame(
         std::vector<uint8_t>& packet, const VideoFrame& inputFrame)
     {
-        m_encodedImage._completeFrame = true;
         m_encodedImage.SetTimestamp(inputFrame.timestamp());
         m_encodedImage._encodedWidth = inputFrame.video_frame_buffer()->width();
         m_encodedImage._encodedHeight = inputFrame.video_frame_buffer()->height();
@@ -260,25 +259,14 @@ namespace webrtc
         m_encodedImage.SetEncodedData(EncodedImageBuffer::Create(packet.data(), packet.size()));
         m_encodedImage.set_size(packet.size());
 
-        m_fragHeader.VerifyAndAllocateFragmentationHeader(naluIndices.size());
-        m_fragHeader.fragmentationVectorSize = static_cast<uint16_t>(naluIndices.size());
-        for (uint32_t i = 0; i < naluIndices.size(); i++)
-        {
-            H264::NaluIndex const& NALUIndex = naluIndices[i];
-            m_fragHeader.fragmentationOffset[i] = NALUIndex.payload_start_offset;
-            m_fragHeader.fragmentationLength[i] = NALUIndex.payload_size;
-        }
-
-        int qp;
-        m_h264BitstreamParser.ParseBitstream(packet.data(), packet.size());
-        m_h264BitstreamParser.GetLastSliceQp(&qp);
-        m_encodedImage.qp_ = qp;
+        m_h264BitstreamParser.ParseBitstream(m_encodedImage);
+        m_encodedImage.qp_ = m_h264BitstreamParser.GetLastSliceQp().value_or(-1);
 
         CodecSpecificInfo codecInfo;
         codecInfo.codecType = kVideoCodecH264;
         codecInfo.codecSpecific.H264.packetization_mode = H264PacketizationMode::NonInterleaved;
 
-        const auto result = m_encodedCompleteCallback->OnEncodedImage(m_encodedImage, &codecInfo, &m_fragHeader);
+        const auto result = m_encodedCompleteCallback->OnEncodedImage(m_encodedImage, &codecInfo);
         if (result.error != EncodedImageCallback::Result::OK)
         {
             RTC_LOG(LS_ERROR) << "Encode m_encodedCompleteCallback failed " <<  result.error;

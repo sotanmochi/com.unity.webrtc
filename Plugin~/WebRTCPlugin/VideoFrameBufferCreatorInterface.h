@@ -15,18 +15,19 @@ class VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorInterface(
-        IGraphicsDevice* device, void* frame, uint32_t destMemoryType);
+        IGraphicsDevice* device, void* frame, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorInterface();
     virtual void Init() = 0;
     virtual rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
         std::shared_mutex& mutex) = 0;
 public:
     static VideoFrameBufferCreatorInterface* Create(
-        IGraphicsDevice* device, NativeTexPtr ptr, UnityGfxRenderer renderer, uint32_t destMemoryType);
+        IGraphicsDevice* device, NativeTexPtr ptr, UnityGfxRenderer renderer, UnityRenderingExtTextureFormat format, uint32_t memoryType);
 protected:
     int m_width;
     int m_height;
     IGraphicsDevice* m_device;
+    UnityRenderingExtTextureFormat m_format;
     void* m_frame;
     bool m_useCpu;
     bool m_useGpu;
@@ -37,7 +38,7 @@ class VideoFrameBufferCreatorD3D11 : public VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorD3D11(
-        IGraphicsDevice* m_device, NativeTexPtr ptr, uint32_t destMemoryType);
+        IGraphicsDevice* m_device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorD3D11();
 
     void Init() override;
@@ -57,7 +58,7 @@ class VideoFrameBufferCreatorD3D12 : public VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorD3D12(
-        IGraphicsDevice* m_device, NativeTexPtr ptr, uint32_t destMemoryType);
+        IGraphicsDevice* m_device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorD3D12();
 
     void Init() override;
@@ -78,7 +79,7 @@ class VideoFrameBufferCreatorVulkan : public VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorVulkan(
-        IGraphicsDevice* m_device, NativeTexPtr ptr, uint32_t destMemoryType);
+        IGraphicsDevice* m_device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorVulkan();
 
     void Init() override;
@@ -99,7 +100,7 @@ class VideoFrameBufferCreatorMetal : VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorMetal(
-        IGraphicsDevice* m_device, NativeTexPtr ptr, uint32_t destMemoryType);
+        IGraphicsDevice* m_device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorMetal();
 
     void Init() override;
@@ -112,7 +113,7 @@ class VideoFrameBufferCreatorOpenGL : public VideoFrameBufferCreatorInterface
 {
 public:
     VideoFrameBufferCreatorOpenGL(
-        IGraphicsDevice* m_device, NativeTexPtr ptr, uint32_t destMemoryType);
+        IGraphicsDevice* m_device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorOpenGL();
 
     void Init() override;
