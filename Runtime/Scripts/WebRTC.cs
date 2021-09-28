@@ -856,7 +856,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreateAudioTrackSource(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr ContextCreateVideoTrackSource(IntPtr ptr, uint memoryType);
+        public static extern IntPtr ContextCreateVideoTrackSource(IntPtr ptr, IntPtr texturePtr, GraphicsFormat format, uint memoryType);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreateVideoTrack(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr trackSource);
         [DllImport(WebRTC.Lib)]
@@ -865,8 +865,6 @@ namespace Unity.WebRTC
         public static extern void ContextStopMediaStreamTrack(IntPtr context, IntPtr track);
         [DllImport(WebRTC.Lib)]
         public static extern void ContextDeleteStatsReport(IntPtr context, IntPtr report);
-        [DllImport(WebRTC.Lib)]
-        public static extern void ContextSetVideoEncoderParameter(IntPtr context, IntPtr track, int width, int height, GraphicsFormat format, IntPtr texturePtr);
         [DllImport(WebRTC.Lib)]
         public static extern void ContextAddRefPtr(IntPtr context, IntPtr ptr);
         [DllImport(WebRTC.Lib)]

@@ -230,12 +230,13 @@ namespace Unity.WebRTC
             return NativeMethods.GetUpdateTextureFunc(self);
         }
 
-        public IntPtr CreateVideoTrackSource(bool useGpu = true, bool useCpu = true)
+        public IntPtr CreateVideoTrackSource(
+            IntPtr texturePtr, GraphicsFormat format, bool useGpu = true, bool useCpu = true)
         {
             uint memoryType =
                 (useGpu ? (uint)VideoSourceMemoryType.GpuMemory : 0)
                 + (useCpu ? (uint)VideoSourceMemoryType.CpuMemory : 0);
-            return NativeMethods.ContextCreateVideoTrackSource(self, memoryType);
+            return NativeMethods.ContextCreateVideoTrackSource(self, texturePtr, format, memoryType);
         }
 
         public IntPtr CreateAudioTrackSource()
@@ -297,7 +298,7 @@ namespace Unity.WebRTC
         internal void InitializeEncoder(IntPtr track)
         {
             renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-            VideoEncoderMethods.InitializeEncoder(renderFunction, videoSource);
+            VideoEncoderMethods.InitializeEncoder(renderFunction, track);
         }
 
         internal void FinalizeEncoder(IntPtr videoSource)

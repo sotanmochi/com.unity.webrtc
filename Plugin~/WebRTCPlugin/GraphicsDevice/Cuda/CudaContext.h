@@ -24,13 +24,13 @@ public:
 #endif
 
     void Shutdown();
-    inline CUcontext GetContext() const;
+    CUcontext GetContext() const;
 private:
     CUcontext m_context;
 
 };
 
-inline CUcontext CudaContext::GetContext() const { return m_context; }
+//inline CUcontext CudaContext::GetContext() const { return m_context; }
 
 } // end namespace webrtc
 } // end namespace unity

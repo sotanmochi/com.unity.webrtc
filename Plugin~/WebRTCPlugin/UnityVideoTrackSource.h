@@ -57,12 +57,6 @@ class UnityVideoTrackSource :
 
     void OnFrameCaptured(int64_t timestamp_us);
 
-    // todo(kazuki)::
-    //CodecInitializationResult GetCodecInitializationResult() const
-    //{
-    //    return CodecInitializationResult::Success;
-    //}
-
     using ::webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
     using ::webrtc::VideoTrackSourceInterface::RemoveSink;
 

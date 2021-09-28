@@ -117,12 +117,14 @@ namespace Unity.WebRTC
         /// </summary>
         /// <param name="source"></param>
         /// <param name="needFlip"></param>
-        public VideoStreamTrack(Texture source, bool needFlip = true)
+        public VideoStreamTrack(Texture source, bool needFlip = true, bool useGpu = true, bool useCpu = true)
             : this(source,
                 CreateRenderTexture(source.width, source.height),
                 source.width,
                 source.height,
-                needFlip)
+                needFlip,
+                useGpu,
+                useCpu)
         {
         }
 
@@ -144,7 +146,7 @@ namespace Unity.WebRTC
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="format"></param>
-        public VideoStreamTrack(IntPtr texturePtr, int width, int height, GraphicsFormat format, bool needFlip)
+        public VideoStreamTrack(IntPtr texturePtr, int width, int height, GraphicsFormat format, bool needFlip, bool useGpu = true, bool useCpu = true)
             : this(Guid.NewGuid().ToString(), new VideoTrackSource(), needFlip)
         {
             var error = WebRTC.ValidateTextureSize(width, height, Application.platform, WebRTC.GetEncoderType());
@@ -153,7 +155,7 @@ namespace Unity.WebRTC
                 throw new ArgumentException(error.message);
             }
             WebRTC.ValidateGraphicsFormat(format);
-            WebRTC.Context.SetVideoEncoderParameter(GetSelfOrThrow(), width, height, format, texturePtr);
+            //WebRTC.Context.SetVideoEncoderParameter(GetSelfOrThrow(), width, height, format, texturePtr);
             WebRTC.Context.InitializeEncoder(GetSelfOrThrow());
         }
 
@@ -260,7 +262,8 @@ namespace Unity.WebRTC
 
     internal class VideoTrackSource : RefCountedObject
     {
-        public VideoTrackSource(bool useGpu, bool useCpu) : base(WebRTC.Context.CreateVideoTrackSource(useGpu, useCpu))
+        public VideoTrackSource(IntPtr texturePtr, GraphicsFormat format, bool useGpu, bool useCpu)
+            : base(WebRTC.Context.CreateVideoTrackSource(texturePtr, format, useGpu, useCpu))
         {
             WebRTC.Table.Add(self, this);
         }

@@ -28,7 +28,6 @@ class VideoTrackSourceTest : public GraphicsDeviceTestBase
 {
 public:
     VideoTrackSourceTest() :
-        //encoder_(EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat)),
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
@@ -40,7 +39,6 @@ public:
             /*needs_denoising=*/ absl::nullopt);
         m_trackSource->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
         m_trackSource->Init();
-        //m_trackSource->SetEncoder(encoder_.get());
 
         EXPECT_NE(nullptr, m_device);
 

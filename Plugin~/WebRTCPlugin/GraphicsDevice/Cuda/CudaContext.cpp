@@ -262,7 +262,27 @@ CUresult CudaContext::InitGL() {
 }
 #endif
 //---------------------------------------------------------------------------------------------------------------------
+CUcontext CudaContext::GetContext() const
+{
+    RTC_DCHECK(m_context);
 
+    CUcontext current;
+    if (!ck(cuCtxGetCurrent(&current)))
+    {
+        throw;
+    }
+    if (m_context == current)
+    {
+        return m_context;
+    }
+    if (!ck(cuCtxSetCurrent(m_context)))
+    {
+        throw;
+    }
+    return m_context;
+}
+
+//---------------------------------------------------------------------------------------------------------------------
 void CudaContext::Shutdown() {
     if (nullptr != m_context) {
         cuCtxDestroy(m_context);

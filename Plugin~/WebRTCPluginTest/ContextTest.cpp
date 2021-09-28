@@ -1,8 +1,5 @@
 #include "pch.h"
 
-#include <cuda.h>
-#include "NvCodecUtils.h"
-
 #include "rtc_base/bind.h"
 #include "GraphicsDeviceTestBase.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
@@ -30,9 +27,6 @@ protected:
         GraphicsDeviceTestBase::SetUp();
         EXPECT_NE(nullptr, m_device);
 
-        //encoder_ = EncoderFactory::GetInstance().Init(width, height, m_device, m_encoderType, m_textureFormat);
-        //EXPECT_NE(nullptr, encoder_);
-
         context = std::make_unique<Context>();
         callback_videoframeresize = &OnFrameSizeChange;
     }
@@ -51,7 +45,7 @@ TEST_P(ContextTest, InitializeAndFinalizeEncoder) {
     EXPECT_NE(nullptr, tex);
     const auto source = context->CreateVideoSource(tex->GetNativeTexturePtrV(), m_device, m_textureFormat, GPU_MEMORY | CPU_MEMORY);
     const auto track = context->CreateVideoTrack("video", source);
-//    EXPECT_TRUE(context->InitializeEncoder(encoder_.get(), track));
+
     context->RemoveRefPtr(track);
     context->RemoveRefPtr(source);
 }
@@ -68,7 +62,7 @@ TEST_P(ContextTest, CreateAndDeleteVideoTrack) {
     const auto source = context->CreateVideoSource(tex->GetNativeTexturePtrV(), m_device, m_textureFormat, GPU_MEMORY | CPU_MEMORY);
     const auto track = context->CreateVideoTrack("video", source);
     EXPECT_NE(nullptr, track);
-//    EXPECT_TRUE(context->InitializeEncoder(encoder_.get(), track));
+
     context->RemoveRefPtr(track);
     context->RemoveRefPtr(source);
 }
