@@ -53,7 +53,12 @@ namespace Unity.WebRTC.RuntimeTest
         public void EqualIdWithVideoTrack()
         {
             var guid = Guid.NewGuid().ToString();
-            var source = new VideoTrackSource();
+            var width = 256;
+            var height = 256;
+            var format = WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
+            var rt = new RenderTexture(width, height, 0, format);
+            rt.Create();
+            var source = new VideoTrackSource(rt.GetNativeTexturePtr(), rt.graphicsFormat, false, true);
             var track = new VideoStreamTrack(WebRTC.Context.CreateVideoTrack(guid, source.self));
             Assert.That(track, Is.Not.Null);
             Assert.That(track.Id, Is.EqualTo(guid));
