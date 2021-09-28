@@ -4,7 +4,6 @@ target_sources(WebRTCLibTest
   PRIVATE
     pch.cpp
     pch.h
-    CudaDeviceTest.cpp
     ContextTest.cpp
     GraphicsDeviceTest.cpp
     GraphicsDeviceTestBase.cpp
@@ -22,11 +21,6 @@ endif()
 
 if(Windows OR Linux)
   add_subdirectory(NvCodec)
-  target_sources(WebRTCLibTest
-    PRIVATE
-      GPUResourceBufferTest.cpp
-      H264HardwareEncoderTest.cpp
-  )
 endif()
 
 include(FetchContent)
