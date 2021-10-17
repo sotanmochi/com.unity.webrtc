@@ -103,7 +103,7 @@ rtc::scoped_refptr<I420Buffer> VideoFrameBufferCreatorD3D12::CreateI420Buffer(
 }
 
 rtc::scoped_refptr<VideoFrameBuffer>
-VideoFrameBufferCreatorD3D12::CreateBuffer(std::shared_mutex& mutex)
+VideoFrameBufferCreatorD3D12::CreateBuffer(std::shared_timed_mutex& mutex)
 {
     // texture copy for hardware encoder
     if(m_useGpu)

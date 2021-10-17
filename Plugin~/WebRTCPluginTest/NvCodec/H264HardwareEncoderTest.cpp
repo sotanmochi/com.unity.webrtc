@@ -179,7 +179,7 @@ private:
     CUcontext m_context;
     CUdeviceptr devicePtr_;
     CUarray array_;
-    std::shared_mutex mutex_;
+    std::shared_timed_mutex mutex_;
     uint32_t lastTimesamp_;
     FakeEncodeCompleteCallback encode_complete_callback_;
     FakeDecodeCompleteCallback decode_complete_callback_;

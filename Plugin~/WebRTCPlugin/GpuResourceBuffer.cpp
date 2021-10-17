@@ -9,7 +9,7 @@ namespace webrtc
 
 GpuResourceBuffer::GpuResourceBuffer(
     const rtc::scoped_refptr<I420BufferInterface>& buffer,
-    CUdeviceptr devicePtr, std::shared_mutex& mutex)
+    CUdeviceptr devicePtr, std::shared_timed_mutex& mutex)
     : m_buffer(buffer)
     , m_mutex(&mutex)
     , m_devicePtr(devicePtr)
@@ -19,7 +19,7 @@ GpuResourceBuffer::GpuResourceBuffer(
 
 GpuResourceBuffer::GpuResourceBuffer(
     const rtc::scoped_refptr<I420BufferInterface>& buffer,
-    CUarray array, std::shared_mutex& mutex)
+    CUarray array, std::shared_timed_mutex& mutex)
     : m_buffer(buffer)
     , m_mutex(&mutex)
     , m_array(array)
@@ -48,7 +48,7 @@ int GpuResourceBuffer::height() const
     return m_buffer->height();
 }
 
-std::shared_mutex* GpuResourceBuffer::mutex() const
+std::shared_timed_mutex* GpuResourceBuffer::mutex() const
 {
     return m_mutex;
 }

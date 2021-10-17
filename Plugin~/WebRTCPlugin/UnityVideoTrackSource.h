@@ -86,7 +86,7 @@ private:
 
     const bool is_screencast_;
     const absl::optional<bool> needs_denoising_;
-    std::timed_mutex m_mutex;
+    std::shared_timed_mutex m_mutex;
     std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator;
 };
 

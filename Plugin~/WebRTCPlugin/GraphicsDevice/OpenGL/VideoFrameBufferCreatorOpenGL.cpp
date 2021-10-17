@@ -88,7 +88,7 @@ VideoFrameBufferCreatorOpenGL::~VideoFrameBufferCreatorOpenGL()
 };
 
 rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorOpenGL::CreateBuffer(
-    std::shared_mutex& mutex)
+    std::shared_timed_mutex& mutex)
 {
     if(!m_device->CopyResourceFromNativeV(m_texture.get(), m_frame))
     {

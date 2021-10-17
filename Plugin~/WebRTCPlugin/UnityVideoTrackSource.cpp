@@ -25,14 +25,14 @@ void UnityVideoTrackSource::Init()
 #if defined(__clang__)
     // DETACH_FROM_THREAD(thread_checker_);
 #endif
-    std::unique_lock<std::timed_mutex> lock(m_mutex);
+    std::unique_lock<std::shared_timed_mutex> lock(m_mutex);
     m_bufferCreator->Init();
 }
 
 UnityVideoTrackSource::~UnityVideoTrackSource()
 {
     {
-        std::unique_lock<std::timed_mutex> lock(m_mutex);
+        std::unique_lock<std::shared_timed_mutex> lock(m_mutex);
     }
 }
 
@@ -64,7 +64,7 @@ void UnityVideoTrackSource::OnFrameCaptured(
 #if defined(__clang__)
     // DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #endif
-    const std::unique_lock<std::timed_mutex> lock(m_mutex, std::try_to_lock);
+    const std::unique_lock<std::shared_timed_mutex> lock(m_mutex, std::try_to_lock);
     if (!lock)
     {
         // currently encoding

@@ -23,7 +23,7 @@ public:
     virtual ~VideoFrameBufferCreatorInterface();
     virtual void Init() = 0;
     virtual rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::timed_mutex& mutex) = 0;
+        std::shared_timed_mutex& mutex) = 0;
 public:
     static VideoFrameBufferCreatorInterface* Create(
         IGraphicsDevice* device, NativeTexPtr ptr, UnityGfxRenderer renderer, UnityRenderingExtTextureFormat format, uint32_t memoryType);
@@ -47,7 +47,7 @@ public:
 
     void Init() override;
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::shared_mutex& mutex) override;
+        std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
 
@@ -67,7 +67,7 @@ public:
 
     void Init() override;
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::shared_mutex& mutex) override;
+        std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
 
@@ -89,7 +89,7 @@ public:
 
     void Init() override;
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::shared_mutex& mutex) override;
+        std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
 
@@ -111,7 +111,7 @@ public:
 
     void Init() override;
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::timed_mutex& mutex) override;
+        std::shared_timed_mutex& mutex) override;
 };
 #endif
 
@@ -125,7 +125,7 @@ public:
 
     void Init() override;
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::shared_mutex& mutex) override;
+        std::shared_timed_mutex& mutex) override;
 private:
     CUgraphicsResource m_resource;
     CUarray m_mappedArray;

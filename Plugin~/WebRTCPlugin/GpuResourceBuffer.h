@@ -14,12 +14,12 @@ class GpuResourceBuffer : public VideoFrameBuffer
 public:
     GpuResourceBuffer(
         const rtc::scoped_refptr<I420BufferInterface>& frame,
-        CUdeviceptr devicePtr, std::shared_mutex& mutex);
+        CUdeviceptr devicePtr, std::shared_timed_mutex& mutex);
     GpuResourceBuffer(
         const rtc::scoped_refptr<I420BufferInterface>& frame,
-        CUarray array, std::shared_mutex& mutex);
+        CUarray array, std::shared_timed_mutex& mutex);
 
-    std::shared_mutex* mutex() const;
+    std::shared_timed_mutex* mutex() const;
     CUmemorytype memoryType() const;
     int index() const;
 
@@ -40,7 +40,7 @@ protected:
     ~GpuResourceBuffer() override;
 private:
     rtc::scoped_refptr<I420BufferInterface> m_buffer;
-    std::shared_mutex* m_mutex;
+    std::shared_timed_mutex* m_mutex;
     CUdeviceptr m_devicePtr;
     CUarray m_array;
     CUmemorytype m_memoryType;

@@ -120,8 +120,8 @@ namespace webrtc
         const NvEncInputFrame* dst, const GpuResourceBuffer* buffer,
         CUcontext context, CUmemorytype memoryType)
     {
-        std::shared_mutex* mutex = buffer->mutex();
-        std::shared_lock<std::shared_mutex> lock(*mutex);
+        std::shared_timed_mutex* mutex = buffer->mutex();
+        std::shared_lock<std::shared_timed_mutex> lock(*mutex);
 
         int width = buffer->width();
         int height = buffer->height();

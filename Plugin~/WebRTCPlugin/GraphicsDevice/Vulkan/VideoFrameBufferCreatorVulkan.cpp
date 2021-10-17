@@ -72,7 +72,7 @@ rtc::scoped_refptr<I420Buffer> VideoFrameBufferCreatorVulkan::CreateI420Buffer(
 }
 
 rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorVulkan::CreateBuffer(
-    std::shared_mutex& mutex)
+    std::shared_timed_mutex& mutex)
 {
     // texture copy for hardware encoder
     if (m_useGpu)
