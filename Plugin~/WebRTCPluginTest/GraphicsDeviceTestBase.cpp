@@ -436,7 +436,8 @@ GraphicsDeviceTestBase::GraphicsDeviceTestBase()
     if (m_unityGfxRenderer == kUnityGfxRendererD3D12)
     {
 #if defined(SUPPORT_D3D12)
-        m_device = new D3D12GraphicsDevice(static_cast<ID3D12Device*>(m_pNativeGfxDevice), pCommandQueue.Get());
+        m_device = new D3D12GraphicsDevice(
+            static_cast<ID3D12Device*>(m_pNativeGfxDevice), pCommandQueue.Get(), m_unityGfxRenderer);
 #endif
     }
     else

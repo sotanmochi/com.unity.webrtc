@@ -12,8 +12,10 @@ namespace webrtc
 
 VulkanGraphicsDevice::VulkanGraphicsDevice( IUnityGraphicsVulkan* unityVulkan, const VkInstance instance,
     const VkPhysicalDevice physicalDevice,
-    const VkDevice device, const VkQueue graphicsQueue, const uint32_t queueFamilyIndex)
-    : m_unityVulkan(unityVulkan)
+    const VkDevice device, const VkQueue graphicsQueue, const uint32_t queueFamilyIndex,
+    UnityGfxRenderer renderer)
+    : IGraphicsDevice(renderer)
+    , m_unityVulkan(unityVulkan)
     , m_instance(instance)
     , m_physicalDevice(physicalDevice)
     , m_device(device)

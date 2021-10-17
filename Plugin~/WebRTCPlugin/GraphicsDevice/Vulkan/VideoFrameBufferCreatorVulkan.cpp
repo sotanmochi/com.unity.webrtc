@@ -1,11 +1,14 @@
 #include "pch.h"
-#include <cuda.h>
-#include "GpuResourceBuffer.h"
-#include "../NvCodec/Utils/NvCodecUtils.h"
 #include "VideoFrameBufferCreatorInterface.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
 #include "GraphicsDevice/Vulkan/VulkanGraphicsDevice.h"
+
+#if CUDA_PLATFORM
+#include <cuda.h>
+#include "GpuResourceBuffer.h"
+#include "../NvCodec/Utils/NvCodecUtils.h"
+#endif
 
 namespace unity
 {

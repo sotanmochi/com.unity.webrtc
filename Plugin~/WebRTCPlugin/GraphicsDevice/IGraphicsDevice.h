@@ -19,8 +19,7 @@ class IGraphicsDevice
 #endif
 {
 public:
-
-    IGraphicsDevice();
+    IGraphicsDevice(UnityGfxRenderer renderer);
     virtual ~IGraphicsDevice() = 0;
     virtual bool InitV() = 0;
     virtual void ShutdownV() = 0;
@@ -30,11 +29,13 @@ public:
     virtual bool CopyResourceFromNativeV(ITexture2D* dest, NativeTexPtr nativeTexturePtr) = 0;
     virtual NativeTexPtr ConvertNativeFromUnityPtr(void* tex) { return tex; }
     virtual GraphicsDeviceType GetDeviceType() const = 0;
-    virtual UnityGfxRenderer GetGfxRenderer() const = 0;
+    virtual UnityGfxRenderer GetGfxRenderer() const { return m_gfxRenderer; }
 
     //Required for software encoding
     virtual ITexture2D* CreateCPUReadTextureV(uint32_t width, uint32_t height, UnityRenderingExtTextureFormat textureFormat) = 0;
     virtual rtc::scoped_refptr<::webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) = 0;
+protected:
+    UnityGfxRenderer m_gfxRenderer;
 };
 
 } // end namespace webrtc

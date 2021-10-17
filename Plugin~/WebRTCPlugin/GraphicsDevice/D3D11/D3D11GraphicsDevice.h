@@ -12,7 +12,7 @@ namespace webrtc
 class D3D11GraphicsDevice : public IGraphicsDevice
 {
 public:
-    D3D11GraphicsDevice(ID3D11Device* nativeDevice);
+    D3D11GraphicsDevice(ID3D11Device* nativeDevice, UnityGfxRenderer renderer);
     virtual ~D3D11GraphicsDevice();
     virtual bool InitV() override;
     virtual void ShutdownV() override;
@@ -22,7 +22,6 @@ public:
     virtual bool CopyResourceV(ITexture2D* dest, ITexture2D* src) override;
     virtual bool CopyResourceFromNativeV(ITexture2D* dest, void* nativeTexturePtr) override;
     inline virtual GraphicsDeviceType GetDeviceType() const override;
-    inline virtual UnityGfxRenderer GetGfxRenderer() const override;
 
     virtual rtc::scoped_refptr < ::webrtc::I420Buffer > ConvertRGBToI420(ITexture2D* tex) override;
 
@@ -41,7 +40,6 @@ private:
 
 void* D3D11GraphicsDevice::GetEncodeDevicePtrV() { return reinterpret_cast<void*>(m_d3d11Device); }
 GraphicsDeviceType D3D11GraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_D3D11; }
-UnityGfxRenderer D3D11GraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererD3D11; }
 
 } // end namespace webrtc
 } // end namespace unity

@@ -14,10 +14,10 @@ namespace webrtc
 
 namespace webrtc = ::webrtc;
 
-class OpenGLGraphicsDevice : public IGraphicsDevice, ICudaDevice
+class OpenGLGraphicsDevice : public IGraphicsDevice
 {
 public:
-    OpenGLGraphicsDevice();
+    OpenGLGraphicsDevice(UnityGfxRenderer renderer);
     virtual ~OpenGLGraphicsDevice();
 
     virtual bool InitV() override;

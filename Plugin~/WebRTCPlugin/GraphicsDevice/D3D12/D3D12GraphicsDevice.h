@@ -43,8 +43,8 @@ inline void ThrowIfFailed(HRESULT hr)
 class D3D12GraphicsDevice : public IGraphicsDevice
 {
 public:
-    explicit D3D12GraphicsDevice(ID3D12Device* nativeDevice, IUnityGraphicsD3D12v5* unityInterface );
-    explicit D3D12GraphicsDevice(ID3D12Device* nativeDevice, ID3D12CommandQueue* commandQueue);
+    explicit D3D12GraphicsDevice(ID3D12Device* nativeDevice, IUnityGraphicsD3D12v5* unityInterface, UnityGfxRenderer renderer);
+    explicit D3D12GraphicsDevice(ID3D12Device* nativeDevice, ID3D12CommandQueue* commandQueue, UnityGfxRenderer renderer);
     virtual ~D3D12GraphicsDevice();
     virtual bool InitV() override;
     virtual void ShutdownV() override;
@@ -54,7 +54,6 @@ public:
     virtual bool CopyResourceV(ITexture2D* dest, ITexture2D* src) override;
     virtual bool CopyResourceFromNativeV(ITexture2D* dest, void* nativeTexturePtr) override;
     inline virtual GraphicsDeviceType GetDeviceType() const override;
-    inline virtual UnityGfxRenderer GetGfxRenderer() const override;
 
     virtual ITexture2D* CreateCPUReadTextureV(uint32_t w, uint32_t h, UnityRenderingExtTextureFormat textureFormat) override;
     virtual rtc::scoped_refptr<webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
@@ -100,7 +99,6 @@ private:
 //use D3D11. See notes below
 void* D3D12GraphicsDevice::GetEncodeDevicePtrV() { return reinterpret_cast<void*>(m_d3d11Device); }
 GraphicsDeviceType D3D12GraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_D3D12; }
-UnityGfxRenderer D3D12GraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererD3D12; }
 
 } // end namespace webrtc
 } // end namespace unity

@@ -18,7 +18,8 @@ class VulkanGraphicsDevice : public IGraphicsDevice
 public:
     VulkanGraphicsDevice( IUnityGraphicsVulkan* unityVulkan, const VkInstance instance,
         const VkPhysicalDevice physicalDevice, const VkDevice device,
-        const VkQueue graphicsQueue, const uint32_t queueFamilyIndex);
+        const VkQueue graphicsQueue, const uint32_t queueFamilyIndex,
+        UnityGfxRenderer renderer);
 
     virtual ~VulkanGraphicsDevice() = default;
     virtual bool InitV() override;
@@ -41,8 +42,6 @@ public:
     /// <returns></returns>
     virtual bool CopyResourceFromNativeV(ITexture2D* dest, void* nativeTexturePtr) override;
     inline virtual GraphicsDeviceType GetDeviceType() const override;
-    inline virtual UnityGfxRenderer GetGfxRenderer() const override;
-
     virtual rtc::scoped_refptr<webrtc::I420Buffer> ConvertRGBToI420(ITexture2D* tex) override;
 
 #if CUDA_PLATFORM
@@ -80,6 +79,6 @@ void* VulkanGraphicsDevice::GetEncodeDevicePtrV()
 #endif
 }
 GraphicsDeviceType VulkanGraphicsDevice::GetDeviceType() const { return GRAPHICS_DEVICE_VULKAN; }
-UnityGfxRenderer VulkanGraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererVulkan; }
+//UnityGfxRenderer VulkanGraphicsDevice::GetGfxRenderer() const { return kUnityGfxRendererVulkan; }
 } // end namespace webrtc
 } // end namespace unity

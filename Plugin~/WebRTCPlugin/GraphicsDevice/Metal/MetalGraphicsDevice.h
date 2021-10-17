@@ -11,7 +11,7 @@ namespace webrtc
     namespace webrtc = ::webrtc;
     class MetalGraphicsDevice : public IGraphicsDevice{
     public:
-        MetalGraphicsDevice(id<MTLDevice> device, IUnityGraphicsMetal* unityGraphicsMetal);
+        MetalGraphicsDevice(id<MTLDevice> device, IUnityGraphicsMetal* unityGraphicsMetal, UnityGfxRenderer renderer);
         virtual ~MetalGraphicsDevice();
 
         virtual bool InitV() override;

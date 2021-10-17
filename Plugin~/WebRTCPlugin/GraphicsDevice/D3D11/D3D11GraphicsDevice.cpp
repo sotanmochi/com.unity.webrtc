@@ -17,8 +17,9 @@ namespace unity
 namespace webrtc
 {
 
-D3D11GraphicsDevice::D3D11GraphicsDevice(ID3D11Device* nativeDevice)
-    : m_d3d11Device(nativeDevice)
+D3D11GraphicsDevice::D3D11GraphicsDevice(ID3D11Device* nativeDevice, UnityGfxRenderer renderer) 
+    : IGraphicsDevice(renderer)
+    , m_d3d11Device(nativeDevice)
 {
     m_d3d11Device->GetImmediateContext(&m_d3d11Context);
 }
