@@ -87,10 +87,6 @@ VideoFrameBufferCreatorD3D11::~VideoFrameBufferCreatorD3D11()
 rtc::scoped_refptr<I420Buffer> VideoFrameBufferCreatorD3D11::CreateI420Buffer(
     ITexture2D* tex)
 {
-    if(!m_useCpu)
-    {
-        return m_dummyBuffer;
-    }
     return m_device->ConvertRGBToI420(tex);
 }
 
@@ -105,24 +101,23 @@ VideoFrameBufferCreatorD3D11::CreateBuffer(std::shared_timed_mutex& mutex)
         {
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
+        return new rtc::RefCountedObject<GpuResourceBuffer>(
+            m_dummyBuffer, m_mappedArray, mutex);
     }
 
     // texture copy for software encoder 
-    if (m_useGpu)
+    if (m_useCpu)
     {
         if (!m_device->CopyResourceFromNativeV(
             m_cpuReadTexture.get(), m_frame))
         {
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
+        // i420 buffer for software encoder
+        return CreateI420Buffer(
+            m_cpuReadTexture.get());
     }
-
-    // i420 buffer for software encoder
-    rtc::scoped_refptr<I420Buffer> buffer = CreateI420Buffer(
-        m_cpuReadTexture.get());
-
-    return new rtc::RefCountedObject<GpuResourceBuffer>(
-        buffer, m_mappedArray, mutex);
+    assert("Must set true to m_useGpu or m_useGpu");
 }
 
 } // end namespace webrtc

@@ -55,7 +55,6 @@ class UnityVideoTrackSource :
     bool remote() const override;
     bool is_screencast() const override;
     absl::optional<bool> needs_denoising() const override;
-
     void OnFrameCaptured(int64_t timestamp_us);
 
     using ::webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
