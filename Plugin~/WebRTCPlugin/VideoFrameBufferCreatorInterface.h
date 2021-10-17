@@ -1,8 +1,12 @@
 #pragma once
-#if defined(UNITY_WIN) || defined(UNITY_LINUX)
+#if UNITY_WIN || UNITY_LINUX
 #include <cuda.h>
-#include "GraphicsDevice/Vulkan/VulkanGraphicsDevice.h"
 #endif 
+
+#if UNITY_WIN || UNITY_LINUX || UNITY_ANDROID
+#include "GraphicsDevice/Vulkan/VulkanGraphicsDevice.h"
+#endif
+
 #include <shared_mutex>
 #include "GraphicsDevice/IGraphicsDevice.h"
 
@@ -33,7 +37,7 @@ protected:
     bool m_useGpu;
 };
 
-#if defined(UNITY_WIN)
+#if UNITY_WIN
 class VideoFrameBufferCreatorD3D11 : public VideoFrameBufferCreatorInterface
 {
 public:
@@ -75,7 +79,7 @@ private:
 };
 #endif
 
-#if defined(UNITY_LINUX) || defined(UNITY_ANDROID) || defined(UNITY_WIN)
+#if UNITY_LINUX || UNITY_ANDROID || UNITY_WIN
 class VideoFrameBufferCreatorVulkan : public VideoFrameBufferCreatorInterface
 {
 public:
@@ -97,7 +101,7 @@ private:
 };
 #endif
 
-#if defined(UNITY_MAC)
+#if UNITY_OSX || UNITY_IOS
 class VideoFrameBufferCreatorMetal : VideoFrameBufferCreatorInterface
 {
 public:
@@ -110,7 +114,7 @@ public:
 }
 #endif
 
-#if defined(UNITY_LINUX) || defined(UNITY_ANDROID)
+#if UNITY_LINUX || UNITY_ANDROID
 class VideoFrameBufferCreatorOpenGL : public VideoFrameBufferCreatorInterface
 {
 public:

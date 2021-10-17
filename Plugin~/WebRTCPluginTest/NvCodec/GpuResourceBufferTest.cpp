@@ -1,5 +1,4 @@
 #include "pch.h"
-
 #include "GpuResourceBuffer.h"
 
 namespace unity
@@ -7,7 +6,7 @@ namespace unity
 namespace webrtc
 {
 
-//TEST(GpuResourceBufferTest, WidthAndHeight) {
+TEST(GpuResourceBufferTest, WidthAndHeight) {
     //const gfx::Size kCodedSize(1280, 960);
     //const gfx::Rect kVisibleRect(0, 120, 1280, 720);
     //const gfx::Size kNaturalSize(640, 360);
@@ -34,7 +33,7 @@ namespace webrtc
     //        WebRtcVideoFrameAdapter::LogStatus::kNoLogging));
     //EXPECT_EQ(gmb_frame_adapter->width(), kNaturalSize.width());
     //EXPECT_EQ(gmb_frame_adapter->height(), kNaturalSize.height());
-//}
+}
 
 } // end namespace webrtc
 } // end namespace unity
