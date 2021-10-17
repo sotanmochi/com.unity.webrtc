@@ -7,7 +7,8 @@
 
 // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
-#include "base/threading/thread_checker.h"
+// todo::(kazuki) fix error: 'build/chromeos_buildflags.h' file not found
+// #include "base/threading/thread_checker.h"
 #endif
 
 namespace unity {
@@ -76,7 +77,7 @@ private:
     // |thread_checker_| is bound to the libjingle worker thread.
     // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
-    THREAD_CHECKER(thread_checker_);
+    // THREAD_CHECKER(thread_checker_);
 #endif
     // media::VideoFramePool scaled_frame_pool_;
 
@@ -85,7 +86,7 @@ private:
 
     const bool is_screencast_;
     const absl::optional<bool> needs_denoising_;
-    std::shared_mutex m_mutex;
+    std::timed_mutex m_mutex;
     std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator;
 };
 

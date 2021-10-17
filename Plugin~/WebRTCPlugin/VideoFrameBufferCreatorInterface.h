@@ -23,7 +23,7 @@ public:
     virtual ~VideoFrameBufferCreatorInterface();
     virtual void Init() = 0;
     virtual rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
-        std::shared_mutex& mutex) = 0;
+        std::timed_mutex& mutex) = 0;
 public:
     static VideoFrameBufferCreatorInterface* Create(
         IGraphicsDevice* device, NativeTexPtr ptr, UnityGfxRenderer renderer, UnityRenderingExtTextureFormat format, uint32_t memoryType);
@@ -110,8 +110,9 @@ public:
     virtual ~VideoFrameBufferCreatorMetal();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer() override;
-}
+    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+        std::timed_mutex& mutex) override;
+};
 #endif
 
 #if UNITY_LINUX || UNITY_ANDROID

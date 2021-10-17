@@ -3,10 +3,10 @@
 
 #if CUDA_PLATFORM
 #include <cuda.h>
+#include "H264HardwareEncoder.h"
 #endif
 
 #include "DummyVideoEncoder.h"
-#include "H264HardwareEncoder.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 
 #if UNITY_OSX || UNITY_IOS

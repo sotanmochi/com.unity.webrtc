@@ -23,16 +23,16 @@ void UnityVideoTrackSource::Init()
 {
     // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
-    DETACH_FROM_THREAD(thread_checker_);
+    // DETACH_FROM_THREAD(thread_checker_);
 #endif
-    std::unique_lock<std::shared_mutex> lock(m_mutex);
+    std::unique_lock<std::timed_mutex> lock(m_mutex);
     m_bufferCreator->Init();
 }
 
 UnityVideoTrackSource::~UnityVideoTrackSource()
 {
     {
-        std::unique_lock<std::shared_mutex> lock(m_mutex);
+        std::unique_lock<std::timed_mutex> lock(m_mutex);
     }
 }
 
@@ -62,9 +62,9 @@ void UnityVideoTrackSource::OnFrameCaptured(
 {
     // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
-    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    // DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 #endif
-    const std::unique_lock<std::shared_mutex> lock(m_mutex, std::try_to_lock);
+    const std::unique_lock<std::timed_mutex> lock(m_mutex, std::try_to_lock);
     if (!lock)
     {
         // currently encoding
@@ -79,8 +79,8 @@ void UnityVideoTrackSource::OnFrameCaptured(
         timestamp_aligner_.TranslateTimestamp(timestamp_us,
             now_us);
 
-    webrtc::VideoFrame::Builder builder =
-        webrtc::VideoFrame::Builder()
+    ::webrtc::VideoFrame::Builder builder =
+        ::webrtc::VideoFrame::Builder()
         .set_video_frame_buffer(buffer)
         .set_timestamp_us(translated_camera_time_us);
 
