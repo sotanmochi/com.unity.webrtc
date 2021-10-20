@@ -58,7 +58,7 @@ absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
 }
 
 void UnityVideoTrackSource::OnFrameCaptured(
-    int64_t timestamp_us)
+    scoped_refptr<VideoFrame> frame)
 {
     // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
@@ -71,17 +71,20 @@ void UnityVideoTrackSource::OnFrameCaptured(
         return;
     }
 
-    const rtc::scoped_refptr<VideoFrameBuffer> buffer =
-        m_bufferCreator->CreateBuffer(m_mutex);
+    //const rtc::scoped_refptr<VideoFrameBuffer> buffer =
+    //    m_bufferCreator->CreateBuffer(m_mutex);
 
     const int64_t now_us = rtc::TimeMicros();
     const int64_t translated_camera_time_us =
-        timestamp_aligner_.TranslateTimestamp(timestamp_us,
+        timestamp_aligner_.TranslateTimestamp(frame->timestamp().InMicroseconds(),
             now_us);
+
+    rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
+        new rtc::RefCountedObject<VideoFrameAdapter>(frame));
 
     ::webrtc::VideoFrame::Builder builder =
         ::webrtc::VideoFrame::Builder()
-        .set_video_frame_buffer(buffer)
+        .set_video_frame_buffer(frame_adapter)
         .set_timestamp_us(translated_camera_time_us);
 
     OnFrame(builder.build());

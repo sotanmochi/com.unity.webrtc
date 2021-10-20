@@ -16,8 +16,8 @@ namespace webrtc
 {
 
 VideoFrameBufferCreatorOpenGL::VideoFrameBufferCreatorOpenGL(
-    IGraphicsDevice* device, void* frame)
-    : VideoFrameBufferCreatorInterface(device, frame)
+    IGraphicsDevice* device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType)
+    : VideoFrameBufferCreatorInterface(device, ptr, format, frame)
     , m_resource(nullptr)
     , m_mappedArray(nullptr)
     , m_texture(nullptr)
@@ -93,11 +93,27 @@ VideoFrameBufferCreatorOpenGL::~VideoFrameBufferCreatorOpenGL()
 rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorOpenGL::CreateBuffer(
     std::shared_timed_mutex& mutex)
 {
-    if(!m_device->CopyResourceFromNativeV(m_texture.get(), m_frame))
+    if(m_useGpu)
     {
-        throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+        if(!m_device->CopyResourceFromNativeV(
+            m_gpuReadTexture.get(), m_frame))
+        {
+            throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+        }
+        return new rtc::RefCountedObject<GpuResourceBuffer>(nullptr, m_mappedArray, mutex);
     }
-    return new rtc::RefCountedObject<GpuResourceBuffer>(nullptr, m_mappedArray, mutex);
+    if (m_useCpu)
+    {
+        if (!m_device->CopyResourceFromNativeV(
+            m_cpuReadTexture.get(), m_frame))
+        {
+            throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+        }
+        // i420 buffer for software encoder
+        return CreateI420Buffer(
+            m_cpuReadTexture.get());
+    }
+    assert("Must set true to m_useGpu or m_useGpu");
 }
 
 } // end namespace webrtc

@@ -127,9 +127,14 @@ public:
     rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 private:
+
+#if CUDA_PLATFORM
     CUgraphicsResource m_resource;
     CUarray m_mappedArray;
+#endif
+
     std::unique_ptr<ITexture2D> m_gpuReadTexture;
+    std::unique_ptr<ITexture2D> m_cpuReadTexture;
 };
 #endif
 } // end namespace webrtc
