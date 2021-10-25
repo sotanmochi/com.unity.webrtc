@@ -39,7 +39,7 @@ public:
     virtual int32_t Release() override;
     // Encode an I420 image (as a part of a video stream). The encoded image
     // will be returned to the user through the encode complete m_encodedCompleteCallback.
-    virtual int32_t Encode(const VideoFrame& frame,
+    virtual int32_t Encode(const ::webrtc::VideoFrame& frame,
         const std::vector<VideoFrameType>* frame_types) override;
     // Default fallback: Just use the sum of bitrates as the single target rate.
     virtual void SetRates(const RateControlParameters& parameters) override;
@@ -47,7 +47,7 @@ public:
     static std::unique_ptr<VideoEncoder> Create(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format);
 protected:
-    int32_t ProcessEncodedFrame(std::vector<uint8_t>& packet, const VideoFrame& inputFrame);
+    int32_t ProcessEncodedFrame(std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame);
     void SetStreamState(bool sendStream);
 private:
 

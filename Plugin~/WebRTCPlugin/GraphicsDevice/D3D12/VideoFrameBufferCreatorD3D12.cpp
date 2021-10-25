@@ -3,7 +3,7 @@
 #include <cudaD3D11.h>
 
 #include "D3D12GraphicsDevice.h"
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "VideoFrameBufferCreatorInterface.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
@@ -102,7 +102,7 @@ rtc::scoped_refptr<I420Buffer> VideoFrameBufferCreatorD3D12::CreateI420Buffer(
     return m_device->ConvertRGBToI420(tex);
 }
 
-rtc::scoped_refptr<VideoFrameBuffer>
+std::unique_ptr<GpuMemoryBuffer>
 VideoFrameBufferCreatorD3D12::CreateBuffer(std::shared_timed_mutex& mutex)
 {
     // i420 buffer for software encoder
@@ -116,23 +116,23 @@ VideoFrameBufferCreatorD3D12::CreateBuffer(std::shared_timed_mutex& mutex)
         {
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
-        return new rtc::RefCountedObject<GpuResourceBuffer>(
-            m_dummyBuffer, m_mappedArray, mutex);
+        return std::make_unique<GpuMemoryBuffer>(
+            m_mappedArray, mutex);
 
     }
 
     // texture copy for software encoder 
-    if (m_useCpu)
-    {
-        if (!m_device->CopyResourceFromNativeV(
-            m_cpuReadTexture.get(), m_frame))
-        {
-            throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
-        }
-        // i420 buffer for software encoder
-        return CreateI420Buffer(
-            m_cpuReadTexture.get());
-    }
+    //if (m_useCpu)
+    //{
+    //    if (!m_device->CopyResourceFromNativeV(
+    //        m_cpuReadTexture.get(), m_frame))
+    //    {
+    //        throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+    //    }
+    //    // i420 buffer for software encoder
+    //    return CreateI420Buffer(
+    //        m_cpuReadTexture.get());
+    //}
     assert("Must set true to m_useGpu or m_useGpu");
 }
 

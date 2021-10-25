@@ -318,11 +318,15 @@ namespace webrtc
         return m_mapMediaStreamObserver[stream].get();
     }
 
-    VideoTrackSourceInterface* Context::CreateVideoSource(NativeTexPtr ptr, IGraphicsDevice* device, UnityRenderingExtTextureFormat format, uint32_t memoryType)
+    VideoTrackSourceInterface* Context::CreateVideoSource(
+        NativeTexPtr ptr,
+        IGraphicsDevice* device,
+        UnityRenderingExtTextureFormat format,
+        uint32_t memoryType)
     {
         const rtc::scoped_refptr<UnityVideoTrackSource> source =
             new rtc::RefCountedObject<UnityVideoTrackSource>(
-                device, ptr, format, memoryType, false, absl::nullopt);
+                false, absl::nullopt);
 
         AddRefPtr(source);
         return source;

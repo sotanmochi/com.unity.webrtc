@@ -9,6 +9,7 @@
 
 #include <shared_mutex>
 #include "GraphicsDevice/IGraphicsDevice.h"
+#include "GpuMemoryBuffer.h"
 
 using namespace webrtc;
 
@@ -22,7 +23,7 @@ public:
         IGraphicsDevice* device, void* frame, UnityRenderingExtTextureFormat format, uint32_t memoryType);
     virtual ~VideoFrameBufferCreatorInterface();
     virtual void Init() = 0;
-    virtual rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    virtual std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) = 0;
 public:
     static VideoFrameBufferCreatorInterface* Create(
@@ -46,7 +47,7 @@ public:
     virtual ~VideoFrameBufferCreatorD3D11();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
@@ -66,7 +67,7 @@ public:
     virtual ~VideoFrameBufferCreatorD3D12();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
@@ -88,7 +89,7 @@ public:
     virtual ~VideoFrameBufferCreatorVulkan();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 private:
     rtc::scoped_refptr<I420Buffer> CreateI420Buffer(ITexture2D* tex);
@@ -110,7 +111,7 @@ public:
     virtual ~VideoFrameBufferCreatorMetal();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 };
 #endif
@@ -124,7 +125,7 @@ public:
     virtual ~VideoFrameBufferCreatorOpenGL();
 
     void Init() override;
-    rtc::scoped_refptr<VideoFrameBuffer> CreateBuffer(
+    std::unique_ptr<GpuMemoryBuffer> CreateBuffer(
         std::shared_timed_mutex& mutex) override;
 private:
 

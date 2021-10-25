@@ -1,11 +1,7 @@
 #pragma once
 
 #include <shared_mutex>
-#include "GraphicsDevice/IGraphicsDevice.h"
-#include "rtc_base/timestamp_aligner.h"
-#include "base/time/time.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/memory/ref_counted.h"
+#include "VideoFrame.h"
 
 // todo::(kazuki) change compiler vc to clang
 #if defined(__clang__)
@@ -16,6 +12,8 @@
 namespace unity {
 namespace webrtc {
 
+using namespace ::webrtc;
+
 class IGraphicsDevice;
 class VideoFrameBufferCreatorInterface;
 
@@ -25,37 +23,29 @@ enum VIDEO_SOURCE_DEST_MEMORY_TYPE_FLAG
     CPU_MEMORY = 0x2L,
 };
 
-class VideoFrame : public base::RefCountedThreadSafe <VideoFrame> {
-public:
-    constexpr int width() const { return width_; }
-    constexpr int height() const { return height_; }
-
-    void set_width(int width) { width_ = std::max(0, width); }
-    void set_height(int height) { height_ = std::max(0, height); }
-
-    base::TimeDelta timestamp() const { return timestamp_; }
-    void set_timestamp(base::TimeDelta timestamp) { timestamp_ = timestamp; }
-private:
-    base::TimeDelta timestamp_;
-    int width_;
-    int height_;
-};
-
-class VideoFrameAdapter : public webrtc::VideoFrameBuffer
+class VideoFrameAdapter : public VideoFrameBuffer
 {
-    explicit VideoFrameAdapter(scoped_refptr<VideoFrame> frame);
+public:
+    VideoFrameAdapter(rtc::scoped_refptr<VideoFrame> frame)
+        : frame_(std::move(frame)) {}
 
-    webrtc::VideoFrameBuffer::Type type() const override {
-        return webrtc::VideoFrameBuffer::Type::kNative;
+    rtc::scoped_refptr<VideoFrame> GetVideoFrame() const { return frame_; }
+
+    VideoFrameBuffer::Type type() const override {
+        return ::webrtc::VideoFrameBuffer::Type::kNative;
     }
     int width() const override { return frame_->width(); }
     int height() const override { return frame_->height(); }
 
-    rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override;
-    //rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
-    //    rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
+    rtc::scoped_refptr<I420BufferInterface> ToI420() override;
+protected:
+    ~VideoFrameAdapter() override {};
 private:
-    const scoped_refptr<VideoFrame> frame_;
+    rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToVideoFrameBuffer(
+        rtc::scoped_refptr<VideoFrame> video_frame);
+    rtc::scoped_refptr <VideoFrame> ConstructVideoFrameFromGpu(
+        rtc::scoped_refptr <VideoFrame> video_frame);
+    const rtc::scoped_refptr<VideoFrame> frame_;
 };
 
 // This class implements webrtc's VideoTrackSourceInterface. To pass frames down
@@ -78,19 +68,16 @@ class UnityVideoTrackSource :
         //};
 
     UnityVideoTrackSource(
-        IGraphicsDevice* device, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType,
-        bool is_screencast, absl::optional<bool> needs_denoising);
+        bool is_screencast,
+        absl::optional<bool> needs_denoising);
     ~UnityVideoTrackSource() override;
-
-
-    void Init();
 
     SourceState state() const override;
 
     bool remote() const override;
     bool is_screencast() const override;
     absl::optional<bool> needs_denoising() const override;
-    void OnFrameCaptured(scoped_refptr<VideoFrame> frame);
+    void OnFrameCaptured(rtc::scoped_refptr<VideoFrame> frame);
 
     using ::webrtc::VideoTrackSourceInterface::AddOrUpdateSink;
     using ::webrtc::VideoTrackSourceInterface::RemoveSink;
@@ -121,7 +108,7 @@ private:
     const bool is_screencast_;
     const absl::optional<bool> needs_denoising_;
     std::shared_timed_mutex m_mutex;
-    std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator;
+//    std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator;
 };
 
 } // end namespace webrtc

@@ -46,6 +46,8 @@ target_sources(WebRTCLib
     UnityLogStream.cpp
     VideoFrameBufferCreatorInterface.cpp
     VideoFrameBufferCreatorInterface.h
+    VideoFrame.cpp
+    VideoFrame.h
 )
 
 if(iOS OR macOS)
@@ -60,8 +62,8 @@ if(Windows OR Linux)
     PRIVATE
       H264HardwareEncoder.cpp
       H264HardwareEncoder.h
-      GPUResourceBuffer.cpp
-      GPUResourceBuffer.h
+      GPUMemoryBuffer.cpp
+      GPUMemoryBuffer.h
     )
 endif()
 

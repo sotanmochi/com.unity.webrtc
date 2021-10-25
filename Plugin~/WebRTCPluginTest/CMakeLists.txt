@@ -8,6 +8,9 @@ target_sources(WebRTCLibTest
     GraphicsDeviceTest.cpp
     GraphicsDeviceTestBase.cpp
     GraphicsDeviceTestBase.h
+    VideoFrameTest.cpp
+    VideoFrameUtil.cpp
+    VideoFrameUtil.h
 )
 
 # todo(kazuki):: fix linker error on macOS and iOS

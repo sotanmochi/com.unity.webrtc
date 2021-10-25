@@ -43,6 +43,8 @@ VideoFrameBufferCreatorInterface* VideoFrameBufferCreatorInterface::Create(
     case kUnityGfxRendererOpenGLCore:
         return new VideoFrameBufferCreatorOpenGL(device, format, frame);
 #endif
+    default:
+        RTC_NOTREACHED();
     }
 }
 }

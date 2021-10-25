@@ -27,7 +27,6 @@ public:
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
-            m_device, m_texture->GetNativeTexturePtrV(), m_textureFormat, CPU_MEMORY | GPU_MEMORY,
             /*is_screencast=*/ false,
             /*needs_denoising=*/ absl::nullopt);
         m_callback = &OnFrameSizeChange;

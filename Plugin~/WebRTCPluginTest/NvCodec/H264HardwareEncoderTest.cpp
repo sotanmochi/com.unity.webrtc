@@ -1,12 +1,14 @@
 #include "pch.h"
 
 
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #include "../WebRTCPlugin/H264HardwareEncoder.h"
 #include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "test/video_codec_settings.h"
 #include "modules/video_coding/codecs/vp8/include/vp8.h"
+#include "UnityVideoTrackSource.h"
+#include "VideoFrameUtil.h"
 
 //using testing::_;
 using namespace webrtc;
@@ -57,15 +59,15 @@ protected:
         explicit FakeDecodeCompleteCallback(H264HardwareEncoderTest* test)
             : test_(test) {}
 
-        int32_t Decoded(VideoFrame& frame) override {
+        int32_t Decoded(::webrtc::VideoFrame& frame) override {
             RTC_NOTREACHED();
             return -1;
         }
-        int32_t Decoded(VideoFrame& frame, int64_t decode_time_ms) override {
+        int32_t Decoded(::webrtc::VideoFrame& frame, int64_t decode_time_ms) override {
             RTC_NOTREACHED();
             return -1;
         }
-        void Decoded(VideoFrame& frame,
+        void Decoded(::webrtc::VideoFrame& frame,
             absl::optional<int32_t> decode_time_ms,
             absl::optional<uint8_t> qp) override
         {
@@ -153,14 +155,20 @@ protected:
             ck(cuArrayDestroy(array_)));
     }
 
-    VideoFrame NextInputFrame()
+    ::webrtc::VideoFrame NextInputFrame()
     {
-        rtc::scoped_refptr<I420Buffer> i420Buffer = I420Buffer::Create(kWidth, kHeight);
-        rtc::scoped_refptr<GpuResourceBuffer> buffer =
-            new rtc::RefCountedObject<GpuResourceBuffer>(i420Buffer, devicePtr_, mutex_);
+        //rtc::scoped_refptr<I420Buffer> i420Buffer = I420Buffer::Create(kWidth, kHeight);
+        //std::unique_ptr<GpuMemoryBuffer> buffer =
+        //    std::make_unique<GpuMemoryBuffer>(devicePtr_, mutex_);
 
-        VideoFrame input_frame = VideoFrame::Builder()
-            .set_video_frame_buffer(buffer)
+        auto frame = CreateTestFrame(kWidth, kHeight);
+
+
+        rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
+            new rtc::RefCountedObject<VideoFrameAdapter>(std::move(frame)));
+
+        ::webrtc::VideoFrame input_frame = ::webrtc::VideoFrame::Builder()
+            .set_video_frame_buffer(frame_adapter)
             .build();
 
         const uint32_t timestamp = 0;
@@ -187,7 +195,7 @@ private:
 
 TEST_F(H264HardwareEncoderTest, MAYBE_EncodeDecode)
 {
-    VideoFrame input_frame = NextInputFrame();
+    ::webrtc::VideoFrame input_frame = NextInputFrame();
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, encoder_->Encode(input_frame, nullptr));
     //EncodedImage encoded_frame;
     //CodecSpecificInfo codec_specific_info;

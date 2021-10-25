@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 
 namespace unity
 {
 namespace webrtc
 {
 
-TEST(GpuResourceBufferTest, WidthAndHeight) {
+TEST(GpuMemoryBufferTest, WidthAndHeight) {
     //const gfx::Size kCodedSize(1280, 960);
     //const gfx::Rect kVisibleRect(0, 120, 1280, 720);
     //const gfx::Size kNaturalSize(640, 360);

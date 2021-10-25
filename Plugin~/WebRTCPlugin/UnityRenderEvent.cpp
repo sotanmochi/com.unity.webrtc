@@ -10,6 +10,7 @@
 //#include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsDevice.h"
 #include "GraphicsDevice/GraphicsUtility.h"
+#include "VideoFrame.h"
 
 #if defined(SUPPORT_VULKAN)
 #include "GraphicsDevice/Vulkan/UnityVulkanInitCallback.h"
@@ -279,22 +280,23 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
         return;
     }
 
-    //if(!s_context->ExistsVideoSource(source))
-    //{
-    //    return;
-    //}
-
     switch(event)
     {
         case VideoStreamRenderEventID::Initialize:
         {
             //const VideoEncoderParameter* param = s_context->GetEncoderParameter(track);
-            const UnityEncoderType encoderType = s_context->GetEncoderType();
+            //const UnityEncoderType encoderType = s_context->GetEncoderType();
             UnityVideoTrackSource* source = s_context->GetVideoSource(track);
             UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
+
+
+            //std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator =
+            //    VideoFrameBufferCreatorInterface::Create(device, ptr, device->GetGfxRenderer(), format, memoryType);
+
+
             //void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
             //    param->textureHandle, s_gfxDevice.get(), gfxRenderer);
-            source->Init();
+            //source->Init();
             //s_mapEncoder[track] = EncoderFactory::GetInstance().Init(
             //    param->width, param->height, s_gfxDevice.get(), encoderType, param->textureFormat);
             //if (!s_context->InitializeEncoder(s_mapEncoder[track].get(), track))
@@ -311,7 +313,12 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             int64_t timestamp_us = s_clock->TimeInMicroseconds();
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
-                source->OnFrameCaptured(timestamp_us);
+                auto buffer = std::make_unique<GpuMemoryBuffer>();
+                int width = 1280;
+                int height = 720;
+                auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
+                    width, height, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
+                source->OnFrameCaptured(frame);
             }
             return;
         }

@@ -6,7 +6,7 @@
 
 #if CUDA_PLATFORM
 #include <cuda.h>
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #endif
 
@@ -65,7 +65,7 @@ rtc::scoped_refptr<I420Buffer> VideoFrameBufferCreatorVulkan::CreateI420Buffer(
     return m_device->ConvertRGBToI420(tex);
 }
 
-rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorVulkan::CreateBuffer(
+std::unique_ptr<GpuMemoryBuffer> VideoFrameBufferCreatorVulkan::CreateBuffer(
     std::shared_timed_mutex& mutex)
 {
 #if CUDA_PLATFORM
@@ -78,22 +78,22 @@ rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorVulkan::CreateBuffer
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
         CUarray array = static_cast<CUarray>(m_gpuReadTexture->GetEncodeTexturePtrV());
-        return new rtc::RefCountedObject<GpuResourceBuffer>(m_dummyBuffer, array, mutex);
+        return std::make_unique<GpuMemoryBuffer>(array, mutex);
     }
 #endif
 
     // texture copy for software encoder 
-    if (m_useCpu)
-    {
-        if (!m_device->CopyResourceFromNativeV(
-            m_cpuReadTexture.get(), m_frame))
-        {
-            throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
-        }
-        // i420 buffer for software encoder
-        return CreateI420Buffer(
-            m_cpuReadTexture.get());
-    }
+    //if (m_useCpu)
+    //{
+    //    if (!m_device->CopyResourceFromNativeV(
+    //        m_cpuReadTexture.get(), m_frame))
+    //    {
+    //        throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+    //    }
+    //    // i420 buffer for software encoder
+    //    return CreateI420Buffer(
+    //        m_cpuReadTexture.get());
+    //}
     assert("Must set true to m_useGpu or m_useGpu");
 }
 

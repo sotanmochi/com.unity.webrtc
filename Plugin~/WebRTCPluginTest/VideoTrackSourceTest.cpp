@@ -1,11 +1,12 @@
 #include "pch.h"
 
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "GraphicsDeviceTestBase.h"
 #include "Context.h"
 #include "GraphicsDevice/IGraphicsDevice.h"
 #include "GraphicsDevice/ITexture2D.h"
 #include "UnityVideoTrackSource.h"
+#include "VideoFrameUtil.h"
 
 using testing::_;
 using testing::Invoke;
@@ -15,14 +16,15 @@ namespace unity
 {
 namespace webrtc
 {
+
 class MockVideoSink : public rtc::VideoSinkInterface<webrtc::VideoFrame>
 {
 public:
     MOCK_METHOD1(OnFrame, void(const webrtc::VideoFrame&));
 };
 
-const int width = 256;
-const int height = 256;
+const int width = 1280;
+const int height = 720;
 
 class VideoTrackSourceTest : public GraphicsDeviceTestBase
 {
@@ -31,14 +33,13 @@ public:
         m_texture(m_device->CreateDefaultTextureV(width, height, m_textureFormat))
     {
         m_trackSource = new rtc::RefCountedObject<UnityVideoTrackSource>(
-            m_device,
-            m_texture->GetNativeTexturePtrV(),
-            m_textureFormat,
-            GPU_MEMORY | CPU_MEMORY,
+            //m_device,
+            //m_texture->GetNativeTexturePtrV(),
+            //m_textureFormat,
+            //GPU_MEMORY | CPU_MEMORY,
             /*is_screencast=*/ false,
             /*needs_denoising=*/ absl::nullopt);
         m_trackSource->AddOrUpdateSink(&mock_sink_, rtc::VideoSinkWants());
-        m_trackSource->Init();
 
         EXPECT_NE(nullptr, m_device);
 
@@ -70,9 +71,21 @@ protected:
     }
 };
 
-TEST_P(VideoTrackSourceTest, Init)
+TEST_P(VideoTrackSourceTest, CreateVideoFrameAdapter)
 {
-    m_trackSource->Init();
+
+    auto frame = CreateTestFrame(width, height);
+
+    rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
+        new rtc::RefCountedObject<VideoFrameAdapter>(std::move(frame)));
+
+    EXPECT_EQ(VideoFrameBuffer::Type::kNative, frame_adapter->type());
+
+    absl::InlinedVector<VideoFrameBuffer::Type, kMaxPreferredPixelFormats>
+    supported_formats = { VideoFrameBuffer::Type::kI420,
+                         VideoFrameBuffer::Type::kNV12 };
+    auto mapped_frame = frame_adapter->GetMappedFrameBuffer(supported_formats);
+    EXPECT_EQ(nullptr, mapped_frame);
 }
 
 TEST_P(VideoTrackSourceTest, CreateVideoSourceProxy)
@@ -97,18 +110,16 @@ TEST_P(VideoTrackSourceTest, SendTestFrame)
             EXPECT_EQ(width, frame.width());
             EXPECT_EQ(height, frame.height());
 
-            GpuResourceBuffer* buffer
-                = static_cast<GpuResourceBuffer*>(frame.video_frame_buffer().get());
-            EXPECT_NE(buffer, nullptr);
-            rtc::scoped_refptr<I420BufferInterface> i420Buffer = buffer->ToI420();
-            EXPECT_NE(i420Buffer, nullptr);
-            CUarray array = buffer->ToArray();
-            EXPECT_NE(array, nullptr);
+            //GpuMemoryBuffer* buffer
+            //    = static_cast<GpuMemoryBuffer*>(frame.video_frame_buffer().get());
+            //EXPECT_NE(buffer, nullptr);
+            //rtc::scoped_refptr<I420BufferInterface> i420Buffer = buffer->ToI420();
+            //EXPECT_NE(i420Buffer, nullptr);
+            //CUarray array = buffer->ToArray();
+            //EXPECT_NE(array, nullptr);
     }));
-    m_trackSource->Init();
-    const int64_t timestamp_us =
-        webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
-    m_trackSource->OnFrameCaptured(timestamp_us);
+    auto frame = CreateTestFrame(width, height);
+    m_trackSource->OnFrameCaptured(std::move(frame));
 }
 #endif
 

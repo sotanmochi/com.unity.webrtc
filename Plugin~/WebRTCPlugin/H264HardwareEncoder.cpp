@@ -1,10 +1,11 @@
 #include "pch.h"
 #include "H264HardwareEncoder.h"
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
 #include "Codec/NvCodec/NvEncoderCudaWithCUarray.h"
 #include "../Utils/NvCodecUtils.h"
+#include "UnityVideoTrackSource.h"
 
 using namespace webrtc;
 
@@ -12,6 +13,7 @@ namespace unity
 {
 namespace webrtc
 {
+    using namespace ::webrtc;
 
     std::unique_ptr<VideoEncoder> H264HardwareEncoder::Create(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
@@ -117,14 +119,15 @@ namespace webrtc
     }
 
     void CopyResource (
-        const NvEncInputFrame* dst, const GpuResourceBuffer* buffer,
+        const NvEncInputFrame* dst, const rtc::scoped_refptr<VideoFrame> frame,
         CUcontext context, CUmemorytype memoryType)
     {
+        auto buffer = frame->GetGpuMemoryBuffer();
         std::shared_timed_mutex* mutex = buffer->mutex();
         std::shared_lock<std::shared_timed_mutex> lock(*mutex);
 
-        int width = buffer->width();
-        int height = buffer->height();
+        int width = frame->width();
+        int height = frame->height();
 
         if(memoryType == CU_MEMORYTYPE_DEVICE)
         {
@@ -149,7 +152,7 @@ namespace webrtc
     }
 
     int32_t H264HardwareEncoder::Encode(
-        const VideoFrame& frame, const std::vector<VideoFrameType>* frameTypes)
+        const ::webrtc::VideoFrame& frame, const std::vector<VideoFrameType>* frameTypes)
     {
         RTC_DCHECK_EQ(frame.width(), m_codec.width);
         RTC_DCHECK_EQ(frame.height(), m_codec.height);
@@ -194,15 +197,16 @@ namespace webrtc
             }
         }
 
-        GpuResourceBuffer* buffer = static_cast<GpuResourceBuffer*>(
-            frame.video_frame_buffer().get());
+        rtc::scoped_refptr<VideoFrame> video_frame =
+            static_cast<VideoFrameAdapter*>(
+                frame.video_frame_buffer().get())->GetVideoFrame();
 
-        RTC_DCHECK_EQ(m_encoder->GetEncodeWidth(), buffer->width());
-        RTC_DCHECK_EQ(m_encoder->GetEncodeHeight(), buffer->height());
+        RTC_DCHECK_EQ(m_encoder->GetEncodeWidth(), video_frame->width());
+        RTC_DCHECK_EQ(m_encoder->GetEncodeHeight(), video_frame->height());
 
         const NvEncInputFrame* dst = m_encoder->GetNextInputFrame();
 
-        CopyResource(dst, buffer, m_context, m_memoryType);
+        CopyResource(dst, video_frame, m_context, m_memoryType);
 
         NV_ENC_PIC_PARAMS picParams = { NV_ENC_PIC_PARAMS_VER };
         picParams.encodePicFlags = 0;
@@ -232,7 +236,7 @@ namespace webrtc
     }
 
     int32_t H264HardwareEncoder::ProcessEncodedFrame(
-        std::vector<uint8_t>& packet, const VideoFrame& inputFrame)
+        std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame)
     {
         m_encodedImage.SetTimestamp(inputFrame.timestamp());
         m_encodedImage._encodedWidth = inputFrame.video_frame_buffer()->width();

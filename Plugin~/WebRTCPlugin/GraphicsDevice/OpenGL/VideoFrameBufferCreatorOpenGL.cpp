@@ -6,7 +6,7 @@
 #if CUDA_PLATFORM
 #include <cuda.h>
 #include <cudaGL.h>
-#include "GpuResourceBuffer.h"
+#include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #endif
 
@@ -100,7 +100,7 @@ rtc::scoped_refptr<VideoFrameBuffer> VideoFrameBufferCreatorOpenGL::CreateBuffer
         {
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
-        return new rtc::RefCountedObject<GpuResourceBuffer>(nullptr, m_mappedArray, mutex);
+        return new rtc::RefCountedObject<GpuMemoryBuffer>(m_mappedArray, mutex);
     }
     if (m_useCpu)
     {
