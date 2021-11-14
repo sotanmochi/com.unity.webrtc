@@ -4,20 +4,20 @@
 namespace unity {
 namespace webrtc {
 
-VideoFrame::VideoFrame(int width, int height, std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer, TimeDelta timestamp)
-    : width_(width)
-    , height_(height)
+VideoFrame::VideoFrame(const Size& size,
+    std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
+    TimeDelta timestamp)
+    : size_(size)
     , gpu_memory_buffer_(std::move(gpu_memory_buffer))
     , timestamp_(timestamp) {}
 
 rtc::scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
-    int width, int height,
-//    const gfx::Size& natural_size,
+    const Size& size,
     std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
 //    const gpu::MailboxHolder(&mailbox_holders)[kMaxPlanes],
 //    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     TimeDelta timestamp) {
-    return new rtc::RefCountedObject<VideoFrame>(width, height, std::move(gpu_memory_buffer), timestamp);
+    return new rtc::RefCountedObject<VideoFrame>(size, std::move(gpu_memory_buffer), timestamp);
 }
 
 bool VideoFrame::HasGpuMemoryBuffer() const {

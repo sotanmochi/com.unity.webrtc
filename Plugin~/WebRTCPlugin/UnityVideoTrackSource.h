@@ -27,15 +27,17 @@ class VideoFrameAdapter : public VideoFrameBuffer
 {
 public:
     VideoFrameAdapter(rtc::scoped_refptr<VideoFrame> frame)
-        : frame_(std::move(frame)) {}
+        : frame_(std::move(frame))
+        , size_(frame_->size())
+        {}
 
     rtc::scoped_refptr<VideoFrame> GetVideoFrame() const { return frame_; }
 
     VideoFrameBuffer::Type type() const override {
         return ::webrtc::VideoFrameBuffer::Type::kNative;
     }
-    int width() const override { return frame_->width(); }
-    int height() const override { return frame_->height(); }
+    int width() const override { return size_.width(); }
+    int height() const override { return size_.height(); }
 
     rtc::scoped_refptr<I420BufferInterface> ToI420() override;
 protected:
@@ -46,6 +48,7 @@ private:
     rtc::scoped_refptr <VideoFrame> ConstructVideoFrameFromGpu(
         rtc::scoped_refptr <VideoFrame> video_frame);
     const rtc::scoped_refptr<VideoFrame> frame_;
+    const Size size_;
 };
 
 // This class implements webrtc's VideoTrackSourceInterface. To pass frames down

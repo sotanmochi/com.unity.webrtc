@@ -314,10 +314,9 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
                 auto buffer = std::make_unique<GpuMemoryBuffer>();
-                int width = 1280;
-                int height = 720;
+                Size size(1280, 720);
                 auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
-                    width, height, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
+                    size, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
                 source->OnFrameCaptured(frame);
             }
             return;

@@ -126,8 +126,7 @@ namespace webrtc
         std::shared_timed_mutex* mutex = buffer->mutex();
         std::shared_lock<std::shared_timed_mutex> lock(*mutex);
 
-        int width = frame->width();
-        int height = frame->height();
+        Size size = frame->size();
 
         if(memoryType == CU_MEMORYTYPE_DEVICE)
         {
@@ -135,7 +134,7 @@ namespace webrtc
 
             NvEncoderCuda::CopyToDeviceFrame(
                 context, reinterpret_cast<void*>(devicePtr), 0, reinterpret_cast<CUdeviceptr>(dst->inputPtr),
-                dst->pitch, width, height,
+                dst->pitch, size.width(), size.height(),
                 CU_MEMORYTYPE_DEVICE, dst->bufferFormat, dst->chromaOffsets,
                 dst->numChromaPlanes);
         }
@@ -145,7 +144,7 @@ namespace webrtc
 
             NvEncoderCudaWithCUarray::CopyToDeviceFrame(
                 context, static_cast<void*>(array), 0, static_cast<CUarray>(dst->inputPtr),
-                dst->pitch, width, height,
+                dst->pitch, size.width(), size.height(),
                 CU_MEMORYTYPE_ARRAY, dst->bufferFormat, dst->chromaOffsets,
                 dst->numChromaPlanes);
         }
@@ -201,8 +200,9 @@ namespace webrtc
             static_cast<VideoFrameAdapter*>(
                 frame.video_frame_buffer().get())->GetVideoFrame();
 
-        RTC_DCHECK_EQ(m_encoder->GetEncodeWidth(), video_frame->width());
-        RTC_DCHECK_EQ(m_encoder->GetEncodeHeight(), video_frame->height());
+        Size size = video_frame->size();
+        RTC_DCHECK_EQ(m_encoder->GetEncodeWidth(), size.width());
+        RTC_DCHECK_EQ(m_encoder->GetEncodeHeight(), size.height());
 
         const NvEncInputFrame* dst = m_encoder->GetNextInputFrame();
 

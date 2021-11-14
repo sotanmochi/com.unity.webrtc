@@ -3,6 +3,7 @@
 #include "rtc_base/timestamp_aligner.h"
 #include "rtc_base/ref_counted_object.h"
 #include "GpuMemoryBuffer.h"
+#include "Size.h"
 
 namespace unity {
 namespace webrtc {
@@ -26,12 +27,9 @@ public:
     VideoFrame(const VideoFrame&) = delete;
     VideoFrame& operator=(const VideoFrame&) = delete;
 
-    constexpr int width() const { return width_; }
-    constexpr int height() const { return height_; }
 
-    void set_width(int width) { width_ = std::max(0, width); }
-    void set_height(int height) { height_ = std::max(0, height); }
 
+    Size size() const { return size_; }
     TimeDelta timestamp() const { return timestamp_; }
     void set_timestamp(TimeDelta timestamp) { timestamp_ = timestamp; }
 
@@ -41,7 +39,7 @@ public:
     bool VideoFrame::HasGpuMemoryBuffer() const;
 
     static rtc::scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
-        int width, int height,
+        const Size& size,
         //const gfx::Rect& visible_rect,
         //const gfx::Size& natural_size,
         std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
@@ -50,16 +48,15 @@ public:
         TimeDelta timestamp);
     static rtc::scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
         rtc::scoped_refptr<VideoFrame> video_frame);
-    virtual ~VideoFrame() {}
 protected:
     VideoFrame::VideoFrame(
-        int width, int height,
+        const Size& size,
         std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
         TimeDelta timestamp);
+    virtual ~VideoFrame() {}
 private:
     TimeDelta timestamp_;
-    int width_;
-    int height_;
+    Size size_;
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer_;
     std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer_;
 };
