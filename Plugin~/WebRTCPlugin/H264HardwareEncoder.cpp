@@ -15,6 +15,27 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
+    class H264HardwareEncoder::Impl
+        : public rtc::RefCountedObject<H264HardwareEncoder::Impl> {
+    public:
+        Impl(media::GpuVideoAcceleratorFactories* gpu_factories,
+            webrtc::VideoCodecType video_codec_type,
+            webrtc::VideoContentType video_content_type);
+        Impl(const Impl&) = delete;
+        Impl& operator=(const Impl&) = delete;
+    private:
+        friend class rtc::RefCountedObject<Impl>;
+        enum {
+            kInputBufferExtraCount = 1,  // The number of input buffers allocated, more
+                                         // than what is requested by
+                                         // VEA::RequireBitstreamBuffers().
+                                         kOutputBufferCount = 3,
+        };
+        ~Impl() override;
+
+        std::unique_ptr<media::VideoEncodeAccelerator> video_encoder_;
+    };
+
     std::unique_ptr<VideoEncoder> H264HardwareEncoder::Create(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
     {
@@ -34,9 +55,22 @@ namespace webrtc
         RTC_CHECK_NE(memoryType, CU_MEMORYTYPE_HOST);
     }
 
+    H264HardwareEncoder::~H264HardwareEncoder() {
+        Release();
+        RTC_DCHECK(!impl_.get());
+    }
+
     int H264HardwareEncoder::InitEncode(const VideoCodec* codec,
         const VideoEncoder::Settings& settings)
     {
+        if (impl_)
+            Release();
+        //impl_ =
+        //    new Impl(gpu_factories_, ProfileToWebRtcVideoCodecType(profile_),
+        //        (codec_settings->mode == webrtc::VideoCodecMode::kScreensharing)
+        //        ? webrtc::VideoContentType::SCREENSHARE
+        //        : webrtc::VideoContentType::UNSPECIFIED);
+
         if (codec == nullptr)
         {
             return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
@@ -153,6 +187,10 @@ namespace webrtc
     int32_t H264HardwareEncoder::Encode(
         const ::webrtc::VideoFrame& frame, const std::vector<VideoFrameType>* frameTypes)
     {
+        if (!impl_.get()) {
+            return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
+        }
+
         RTC_DCHECK_EQ(frame.width(), m_codec.width);
         RTC_DCHECK_EQ(frame.height(), m_codec.height);
 
