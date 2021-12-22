@@ -64,7 +64,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             yield return new WaitUntil(() => audioTrack.Renderer != null);
             Assert.That(audioTrack.Renderer, Is.Not.Null);
-            Assert.That(audioTrack.Renderer.channels, Is.EqualTo(channels));
+            Assert.That(audioTrack.Renderer.clip.channels, Is.EqualTo(channels));
 
 
             // second track
@@ -81,7 +81,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             yield return new WaitUntil(() => audioTrack.Renderer != null);
             Assert.That(audioTrack.Renderer, Is.Not.Null);
-            Assert.That(audioTrack.Renderer.channels, Is.EqualTo(channels));
+            Assert.That(audioTrack.Renderer.clip.channels, Is.EqualTo(channels));
 
             test.component.Dispose();
             Object.DestroyImmediate(test.gameObject);
@@ -136,7 +136,11 @@ namespace Unity.WebRTC.RuntimeTest
         [Test]
         public void AudioStreamRenderer()
         {
-            var renderer = new AudioStreamTrack.AudioStreamRenderer("test", 48000, 2);
+            GameObject obj = new GameObject("audio");
+            AudioSource source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
+
+            var renderer = new AudioStreamTrack.AudioStreamRenderer(source);
             Assert.That(renderer.clip, Is.Not.Null);
 
             for (int i = 0; i < 300; i++)
