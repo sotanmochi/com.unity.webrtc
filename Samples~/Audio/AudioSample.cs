@@ -222,11 +222,10 @@ namespace Unity.WebRTC
             track.OnAudioReceived += OnAudioReceived;
         }
 
-        void OnAudioReceived(AudioClip renderer)
+        void OnAudioReceived(AudioSource renderer)
         {
-            outputAudioSource.clip = renderer;
-            outputAudioSource.loop = true;
-            outputAudioSource.Play();
+            renderer.loop = true;
+            renderer.Play();
         }
 
         void OnHangUp()
