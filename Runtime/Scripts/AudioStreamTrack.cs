@@ -10,10 +10,10 @@ namespace Unity.WebRTC
     {
         public static void SetTrack(this AudioSource source, AudioStreamTrack track)
         {
-            if(track.Source != null)
+            if(track.Renderer != null)
             {
                 throw new InvalidOperationException(
-                    $"AudioStreamTrack already has AudioSource {track.Source.name}.");
+                    $"AudioStreamTrack already has AudioSource {track.Renderer.name}.");
             }
             track.SetAudioSource(source);
         }
@@ -40,6 +40,12 @@ namespace Unity.WebRTC
         ///
         /// </summary>
         public AudioSource Source { get; private set; }
+
+        /// <summary>
+        ///
+        /// </summary>
+        public AudioSource Renderer { get; private set; }
+
 
         internal class AudioBufferTracker
         {
@@ -159,13 +165,6 @@ namespace Unity.WebRTC
 
                 if (m_recvBufs.Count >= AudioBufferTracker.NumOfFramesForBuffering && !m_bufferReady)
                 {
-                    //var audioSource = FindAttachedAudioSource();
-                    //if (audioSource)
-                    //{
-                    //    m_audioSource = audioSource;
-                    //    m_bufInfo.Initialize(m_audioSource);
-                    //}
-
                     WriteToAudioClip(AudioBufferTracker.NumOfFramesForBuffering - 1);
                     m_bufferReady = true;
                 }
@@ -326,14 +325,14 @@ namespace Unity.WebRTC
             nativeArray.Dispose();
         }
 
-        internal void SetAudioSource(AudioSource source)
+        internal void SetAudioSource(AudioSource renderer)
         {
-            Source = source;
+            Renderer = renderer;
         }
 
         private void OnAudioReceivedInternal(float[] audioData, int sampleRate, int channels, int numOfFrames)
         {
-            if (Source == null)
+            if (Renderer == null)
                 return;
 
             if (_streamRenderer == null)
@@ -343,8 +342,8 @@ namespace Unity.WebRTC
                     frameCountReceiveDataForIgnoring++;
                     return;
                 }
-                _streamRenderer = new AudioStreamRenderer(Source, sampleRate, channels);
-                OnAudioReceived?.Invoke(Source);
+                _streamRenderer = new AudioStreamRenderer(Renderer, sampleRate, channels);
+                OnAudioReceived?.Invoke(Renderer);
             }
             _streamRenderer?.SetData(audioData);
         }
