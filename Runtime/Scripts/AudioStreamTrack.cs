@@ -6,6 +6,20 @@ using UnityEngine;
 
 namespace Unity.WebRTC
 {
+    public static class AudioSourceExtension
+    {
+        public static void SetTrack(this AudioSource source, AudioStreamTrack track)
+        {
+            if(track.Source != null)
+            {
+                throw new InvalidOperationException(
+                    $"AudioStreamTrack already has AudioSource {track.Source.name}.");
+            }
+            track.SetAudioSource(source);
+        }
+    }
+
+
     /// <summary>
     ///
     /// </summary>
@@ -193,17 +207,16 @@ namespace Unity.WebRTC
             : this(Guid.NewGuid().ToString(), new AudioTrackSource())
         {
             if (source == null)
-                throw new ArgumentNullException("AudioSource argument is null");
+                throw new ArgumentNullException("AudioSource argument is null.");
+            if (source.clip == null)
+                throw new ArgumentException("AudioClip must to be attached on AudioSource.");
             Source = source;
 
-            // initialize audio streaming
-            if(source.clip != null)
-            {
-                WebRTC.Context.InitLocalAudio(self, source.clip.frequency, source.clip.channels);
-                _audioSourceRead = source.gameObject.AddComponent<AudioSourceRead>();
-                _audioSourceRead.hideFlags = HideFlags.HideInHierarchy;
-                _audioSourceRead.onAudioRead += SetData;
-            }
+            // initialize audio streaming for sender
+            WebRTC.Context.InitLocalAudio(self, source.clip.frequency, source.clip.channels);
+            _audioSourceRead = source.gameObject.AddComponent<AudioSourceRead>();
+            _audioSourceRead.hideFlags = HideFlags.HideInHierarchy;
+            _audioSourceRead.onAudioRead += SetData;
         }
 
         internal AudioStreamTrack(string label, AudioTrackSource source)
@@ -313,8 +326,16 @@ namespace Unity.WebRTC
             nativeArray.Dispose();
         }
 
+        internal void SetAudioSource(AudioSource source)
+        {
+            Source = source;
+        }
+
         private void OnAudioReceivedInternal(float[] audioData, int sampleRate, int channels, int numOfFrames)
         {
+            if (Source == null)
+                return;
+
             if (_streamRenderer == null)
             {
                 if(frameCountReceiveDataForIgnoring < MaxFrameCountReceiveDataForIgnoring)
