@@ -260,6 +260,7 @@ namespace Unity.WebRTC.RuntimeTest
             var peer = new RTCPeerConnection();
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
 
             var sender = peer.AddTrack(track);
@@ -268,6 +269,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             track.Dispose();
             peer.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -282,6 +284,7 @@ namespace Unity.WebRTC.RuntimeTest
             var peer2 = new RTCPeerConnection(ref config);
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var audioTrack = new AudioStreamTrack(source);
 
             var transceiver1 = peer1.AddTransceiver(TrackKind.Audio);
@@ -327,6 +330,7 @@ namespace Unity.WebRTC.RuntimeTest
             peer2.Close();
             peer1.Dispose();
             peer2.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -345,6 +349,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj1 = new GameObject("audio1");
             var source1 = obj1.AddComponent<AudioSource>();
+            source1.clip = AudioClip.Create("test1", 480, 2, 48000, false);
             AudioStreamTrack track1 = new AudioStreamTrack(source1);
             peer1.AddTrack(track1);
 
@@ -356,6 +361,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj2 = new GameObject("audio2");
             var source2 = obj2.AddComponent<AudioSource>();
+            source2.clip = AudioClip.Create("test2", 480, 2, 48000, false);
             AudioStreamTrack track2 = new AudioStreamTrack(source2);
             RTCRtpSender sender2 = peer2.AddTrack(track2);
             Assert.That(sender2, Is.Not.Null);
@@ -365,6 +371,8 @@ namespace Unity.WebRTC.RuntimeTest
             track2.Dispose();
             peer1.Dispose();
             peer2.Dispose();
+            Object.DestroyImmediate(source1.clip);
+            Object.DestroyImmediate(source2.clip);
             Object.DestroyImmediate(obj1);
             Object.DestroyImmediate(obj2);
         }
@@ -537,6 +545,7 @@ namespace Unity.WebRTC.RuntimeTest
             var stream = new MediaStream();
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             var sender = peer.AddTrack(track, stream);
 
@@ -558,6 +567,7 @@ namespace Unity.WebRTC.RuntimeTest
             stream.Dispose();
             peer.Close();
             peer.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -573,6 +583,7 @@ namespace Unity.WebRTC.RuntimeTest
             var stream = new MediaStream();
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             var sender = peer1.AddTrack(track, stream);
 
@@ -596,6 +607,7 @@ namespace Unity.WebRTC.RuntimeTest
             peer2.Close();
             peer1.Dispose();
             peer2.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -613,6 +625,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             peer1.AddTrack(track);
 
@@ -645,6 +658,7 @@ namespace Unity.WebRTC.RuntimeTest
             track.Dispose();
             peer1.Close();
             peer2.Close();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -665,6 +679,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             peer1.AddTrack(track);
 
@@ -726,6 +741,7 @@ namespace Unity.WebRTC.RuntimeTest
             track.Dispose();
             peer1.Close();
             peer2.Close();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -743,6 +759,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             AudioStreamTrack track = new AudioStreamTrack(source);
             peer1.AddTrack(track);
 
@@ -756,7 +773,8 @@ namespace Unity.WebRTC.RuntimeTest
             Assert.That(() => track1.Id, Throws.TypeOf<InvalidOperationException>());
             track.Dispose();
             track1.Dispose();
-            Object.DestroyImmediate(source);
+            Object.DestroyImmediate(source.clip);
+            Object.DestroyImmediate(obj);
         }
 
         [UnityTest]
@@ -785,6 +803,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             AudioStreamTrack track1 = new AudioStreamTrack(source);
             peer1.AddTrack(track1);
 
@@ -826,6 +845,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             track1.Dispose();
             peer2.Close();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -898,6 +918,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             AudioStreamTrack track = new AudioStreamTrack(source);
             peer1.AddTrack(track);
 
@@ -922,6 +943,7 @@ namespace Unity.WebRTC.RuntimeTest
             track.Dispose();
             peer1.Close();
             peer2.Close();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -942,6 +964,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             var obj = new GameObject("audio");
             var source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 480, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             stream.AddTrack(track);
             RTCRtpSender sender = peer1.AddTrack(track, stream);
@@ -976,6 +999,7 @@ namespace Unity.WebRTC.RuntimeTest
             track.Dispose();
             peer1.Dispose();
             peer2.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 

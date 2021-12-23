@@ -28,12 +28,14 @@ namespace Unity.WebRTC.RuntimeTest
         {
             var test = new MonoBehaviourTest<SignalingPeers>();
             var source = test.gameObject.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 48000, 2, 48000, false);
             var audioTrack = new AudioStreamTrack(source);
             var sender = test.component.AddTrack(0, audioTrack);
             yield return test;
             Assert.That(test.component.RemoveTrack(0, sender), Is.EqualTo(RTCErrorType.None));
             yield return new WaitUntil(() => test.component.NegotiationCompleted());
             test.component.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(test.gameObject);
         }
 
@@ -95,8 +97,10 @@ namespace Unity.WebRTC.RuntimeTest
         {
             GameObject obj = new GameObject("audio");
             AudioSource source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test", 48000, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             track.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -105,12 +109,16 @@ namespace Unity.WebRTC.RuntimeTest
         {
             GameObject obj1 = new GameObject("audio1");
             AudioSource source1 = obj1.AddComponent<AudioSource>();
+            source1.clip = AudioClip.Create("test1", 48000, 2, 48000, false);
             GameObject obj2 = new GameObject("audio2");
             AudioSource source2 = obj2.AddComponent<AudioSource>();
+            source2.clip = AudioClip.Create("test2", 48000, 2, 48000, false);
             var track1 = new AudioStreamTrack(source1);
             var track2 = new AudioStreamTrack(source2);
             track1.Dispose();
             track2.Dispose();
+            Object.DestroyImmediate(source1.clip);
+            Object.DestroyImmediate(source2.clip);
             Object.DestroyImmediate(obj1);
             Object.DestroyImmediate(obj2);
         }
@@ -120,6 +128,7 @@ namespace Unity.WebRTC.RuntimeTest
         {
             GameObject obj = new GameObject("audio");
             AudioSource source = obj.AddComponent<AudioSource>();
+            source.clip = AudioClip.Create("test1", 48000, 2, 48000, false);
             var track = new AudioStreamTrack(source);
             Assert.That(() => track.SetData(null, 0, 0), Throws.ArgumentNullException);
 
@@ -130,6 +139,7 @@ namespace Unity.WebRTC.RuntimeTest
             Assert.That(() => track.SetData(data, 0, 48000), Throws.ArgumentException);
             Assert.That(() => track.SetData(data, 1, 48000), Throws.Nothing);
             track.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
@@ -143,6 +153,7 @@ namespace Unity.WebRTC.RuntimeTest
             var track = new AudioStreamTrack(source);
             source.Play();
             track.Dispose();
+            Object.DestroyImmediate(source.clip);
             Object.DestroyImmediate(obj);
         }
 
