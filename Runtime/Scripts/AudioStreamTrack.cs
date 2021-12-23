@@ -123,7 +123,6 @@ namespace Unity.WebRTC
                 m_audioSource.clip =
                     AudioClip.Create(clipName, lengthSamples, channels, sampleRate, false);
                 m_bufInfo = new AudioBufferTracker(m_audioSource.clip.frequency);
-                m_bufInfo.Initialize(m_audioSource);
             }
 
             public void Dispose()
@@ -131,8 +130,6 @@ namespace Unity.WebRTC
                 if (m_audioSource != null)
                 {
                     WebRTC.DestroyOnMainThread(m_audioSource.clip);
-                    WebRTC.DestroyOnMainThread(m_audioSource.gameObject);
-                    m_audioSource = null;
                 }
                 m_recvBufs.Clear();
             }
@@ -165,6 +162,7 @@ namespace Unity.WebRTC
 
                 if (m_recvBufs.Count >= AudioBufferTracker.NumOfFramesForBuffering && !m_bufferReady)
                 {
+                    m_bufInfo.Initialize(m_audioSource);
                     WriteToAudioClip(AudioBufferTracker.NumOfFramesForBuffering - 1);
                     m_bufferReady = true;
                 }
