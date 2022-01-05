@@ -27,13 +27,10 @@ public:
     VideoFrame(const VideoFrame&) = delete;
     VideoFrame& operator=(const VideoFrame&) = delete;
 
-
-
     Size size() const { return size_; }
     TimeDelta timestamp() const { return timestamp_; }
     void set_timestamp(TimeDelta timestamp) { timestamp_ = timestamp; }
 
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer() { return frame_buffer_; }
 
     GpuMemoryBuffer* GetGpuMemoryBuffer() const;
     bool VideoFrame::HasGpuMemoryBuffer() const;

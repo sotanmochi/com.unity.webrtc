@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "VideoFrame.h"
+#include "GraphicsDevice/GraphicsDevice.h"
 
 namespace unity {
 namespace webrtc {
@@ -9,7 +10,8 @@ VideoFrame::VideoFrame(const Size& size,
     TimeDelta timestamp)
     : size_(size)
     , gpu_memory_buffer_(std::move(gpu_memory_buffer))
-    , timestamp_(timestamp) {}
+    , timestamp_(timestamp)
+    {}
 
 rtc::scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const Size& size,
@@ -17,7 +19,8 @@ rtc::scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
 //    const gpu::MailboxHolder(&mailbox_holders)[kMaxPlanes],
 //    ReleaseMailboxAndGpuMemoryBufferCB mailbox_holder_and_gmb_release_cb,
     TimeDelta timestamp) {
-    return new rtc::RefCountedObject<VideoFrame>(size, std::move(gpu_memory_buffer), timestamp);
+    return new rtc::RefCountedObject<VideoFrame>(
+        size, std::move(gpu_memory_buffer), timestamp);
 }
 
 bool VideoFrame::HasGpuMemoryBuffer() const {
@@ -33,7 +36,7 @@ rtc::scoped_refptr<VideoFrame> VideoFrame::ConvertToMemoryMappedFrame(
     RTC_DCHECK(video_frame);
     RTC_DCHECK(video_frame->HasGpuMemoryBuffer());
 
-    //auto* gmb = video_frame->GetGpuMemoryBuffer();
+    auto gmb = video_frame->GetGpuMemoryBuffer();
     //if (!gmb->Map())
     //    return nullptr;
 

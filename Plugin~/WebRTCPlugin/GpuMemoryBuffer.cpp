@@ -7,25 +7,30 @@ namespace unity
 namespace webrtc
 {
 
-GpuMemoryBuffer::GpuMemoryBuffer(
-    CUdeviceptr devicePtr, std::shared_timed_mutex& mutex)
-    : m_mutex(&mutex)
-    , m_devicePtr(devicePtr)
-    , m_memoryType(CU_MEMORYTYPE_DEVICE)
-{
-}
-
-GpuMemoryBuffer::GpuMemoryBuffer(
-    CUarray array, std::shared_timed_mutex& mutex)
-    : m_mutex(&mutex)
-    , m_array(array)
-    , m_memoryType(CU_MEMORYTYPE_ARRAY)
-{
-}
 
 GpuMemoryBuffer::~GpuMemoryBuffer()
 {
 }
+
+GpuMemoryBufferFromUnity::GpuMemoryBufferFromUnity(
+    IGraphicsDevice* device, NativeTexPtr ptr,
+    Size& size, UnityRenderingExtTextureFormat format)
+    : device_(device)
+    , ptr_(ptr)
+    , texture_(nullptr)
+{
+    texture_ = device_->CreateCPUReadTextureV(
+        size.width(), size.height(), format);
+}
+
+rtc::scoped_refptr<I420BufferInterface> GpuMemoryBufferFromUnity::ToI420()
+{
+    device_->CopyResourceFromNativeV(texture_, ptr_);
+    return device_->ConvertRGBToI420(texture_);
+}
+
+GpuMemoryBufferFromUnity::~GpuMemoryBufferFromUnity()
+{}
 
 //::webrtc::VideoFrameBuffer::Type GpuMemoryBuffer::type() const
 //{
@@ -49,25 +54,6 @@ std::shared_timed_mutex* GpuMemoryBuffer::mutex() const
     return m_mutex;
 }
 
-CUstream GpuMemoryBuffer::ToStream() const
-{
-    return nullptr;
-}
-
-CUdeviceptr GpuMemoryBuffer::ToDevicePtr() const
-{
-    return m_devicePtr;
-}
-
-CUarray GpuMemoryBuffer::ToArray() const
-{
-    return m_array;
-}
-
-CUmemorytype GpuMemoryBuffer::memoryType() const
-{
-    return m_memoryType;
-}
 
 //rtc::scoped_refptr<I420BufferInterface> GpuMemoryBuffer::ToI420()
 //{

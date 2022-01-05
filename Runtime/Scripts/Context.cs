@@ -230,13 +230,12 @@ namespace Unity.WebRTC
             return NativeMethods.GetUpdateTextureFunc(self);
         }
 
-        public IntPtr CreateVideoTrackSource(
-            IntPtr texturePtr, GraphicsFormat format, bool useGpu = true, bool useCpu = true)
+        public IntPtr CreateVideoTrackSource()
         {
-            uint memoryType =
-                (useGpu ? (uint)VideoSourceMemoryType.GpuMemory : 0)
-                + (useCpu ? (uint)VideoSourceMemoryType.CpuMemory : 0);
-            return NativeMethods.ContextCreateVideoTrackSource(self, texturePtr, format, memoryType);
+            //uint memoryType =
+            //    (useGpu ? (uint)VideoSourceMemoryType.GpuMemory : 0)
+            //    + (useCpu ? (uint)VideoSourceMemoryType.CpuMemory : 0);
+            return NativeMethods.ContextCreateVideoTrackSource(self);
         }
 
         public IntPtr CreateAudioTrackSource()
@@ -295,22 +294,22 @@ namespace Unity.WebRTC
             NativeMethods.ContextGetReceiverCapabilities(self, kind, out capabilities);
         }
 
-        internal void InitializeEncoder(IntPtr track)
-        {
-            renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-            VideoEncoderMethods.InitializeEncoder(renderFunction, track);
-        }
+        //internal void InitializeEncoder(IntPtr track)
+        //{
+        //    renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
+        //    VideoEncoderMethods.InitializeEncoder(renderFunction, track);
+        //}
 
-        internal void FinalizeEncoder(IntPtr videoSource)
-        {
-            renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-            VideoEncoderMethods.FinalizeEncoder(renderFunction, videoSource);
-        }
+        //internal void FinalizeEncoder(IntPtr videoSource)
+        //{
+        //    renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
+        //    VideoEncoderMethods.FinalizeEncoder(renderFunction, videoSource);
+        //}
 
-        internal void Encode(IntPtr videoSource)
+        internal void Encode(IntPtr ptr)
         {
             renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-            VideoEncoderMethods.Encode(renderFunction, videoSource);
+            VideoEncoderMethods.Encode(renderFunction, ptr);
         }
 
         internal void UpdateRendererTexture(uint rendererId, UnityEngine.Texture texture)

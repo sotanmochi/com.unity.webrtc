@@ -289,10 +289,9 @@ extern "C"
     }
 
     UNITY_INTERFACE_EXPORT webrtc::VideoTrackSourceInterface* ContextCreateVideoTrackSource(
-        Context* context, NativeTexPtr ptr, UnityRenderingExtTextureFormat format, uint32_t memoryType)
+        Context* context)
     {
-        IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
-        return context->CreateVideoSource(ptr, device, format, memoryType);
+        return context->CreateVideoSource();
     }
 
     UNITY_INTERFACE_EXPORT webrtc::AudioSourceInterface* ContextCreateAudioTrackSource(Context* context)

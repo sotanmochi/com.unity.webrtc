@@ -3,12 +3,6 @@
 #include <shared_mutex>
 #include "VideoFrame.h"
 
-// todo::(kazuki) change compiler vc to clang
-#if defined(__clang__)
-// todo::(kazuki) fix error: 'build/chromeos_buildflags.h' file not found
-// #include "base/threading/thread_checker.h"
-#endif
-
 namespace unity {
 namespace webrtc {
 
@@ -100,9 +94,6 @@ private:
 
     // |thread_checker_| is bound to the libjingle worker thread.
     // todo::(kazuki) change compiler vc to clang
-#if defined(__clang__)
-    // THREAD_CHECKER(thread_checker_);
-#endif
     // media::VideoFramePool scaled_frame_pool_;
 
     // State for the timestamp translation.

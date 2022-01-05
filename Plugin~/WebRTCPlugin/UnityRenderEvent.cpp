@@ -7,7 +7,6 @@
 #include "Context.h"
 #include "ScopedProfiler.h"
 #include "UnityVideoTrackSource.h"
-//#include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsDevice.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "VideoFrame.h"
@@ -33,7 +32,6 @@ namespace webrtc
     IUnityInterfaces* s_UnityInterfaces = nullptr;
     IUnityGraphics* s_Graphics = nullptr;
     Context* s_context = nullptr;
-//    std::map<const MediaStreamTrackInterface*, std::unique_ptr<IEncoder>> s_mapEncoder;
     std::map<const uint32_t, std::shared_ptr<UnityVideoRenderer>> s_mapVideoRenderer;
     std::unique_ptr <Clock> s_clock;
 
@@ -255,6 +253,14 @@ void PluginUnload()
     s_clock.reset();
 }
 
+struct EncodeData
+{
+    void* texture;
+    UnityVideoTrackSource* source;
+    int width;
+    int height;
+};
+
 // Notice: When DebugLog is used in a method called from RenderingThread, 
 // it hangs when attempting to leave PlayMode and re-enter PlayMode.
 // So, we comment out `DebugLog`.
@@ -269,26 +275,21 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
     if(!lock.owns_lock())
         return;
 
-    MediaStreamTrackInterface* track =
-        static_cast<MediaStreamTrackInterface*>(data);
+    EncodeData* encodeData =
+        static_cast<EncodeData*>(data);
     const VideoStreamRenderEventID event =
         static_cast<VideoStreamRenderEventID>(eventID);
 
-    if (!s_context->ExistsRefPtr(track))
-    {
-        RTC_LOG(LS_INFO) << "OnRenderEvent:: track is not found";
-        return;
-    }
 
     switch(event)
     {
-        case VideoStreamRenderEventID::Initialize:
-        {
+        //case VideoStreamRenderEventID::Initialize:
+        //{
             //const VideoEncoderParameter* param = s_context->GetEncoderParameter(track);
             //const UnityEncoderType encoderType = s_context->GetEncoderType();
-            UnityVideoTrackSource* source = s_context->GetVideoSource(track);
-            UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
 
+            //UnityVideoTrackSource* source = s_context->GetVideoSource(track);
+            //UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
 
             //std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator =
             //    VideoFrameBufferCreatorInterface::Create(device, ptr, device->GetGfxRenderer(), format, memoryType);
@@ -303,28 +304,33 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             //{
             //    // DebugLog("Encoder initialization failed.");
             //}
-            return;
-        }
+        //    return;
+        //}
         case VideoStreamRenderEventID::Encode:
         {
-            UnityVideoTrackSource* source = s_context->GetVideoSource(track);
+            UnityVideoTrackSource* source = encodeData->source;
             if (source == nullptr)
                 return;
             int64_t timestamp_us = s_clock->TimeInMicroseconds();
+            auto device = GraphicsUtility::GetGraphicsDevice();
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
-                auto buffer = std::make_unique<GpuMemoryBuffer>();
-                Size size(1280, 720);
+
+                std::unique_ptr<GpuMemoryBuffer> buffer =
+                    std::make_unique<GpuMemoryBufferFromUnity>(
+                        device, encodeData->texture);
+                Size size(encodeData->width, encodeData->height);
+
                 auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
                     size, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
                 source->OnFrameCaptured(frame);
             }
             return;
         }
-        case VideoStreamRenderEventID::Finalize:
-        {
-            return;
-        }
+        //case VideoStreamRenderEventID::Finalize:
+        //{
+        //    return;
+        //}
         default: {
             RTC_DCHECK(0);
         }

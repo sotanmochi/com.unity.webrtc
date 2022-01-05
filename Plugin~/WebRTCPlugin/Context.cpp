@@ -205,16 +205,16 @@ namespace webrtc
                     m_taskQueueFactory.get());
             });
 
-        //IGraphicsDevice* gfxDevice = GraphicsUtility::GetGraphicsDevice();
-
         std::unique_ptr<webrtc::VideoEncoderFactory> videoEncoderFactory =
             std::make_unique<UnityVideoEncoderFactory>(gfxDevice);
 
         std::unique_ptr<webrtc::VideoDecoderFactory> videoDecoderFactory =
             std::make_unique<UnityVideoDecoderFactory>(forTest);
 
-        rtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory = CreateAudioEncoderFactory();
-        rtc::scoped_refptr<AudioDecoderFactory>  audioDecoderFactory = CreateAudioDecoderFactory();
+        rtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory =
+            CreateAudioEncoderFactory();
+        rtc::scoped_refptr<AudioDecoderFactory>  audioDecoderFactory =
+            CreateAudioDecoderFactory();
 
         m_peerConnectionFactory = CreatePeerConnectionFactory(
                                 m_workerThread.get(),
@@ -241,7 +241,6 @@ namespace webrtc
                 {
                     m_audioDevice = nullptr;
                 });
-            //m_mapIdAndEncoder.clear();
             m_mapClients.clear();
 
             // check count of refptr to avoid to forget disposing
@@ -250,7 +249,6 @@ namespace webrtc
             m_mapRefPtr.clear();
             m_mapMediaStreamObserver.clear();
             m_mapSetSessionDescriptionObserver.clear();
-            //m_mapVideoEncoderParameter.clear();
             m_mapDataChannels.clear();
             m_mapVideoRenderer.clear();
 
@@ -318,11 +316,7 @@ namespace webrtc
         return m_mapMediaStreamObserver[stream].get();
     }
 
-    VideoTrackSourceInterface* Context::CreateVideoSource(
-        NativeTexPtr ptr,
-        IGraphicsDevice* device,
-        UnityRenderingExtTextureFormat format,
-        uint32_t memoryType)
+    VideoTrackSourceInterface* Context::CreateVideoSource()
     {
         const rtc::scoped_refptr<UnityVideoTrackSource> source =
             new rtc::RefCountedObject<UnityVideoTrackSource>(

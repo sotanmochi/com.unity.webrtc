@@ -74,7 +74,7 @@ protected:
 TEST_P(VideoTrackSourceTest, CreateVideoFrameAdapter)
 {
 
-    auto frame = CreateTestFrame(width, height);
+    auto frame = CreateTestFrame(Size(width, height));
 
     rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
         new rtc::RefCountedObject<VideoFrameAdapter>(std::move(frame)));
@@ -118,7 +118,7 @@ TEST_P(VideoTrackSourceTest, SendTestFrame)
             //CUarray array = buffer->ToArray();
             //EXPECT_NE(array, nullptr);
     }));
-    auto frame = CreateTestFrame(width, height);
+    auto frame = CreateTestFrame(Size(width, height));
     m_trackSource->OnFrameCaptured(std::move(frame));
 }
 #endif

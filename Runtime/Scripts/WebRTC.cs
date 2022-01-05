@@ -856,7 +856,7 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreateAudioTrackSource(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
-        public static extern IntPtr ContextCreateVideoTrackSource(IntPtr ptr, IntPtr texturePtr, GraphicsFormat format, uint memoryType);
+        public static extern IntPtr ContextCreateVideoTrackSource(IntPtr ptr);
         [DllImport(WebRTC.Lib)]
         public static extern IntPtr ContextCreateVideoTrack(IntPtr ptr, [MarshalAs(UnmanagedType.LPStr, SizeConst = 256)] string label, IntPtr trackSource);
         [DllImport(WebRTC.Lib)]
@@ -1160,33 +1160,33 @@ namespace Unity.WebRTC
 
     internal static class VideoEncoderMethods
     {
-        static UnityEngine.Rendering.CommandBuffer _command = new UnityEngine.Rendering.CommandBuffer();
+        static CommandBuffer _command = new CommandBuffer();
         enum VideoStreamRenderEventId
         {
-            Initialize = 0,
+//            Initialize = 0,
             Encode = 1,
-            Finalize = 2,
+//            Finalize = 2,
         }
 
-        public static void InitializeEncoder(IntPtr callback, IntPtr track)
-        {
-            _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Initialize, track);
-            Graphics.ExecuteCommandBuffer(_command);
-            _command.Clear();
-        }
+        //public static void InitializeEncoder(IntPtr callback, IntPtr track)
+        //{
+        //    _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Initialize, track);
+        //    Graphics.ExecuteCommandBuffer(_command);
+        //    _command.Clear();
+        //}
 
-        public static void Encode(IntPtr callback, IntPtr track)
+        public static void Encode(IntPtr callback, IntPtr data)
         {
-            _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Encode, track);
+            _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Encode, data);
             Graphics.ExecuteCommandBuffer(_command);
             _command.Clear();
         }
-        public static void FinalizeEncoder(IntPtr callback, IntPtr track)
-        {
-            _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Finalize, track);
-            Graphics.ExecuteCommandBuffer(_command);
-            _command.Clear();
-        }
+        //public static void FinalizeEncoder(IntPtr callback, IntPtr track)
+        //{
+        //    _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Finalize, track);
+        //    Graphics.ExecuteCommandBuffer(_command);
+        //    _command.Clear();
+        //}
     }
 
     internal static class VideoDecoderMethods

@@ -13,12 +13,9 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
     std::unique_ptr<GpuMemoryBuffer> gmb =
         std::make_unique<FakeGpuMemoryBuffer>();
     GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
-    int width = 256;
-    int height = 256;
-
-    auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
-        width, height, std::move(gmb),
-        timestamp);
+    Size size(1280, 720);
+    auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
+        size, std::move(gmb), timestamp);
 
 
     //EXPECT_EQ(frame->layout().format(), PIXEL_FORMAT_NV12);

@@ -1,15 +1,15 @@
 #include "pch.h"
 
-#include "base/callback.h"
+//#include "base/callback.h"
 #include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
 #include "../WebRTCPlugin/H264HardwareEncoder.h"
-#include "modules/video_coding/codecs/test/video_codec_unittest.h"
+//#include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "test/video_codec_settings.h"
-//#include "api/test/create_frame_generator.h"
-#include "api/test/create_videocodec_test_fixture.h"
+#include "api/test/create_frame_generator.h"
+//#include "api/test/create_videocodec_test_fixture.h"
 //#include "modules/video_coding/codecs/vp8/include/vp8.h"
-#include "modules/video_coding/codecs/test/videocodec_test_fixture_impl.h"
+//#include "modules/video_coding/codecs/test/videocodec_test_fixture_impl.h"
 #include "UnityVideoTrackSource.h"
 #include "VideoFrameUtil.h"
 
@@ -17,14 +17,16 @@
 using namespace webrtc;
 using namespace webrtc::test;
 
+using testing::Values;
+
 
 //static const int kEncodeTimeoutMs = 100;
 //static const int kDecodeTimeoutMs = 25;
 //// Set bitrate to get higher quality.
 //static const int kStartBitrate = 300;
 //static const int kMaxBitrate = 4000;
-//static const int kWidth = 176;        // Width of the input image.
-//static const int kHeight = 144;       // Height of the input image.
+static const int kWidth = 176;        // Width of the input image.
+static const int kHeight = 144;       // Height of the input image.
 //static const int kMaxFramerate = 30;  // Arbitrary value.
 
 namespace unity
@@ -46,22 +48,8 @@ const webrtc::VideoEncoder::Settings
 
 class EncodedImageCallbackWrapper : public webrtc::EncodedImageCallback {
 public:
-    using EncodedCallback = ::base::OnceCallback<void(
-        const webrtc::EncodedImage& encoded_image,
-        const webrtc::CodecSpecificInfo* codec_specific_info)>;
-
-    EncodedImageCallbackWrapper(EncodedCallback encoded_callback)
-        : encoded_callback_(std::move(encoded_callback)) {}
-
-    Result OnEncodedImage(
-        const webrtc::EncodedImage& encoded_image,
-        const webrtc::CodecSpecificInfo* codec_specific_info) override {
-        std::move(encoded_callback_).Run(encoded_image, codec_specific_info);
-        return Result(Result::OK);
-    }
 
 private:
-    EncodedCallback encoded_callback_;
 };
 
 class H264HardwareEncoderTest : public ::testing::TestWithParam<webrtc::VideoCodecType>
@@ -91,6 +79,17 @@ protected:
         test::CodecSettings(kVideoCodecH264, codec_settings);
     }
 
+    webrtc::VideoCodec GetDefaultCodec() {
+        webrtc::VideoCodec codec = {};
+        memset(&codec, 0, sizeof(codec));
+        codec.width = kInputFrameWidth;
+        codec.height = kInputFrameHeight;
+        codec.codecType = webrtc::kVideoCodecVP8;
+        codec.startBitrate = kStartBitrate;
+        codec.maxFramerate = 24;
+        return codec;
+    }
+
     void SetUp() override
     {
         ASSERT_TRUE(encoder_thread_->Start());
@@ -98,14 +97,14 @@ protected:
         //EXPECT_CALL(*mock_gpu_factories_.get(), GetTaskRunner())
         //    .WillRepeatedly(Return(encoder_thread_.task_runner()));
 
-        //EXPECT_TRUE(
-        //    ck(cuInit(0)));
+        EXPECT_TRUE(
+            ck(cuInit(0)));
 
-        //EXPECT_TRUE(
-        //    ck(cuDeviceGet(&m_device, 0)));
+        EXPECT_TRUE(
+            ck(cuDeviceGet(&m_device, 0)));
 
-        //EXPECT_TRUE(
-        //    ck(cuCtxCreate(&m_context, 0, m_device)));
+        EXPECT_TRUE(
+            ck(cuCtxCreate(&m_context, 0, m_device)));
 
         //VideoCodec codec_settings_;
         //// webrtc::test::CodecSettings(kVideoCodecVP8, &codec_settings_);
@@ -135,20 +134,20 @@ protected:
         //EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
         //    decoder_->InitDecode(&codec_settings_, 1 /* number of cores */));
 
-        //const int size = kWidth * kHeight * 4;
-        //EXPECT_TRUE(
-        //    ck(cuMemAlloc(&devicePtr_, size)));
+        const int size = kWidth * kHeight * 4;
+        EXPECT_TRUE(
+            ck(cuMemAlloc(&devicePtr_, size)));
 
-        //CUDA_ARRAY3D_DESCRIPTOR arrayDesc = {};
-        //arrayDesc.Width = kWidth;
-        //arrayDesc.Height = kHeight;
-        //arrayDesc.Depth = 0; /* CUDA 2D arrays are defined to have depth 0 */
-        //arrayDesc.Format = CU_AD_FORMAT_UNSIGNED_INT32;
-        //arrayDesc.NumChannels = 1;
-        //arrayDesc.Flags = CUDA_ARRAY3D_SURFACE_LDST;
+        CUDA_ARRAY3D_DESCRIPTOR arrayDesc = {};
+        arrayDesc.Width = kWidth;
+        arrayDesc.Height = kHeight;
+        arrayDesc.Depth = 0; /* CUDA 2D arrays are defined to have depth 0 */
+        arrayDesc.Format = CU_AD_FORMAT_UNSIGNED_INT32;
+        arrayDesc.NumChannels = 1;
+        arrayDesc.Flags = CUDA_ARRAY3D_SURFACE_LDST;
 
-        //EXPECT_TRUE(
-        //    ck(cuArray3DCreate(&array_, &arrayDesc)));
+        EXPECT_TRUE(
+            ck(cuArray3DCreate(&array_, &arrayDesc)));
     }
 
     void TearDown() override
@@ -160,10 +159,10 @@ protected:
         //RunUntilIdle();
         encoder_thread_->Quit();
 
-        //EXPECT_TRUE(
-        //    ck(cuMemFree(devicePtr_)));
-        //EXPECT_TRUE(
-        //    ck(cuArrayDestroy(array_)));
+        EXPECT_TRUE(
+            ck(cuMemFree(devicePtr_)));
+        EXPECT_TRUE(
+            ck(cuArrayDestroy(array_)));
     }
 
     void RunUntilIdle() {
@@ -173,28 +172,26 @@ protected:
         //idle_waiter_.Wait();
     }
 
-    void CreateEncoder(webrtc::VideoCodecType codec_type) {
+    //void CreateEncoder(webrtc::VideoCodecType codec_type) {
         //media::VideoCodecProfile media_profile;
-        switch (codec_type) {
-        case webrtc::kVideoCodecVP8:
-            media_profile = media::VP8PROFILE_ANY;
-            break;
-        case webrtc::kVideoCodecH264:
-            media_profile = media::H264PROFILE_BASELINE;
-            break;
-        case webrtc::kVideoCodecVP9:
-            media_profile = media::VP9PROFILE_PROFILE0;
-            break;
-        default:
-            ADD_FAILURE() << "Unexpected codec type: " << codec_type;
-            media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
-        }
+        //switch (codec_type) {
+        //case webrtc::kVideoCodecVP8:
+        //    media_profile = media::VP8PROFILE_ANY;
+        //    break;
+        //case webrtc::kVideoCodecH264:
+        //    media_profile = media::H264PROFILE_BASELINE;
+        //    break;
+        //case webrtc::kVideoCodecVP9:
+        //    media_profile = media::VP9PROFILE_PROFILE0;
+        //    break;
+        //default:
+        //    ADD_FAILURE() << "Unexpected codec type: " << codec_type;
+        //    media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
+        //}
 
-        mock_vea_ = ExpectCreateInitAndDestroyVEA();
-        encoder_ = std::make_unique<H264HardwareEncoder>(
-            media_profile, false,
-            mock_gpu_factories_.get());
-    }
+        //mock_vea_ = ExpectCreateInitAndDestroyVEA();
+        //encoder_ = std::make_unique<H264HardwareEncoder>();
+    //}
 
     ::webrtc::VideoFrame NextInputFrame()
     {
@@ -205,7 +202,7 @@ protected:
             .set_update_rect(frame_data.update_rect)
             .build();
 
-        auto frame = CreateTestFrame(kWidth, kHeight);
+        auto frame = CreateTestFrame(Size(kWidth, kHeight));
 
         //rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(
         //    new rtc::RefCountedObject<VideoFrameAdapter>(std::move(frame)));
@@ -256,19 +253,13 @@ private:
 
 TEST_F(H264HardwareEncoderTest, CreateAndInitSucceeds)
 {
-    const webrtc::VideoCodecType codec_type = GetParam();
-    CreateEncoder(codec_type);
+    encoder_ = CreateEncoder();
     webrtc::VideoCodec codec = GetDefaultCodec();
-    codec.codecType = codec_type;
+    codec.codecType = webrtc::kVideoCodecH264;
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
-        rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+        encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
-INSTANTIATE_TEST_SUITE_P(CodecProfiles,
-    H264HardwareEncoderTest,
-    Values(webrtc::kVideoCodecH264,
-        webrtc::kVideoCodecVP8,
-        webrtc::kVideoCodecVP9));
 
 //{
     //::webrtc::VideoFrame input_frame = NextInputFrame();

@@ -27,6 +27,7 @@ public:
 
         void SetStreamState(bool send_stream) {}
     };
+    H264HardwareEncoder();
     H264HardwareEncoder(CUcontext context,
         CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format);
     H264HardwareEncoder(const H264HardwareEncoder&) = delete;
@@ -54,10 +55,6 @@ protected:
     int32_t ProcessEncodedFrame(std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame);
     void SetStreamState(bool sendStream);
 private:
-    class Impl;
-    friend class H264HardwareEncoder::Impl;
-    rtc::scoped_refptr<Impl> impl_;
-
     CUcontext m_context;
     CUmemorytype m_memoryType;
     std::unique_ptr<NvEncoder> m_encoder;

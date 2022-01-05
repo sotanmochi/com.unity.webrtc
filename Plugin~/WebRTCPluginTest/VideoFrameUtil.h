@@ -1,11 +1,11 @@
-#include "pch.h"
+#pragma once
 #include "VideoFrame.h"
 
 namespace unity {
 namespace webrtc {
 
 rtc::scoped_refptr<VideoFrame> CreateTestFrame(
-    int width, int height);
+    const Size& size);
 
 } // end namespace webrtc
 } // end namespace unity

@@ -50,10 +50,11 @@ rtc::scoped_refptr<I420BufferInterface> VideoFrameAdapter::ToI420() {
     return ConvertToVideoFrameBuffer(frame_)->ToI420();
 }
 
-rtc::scoped_refptr<webrtc::VideoFrameBuffer>
-VideoFrameAdapter::ConvertToVideoFrameBuffer(rtc::scoped_refptr<VideoFrame> video_frame) {
-    // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/platform/webrtc/convert_to_webrtc_video_frame_buffer.cc
 
+rtc::scoped_refptr<webrtc::VideoFrameBuffer>
+VideoFrameAdapter::ConvertToVideoFrameBuffer(
+    rtc::scoped_refptr<VideoFrame> video_frame)
+{
     auto converted_frame = ConstructVideoFrameFromGpu(video_frame);
     return nullptr; // use GraphicsUtility
 
@@ -62,8 +63,12 @@ VideoFrameAdapter::ConvertToVideoFrameBuffer(rtc::scoped_refptr<VideoFrame> vide
 }
 
 rtc::scoped_refptr<VideoFrame>
-VideoFrameAdapter::ConstructVideoFrameFromGpu(rtc::scoped_refptr<VideoFrame> video_frame) {
-    // todo(kazuki):: use GraphicsUtility
+VideoFrameAdapter::ConstructVideoFrameFromGpu(rtc::scoped_refptr<VideoFrame> video_frame)
+{
+    RTC_DCHECK(video_frame);
+    RTC_DCHECK(video_frame->HasGpuMemoryBuffer());
+
+    auto* gmb = video_frame->GetGpuMemoryBuffer();
     return nullptr;
 }
 
@@ -75,7 +80,6 @@ UnityVideoTrackSource::UnityVideoTrackSource(
     , is_screencast_(is_screencast)
     , needs_denoising_(needs_denoising)
 {
-//  DETACH_FROM_THREAD(thread_checker_);
 }
 
 UnityVideoTrackSource::~UnityVideoTrackSource()
@@ -109,10 +113,6 @@ absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
 void UnityVideoTrackSource::OnFrameCaptured(
     rtc::scoped_refptr<VideoFrame> frame)
 {
-    // todo::(kazuki) change compiler vc to clang
-#if defined(__clang__)
-    // DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#endif
     const std::unique_lock<std::shared_timed_mutex> lock(m_mutex, std::try_to_lock);
     if (!lock)
     {

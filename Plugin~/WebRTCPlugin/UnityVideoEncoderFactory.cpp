@@ -100,16 +100,16 @@ namespace webrtc
         return internal_encoder_factory_->QueryVideoEncoder(format);
     }
 
-    std::unique_ptr<webrtc::VideoEncoder> UnityVideoEncoderFactory::CreateVideoEncoder(const webrtc::SdpVideoFormat& format)
+    std::unique_ptr<webrtc::VideoEncoder> UnityVideoEncoderFactory::CreateVideoEncoder(
+        const webrtc::SdpVideoFormat& format)
     {
 #if CUDA_PLATFORM
-        if (IsFormatSupported(GetHardwareEncoderFormats(), format)
-//            && GraphicsUtility::IsHWCodecSupportedDevice()
-            )
+        if (IsFormatSupported(GetHardwareEncoderFormats(), format))
         {
             CUcontext context = m_gfxDevice->GetCuContext();
             NV_ENC_BUFFER_FORMAT format = m_gfxDevice->GetEncodeBufferFormat();
-            return std::make_unique<H264HardwareEncoder>(context, CU_MEMORYTYPE_ARRAY, format);
+            return std::make_unique<H264HardwareEncoder>(
+                context, CU_MEMORYTYPE_ARRAY, format);
         }
 #endif
         return internal_encoder_factory_->CreateVideoEncoder(format);

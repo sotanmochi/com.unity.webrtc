@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 
@@ -107,8 +108,7 @@ namespace Unity.WebRTC
             {
                 Graphics.Blit(m_sourceTexture, m_destTexture);
             }
-
-            WebRTC.Context.Encode(GetSelfOrThrow());
+            _source.Update(m_destTexture);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Unity.WebRTC
             }
             WebRTC.ValidateGraphicsFormat(format);
             //WebRTC.Context.SetVideoEncoderParameter(GetSelfOrThrow(), width, height, format, texturePtr);
-            WebRTC.Context.InitializeEncoder(GetSelfOrThrow());
+            //WebRTC.Context.InitializeEncoder(GetSelfOrThrow());
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace Unity.WebRTC
             {
                 if (m_source != null)
                 {
-                    WebRTC.Context.FinalizeEncoder(self);
+                    //WebRTC.Context.FinalizeEncoder(self);
                     if (RenderTexture.active == m_destTexture)
                         RenderTexture.active = null;
                 }
@@ -262,15 +262,40 @@ namespace Unity.WebRTC
 
     internal class VideoTrackSource : RefCountedObject
     {
+        struct EncodeData
+        {
+            public IntPtr ptrTexture;
+            public IntPtr ptrTrackSource;
+            public int width;
+            public int height;
+        }
+
+        IntPtr ptr_ = IntPtr.Zero;
+        EncodeData data;
+
         public VideoTrackSource(IntPtr texturePtr, GraphicsFormat format, bool useGpu, bool useCpu)
-            : base(WebRTC.Context.CreateVideoTrackSource(texturePtr, format, useGpu, useCpu))
+            : base(WebRTC.Context.CreateVideoTrackSource())
         {
             WebRTC.Table.Add(self, this);
+            ptr_ = Marshal.AllocHGlobal(Marshal.SizeOf(typeof(EncodeData)));
         }
 
         ~VideoTrackSource()
         {
             this.Dispose();
+        }
+
+        public void Update(Texture texture)
+        {
+            if (data.ptrTexture != texture.GetNativeTexturePtr())
+            {
+                data.ptrTexture = texture.GetNativeTexturePtr();
+                data.ptrTrackSource = self;
+                data.width = texture.width;
+                data.height = texture.height;
+                Marshal.StructureToPtr(data, ptr_, false);
+            }
+            WebRTC.Context.Encode(ptr_);
         }
 
         public override void Dispose()
