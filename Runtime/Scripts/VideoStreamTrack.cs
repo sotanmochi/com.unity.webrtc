@@ -108,7 +108,7 @@ namespace Unity.WebRTC
             {
                 Graphics.Blit(m_sourceTexture, m_destTexture);
             }
-            _source.Update(m_destTexture);
+            m_source.Update(m_destTexture);
         }
 
         /// <summary>

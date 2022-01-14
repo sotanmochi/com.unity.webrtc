@@ -186,8 +186,8 @@ namespace Unity.WebRTC.RuntimeTest
             var renderTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
 
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             NativeMethods.ContextDeleteRefPtr(context, track);
@@ -210,8 +210,8 @@ namespace Unity.WebRTC.RuntimeTest
             var renderTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var error = NativeMethods.PeerConnectionAddTrack(peer, track, streamId, out var sender);
             Assert.That(error, Is.EqualTo(RTCErrorType.None));
@@ -240,8 +240,8 @@ namespace Unity.WebRTC.RuntimeTest
             var renderTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var error = NativeMethods.PeerConnectionAddTrack(peer, track, streamId, out var sender);
             Assert.That(error, Is.EqualTo(RTCErrorType.None));
@@ -273,8 +273,8 @@ namespace Unity.WebRTC.RuntimeTest
             var renderTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
 
             NativeMethods.MediaStreamAddTrack(stream, track);
@@ -375,8 +375,8 @@ namespace Unity.WebRTC.RuntimeTest
             var renderTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var renderer = NativeMethods.CreateVideoRenderer(context, OnVideoFrameResize, true);
             NativeMethods.VideoTrackAddOrUpdateSink(track, renderer);
@@ -436,10 +436,10 @@ namespace Unity.WebRTC.RuntimeTest
             const int width = 1280;
             const int height = 720;
             var renderTexture = CreateRenderTexture(width, height);
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var error = NativeMethods.PeerConnectionAddTrack(peer, track, streamId, out var sender);
             Assert.That(error, Is.EqualTo(RTCErrorType.None));
@@ -450,7 +450,7 @@ namespace Unity.WebRTC.RuntimeTest
             // todo:: You must call `InitializeEncoder` method after `NativeMethods.ContextCaptureVideoStream`
             //NativeMethods.ContextSetVideoEncoderParameter(
             //    context, track, width, height, renderTexture.graphicsFormat, renderTexture.GetNativeTexturePtr());
-            VideoEncoderMethods.InitializeEncoder(callback, track);
+            //VideoEncoderMethods.InitializeEncoder(callback, track);
 
             yield return new WaitForSeconds(1.0f);
 
@@ -459,7 +459,7 @@ namespace Unity.WebRTC.RuntimeTest
 
             VideoEncoderMethods.Encode(callback, track);
             yield return new WaitForSeconds(1.0f);
-            VideoEncoderMethods.FinalizeEncoder(callback, track);
+            //VideoEncoderMethods.FinalizeEncoder(callback, track);
             yield return new WaitForSeconds(1.0f);
 
             Assert.That(NativeMethods.PeerConnectionRemoveTrack(peer, sender), Is.EqualTo(RTCErrorType.None));
@@ -501,8 +501,8 @@ namespace Unity.WebRTC.RuntimeTest
             var receiveTexture = CreateRenderTexture(width, height);
             var texturePtr = renderTexture.GetNativeTexturePtr();
             var format = renderTexture.graphicsFormat;
-            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
-            var source = NativeMethods.ContextCreateVideoTrackSource(context, texturePtr, format, memoryType);
+//            uint memoryType = (uint)(VideoSourceMemoryType.GpuMemory | VideoSourceMemoryType.CpuMemory);
+            var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var renderer = NativeMethods.CreateVideoRenderer(context, OnVideoFrameResize, true);
             var rendererId = NativeMethods.GetVideoRendererId(renderer);
@@ -512,7 +512,7 @@ namespace Unity.WebRTC.RuntimeTest
             var updateTextureEvent = NativeMethods.GetUpdateTextureFunc(context);
 
 //            NativeMethods.ContextSetVideoEncoderParameter(context, track, width, height, renderTexture.graphicsFormat, renderTexture.GetNativeTexturePtr());
-            VideoEncoderMethods.InitializeEncoder(renderEvent, track);
+//            VideoEncoderMethods.InitializeEncoder(renderEvent, track);
             yield return new WaitForSeconds(1.0f);
 
             VideoEncoderMethods.Encode(renderEvent, track);
@@ -522,7 +522,7 @@ namespace Unity.WebRTC.RuntimeTest
             VideoDecoderMethods.UpdateRendererTexture(updateTextureEvent, receiveTexture, rendererId);
             yield return new WaitForSeconds(1.0f);
 
-            VideoEncoderMethods.FinalizeEncoder(renderEvent, track);
+//            VideoEncoderMethods.FinalizeEncoder(renderEvent, track);
             yield return new WaitForSeconds(1.0f);
 
             NativeMethods.VideoTrackRemoveSink(track, renderer);
