@@ -232,9 +232,6 @@ namespace Unity.WebRTC
 
         public IntPtr CreateVideoTrackSource()
         {
-            //uint memoryType =
-            //    (useGpu ? (uint)VideoSourceMemoryType.GpuMemory : 0)
-            //    + (useCpu ? (uint)VideoSourceMemoryType.CpuMemory : 0);
             return NativeMethods.ContextCreateVideoTrackSource(self);
         }
 
@@ -274,11 +271,6 @@ namespace Unity.WebRTC
             NativeMethods.ContextDeleteStatsReport(self, report);
         }
 
-//        public void SetVideoEncoderParameter(IntPtr track, int width, int height, GraphicsFormat format, IntPtr texturePtr)
-//        {
-//            NativeMethods.ContextSetVideoEncoderParameter(self, track, width, height, format, texturePtr);
-//        }
-
         public CodecInitializationResult GetInitializationResult(IntPtr track)
         {
             return NativeMethods.GetInitializationResult(self, track);
@@ -293,18 +285,6 @@ namespace Unity.WebRTC
         {
             NativeMethods.ContextGetReceiverCapabilities(self, kind, out capabilities);
         }
-
-        //internal void InitializeEncoder(IntPtr track)
-        //{
-        //    renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-        //    VideoEncoderMethods.InitializeEncoder(renderFunction, track);
-        //}
-
-        //internal void FinalizeEncoder(IntPtr videoSource)
-        //{
-        //    renderFunction = renderFunction == IntPtr.Zero ? GetRenderEventFunc() : renderFunction;
-        //    VideoEncoderMethods.FinalizeEncoder(renderFunction, videoSource);
-        //}
 
         internal void Encode(IntPtr ptr)
         {

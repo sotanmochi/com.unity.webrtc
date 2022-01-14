@@ -1163,17 +1163,8 @@ namespace Unity.WebRTC
         static CommandBuffer _command = new CommandBuffer();
         enum VideoStreamRenderEventId
         {
-//            Initialize = 0,
             Encode = 1,
-//            Finalize = 2,
         }
-
-        //public static void InitializeEncoder(IntPtr callback, IntPtr track)
-        //{
-        //    _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Initialize, track);
-        //    Graphics.ExecuteCommandBuffer(_command);
-        //    _command.Clear();
-        //}
 
         public static void Encode(IntPtr callback, IntPtr data)
         {
@@ -1181,12 +1172,6 @@ namespace Unity.WebRTC
             Graphics.ExecuteCommandBuffer(_command);
             _command.Clear();
         }
-        //public static void FinalizeEncoder(IntPtr callback, IntPtr track)
-        //{
-        //    _command.IssuePluginEventAndData(callback, (int)VideoStreamRenderEventId.Finalize, track);
-        //    Graphics.ExecuteCommandBuffer(_command);
-        //    _command.Clear();
-        //}
     }
 
     internal static class VideoDecoderMethods
