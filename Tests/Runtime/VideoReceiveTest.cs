@@ -127,6 +127,7 @@ namespace Unity.WebRTC.RuntimeTest
         {
             camObj = new GameObject("Camera");
             cam = camObj.AddComponent<Camera>();
+            StartCoroutine(WebRTC.Update());
 
             IsTestFinished = true;
         }
@@ -194,22 +195,22 @@ namespace Unity.WebRTC.RuntimeTest
             camObj = null;
         }
 
-        private void Update()
-        {
-            foreach (var reference in VideoStreamTrack.s_tracks.Values)
-            {
-                if (!reference.TryGetTarget(out var track))
-                    continue;
-                if (track.IsEncoderInitialized)
-                {
-                    track.Update();
-                }
-                else
-                {
-                    track.UpdateReceiveTexture();
-                }
-            }
-        }
+        // private void Update()
+        // {
+        //     foreach (var reference in VideoStreamTrack.s_tracks.Values)
+        //     {
+        //         if (!reference.TryGetTarget(out var track))
+        //             continue;
+        //         if (track.IsEncoderInitialized)
+        //         {
+        //             track.Update();
+        //         }
+        //         else
+        //         {
+        //             track.UpdateReceiveTexture();
+        //         }
+        //     }
+        // }
 
         public IEnumerator Signaling()
         {
