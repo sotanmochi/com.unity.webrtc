@@ -55,23 +55,12 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer>
 VideoFrameAdapter::ConvertToVideoFrameBuffer(
     rtc::scoped_refptr<VideoFrame> video_frame)
 {
-    auto converted_frame = ConstructVideoFrameFromGpu(video_frame);
-    return nullptr; // use GraphicsUtility
-
-    //return new rtc::RefCountedObject<I420FrameAdapter>(
-    //    std::move(converted_frame));
-}
-
-rtc::scoped_refptr<VideoFrame>
-VideoFrameAdapter::ConstructVideoFrameFromGpu(rtc::scoped_refptr<VideoFrame> video_frame)
-{
     RTC_DCHECK(video_frame);
     RTC_DCHECK(video_frame->HasGpuMemoryBuffer());
 
-    auto* gmb = video_frame->GetGpuMemoryBuffer();
-    return nullptr;
+    auto gmb = video_frame->GetGpuMemoryBuffer();
+    return gmb->ToI420();
 }
-
 
 UnityVideoTrackSource::UnityVideoTrackSource(
     bool is_screencast,

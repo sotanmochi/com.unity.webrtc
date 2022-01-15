@@ -78,7 +78,7 @@ std::unique_ptr<GpuMemoryBuffer> VideoFrameBufferCreatorVulkan::CreateBuffer(
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
         CUarray array = static_cast<CUarray>(m_gpuReadTexture->GetEncodeTexturePtrV());
-        return std::make_unique<GpuMemoryBuffer>(array, mutex);
+        return std::make_unique<CudaMemoryBuffer>(array, mutex);
     }
 #endif
 

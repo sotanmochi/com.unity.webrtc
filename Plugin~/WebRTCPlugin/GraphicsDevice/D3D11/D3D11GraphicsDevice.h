@@ -30,7 +30,7 @@ public:
     virtual NV_ENC_BUFFER_FORMAT GetEncodeBufferFormat() override { return NV_ENC_BUFFER_FORMAT_ARGB; }
 private:
     ID3D11Device* m_d3d11Device;
-    ID3D11DeviceContext* m_d3d11Context;
+//    ComPtr<ID3D11DeviceContext> m_d3d11Context;
 
     bool m_isCudaSupport;
     CudaContext m_cudaContext;

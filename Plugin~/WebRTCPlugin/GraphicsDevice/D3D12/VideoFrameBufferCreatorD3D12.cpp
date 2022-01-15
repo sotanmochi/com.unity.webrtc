@@ -116,7 +116,7 @@ VideoFrameBufferCreatorD3D12::CreateBuffer(std::shared_timed_mutex& mutex)
         {
             throw WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
-        return std::make_unique<GpuMemoryBuffer>(
+        return std::make_unique<CudaMemoryBuffer>(
             m_mappedArray, mutex);
 
     }

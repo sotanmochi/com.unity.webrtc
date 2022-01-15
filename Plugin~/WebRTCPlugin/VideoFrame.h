@@ -2,6 +2,7 @@
 
 #include "rtc_base/timestamp_aligner.h"
 #include "rtc_base/ref_counted_object.h"
+#include "api/units/time_delta.h"
 #include "GpuMemoryBuffer.h"
 #include "Size.h"
 
@@ -31,7 +32,6 @@ public:
     TimeDelta timestamp() const { return timestamp_; }
     void set_timestamp(TimeDelta timestamp) { timestamp_ = timestamp; }
 
-
     GpuMemoryBuffer* GetGpuMemoryBuffer() const;
     bool VideoFrame::HasGpuMemoryBuffer() const;
 
@@ -52,10 +52,9 @@ protected:
         TimeDelta timestamp);
     virtual ~VideoFrame() {}
 private:
-    TimeDelta timestamp_;
     Size size_;
-    rtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_buffer_;
     std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer_;
+    TimeDelta timestamp_;
 };
 
 } // end namespace webrtc

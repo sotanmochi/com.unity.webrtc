@@ -259,6 +259,7 @@ struct EncodeData
     UnityVideoTrackSource* source;
     int width;
     int height;
+    UnityRenderingExtTextureFormat format;
 };
 
 // Notice: When DebugLog is used in a method called from RenderingThread, 
@@ -313,13 +314,13 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
                 return;
             int64_t timestamp_us = s_clock->TimeInMicroseconds();
             auto device = GraphicsUtility::GetGraphicsDevice();
+            Size size(encodeData->width, encodeData->height);
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
 
                 std::unique_ptr<GpuMemoryBuffer> buffer =
                     std::make_unique<GpuMemoryBufferFromUnity>(
-                        device, encodeData->texture);
-                Size size(encodeData->width, encodeData->height);
+                        device, encodeData->texture, size, encodeData->format);
 
                 auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
                     size, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));

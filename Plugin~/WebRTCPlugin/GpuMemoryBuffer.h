@@ -14,10 +14,9 @@ using namespace ::webrtc;
 class GpuMemoryBuffer
 {
 public:
-    explicit GpuMemoryBuffer() {};
-    virtual ~GpuMemoryBuffer();
+    virtual ~GpuMemoryBuffer() {}
 
-    std::shared_timed_mutex* mutex() const;
+    //std::shared_timed_mutex* mutex() const;
     int index() const;
 
 
@@ -31,8 +30,7 @@ public:
     //int height() const final;
     virtual rtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
 private:
-    //rtc::scoped_refptr<I420BufferInterface> m_buffer;
-    std::shared_timed_mutex* m_mutex;
+    //std::shared_timed_mutex* m_mutex;
 };
 
 class GpuMemoryBufferFromUnity : public GpuMemoryBuffer
@@ -46,27 +44,33 @@ public:
 private:
     IGraphicsDevice* device_;
     NativeTexPtr ptr_;
-    ITexture2D* texture_;
+    std::unique_ptr<ITexture2D> texture_;
+
+    rtc::scoped_refptr<I420BufferInterface> i420buffer_;
 };
 
 class CudaMemoryBuffer : public GpuMemoryBuffer
 {
 public:
-    CUstream ToStream() const;
-    CUdeviceptr ToDevicePtr() const;
-    CUarray ToArray() const;
+    CudaMemoryBuffer(CUarray array, std::shared_timed_mutex& mutex)
+        : m_array(array)
+        , m_mutex(&mutex) {}
+    std::shared_timed_mutex* mutex() const { return m_mutex; }
+//    CUstream ToStream() const;
+    CUdeviceptr ToDevicePtr() const { return m_devicePtr; }
+    CUarray ToArray() const { return m_array; }
     rtc::scoped_refptr<I420BufferInterface> ToI420() override;
 private:
     CUdeviceptr m_devicePtr;
     CUarray m_array;
     CUmemorytype m_memoryType;
+    std::shared_timed_mutex* m_mutex;
 };
 
 class FakeGpuMemoryBuffer : public GpuMemoryBuffer
 {
 public:
-    explicit FakeGpuMemoryBuffer() {};
-    ~FakeGpuMemoryBuffer() override {}
+    rtc::scoped_refptr<I420BufferInterface> ToI420() override { return nullptr; }
 };
 
 }

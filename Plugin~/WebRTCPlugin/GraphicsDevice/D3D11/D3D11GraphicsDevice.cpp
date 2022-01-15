@@ -17,17 +17,18 @@ namespace unity
 namespace webrtc
 {
 
-D3D11GraphicsDevice::D3D11GraphicsDevice(ID3D11Device* nativeDevice, UnityGfxRenderer renderer) 
+D3D11GraphicsDevice::D3D11GraphicsDevice(
+    ID3D11Device* nativeDevice, UnityGfxRenderer renderer) 
     : IGraphicsDevice(renderer)
     , m_d3d11Device(nativeDevice)
 {
-    m_d3d11Device->GetImmediateContext(&m_d3d11Context);
+    //m_d3d11Device->GetImmediateContext(&m_d3d11Context);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 D3D11GraphicsDevice::~D3D11GraphicsDevice() {
-    SAFE_RELEASE(m_d3d11Context);
+    //SAFE_RELEASE(m_d3d11Context);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -87,7 +88,10 @@ bool D3D11GraphicsDevice::CopyResourceV(ITexture2D* dest, ITexture2D* src) {
         return false;
     if (nativeSrc == nullptr || nativeDest == nullptr)
         return false;
-    m_d3d11Context->CopyResource(nativeDest, nativeSrc);
+
+    ComPtr<ID3D11DeviceContext> context;
+    m_d3d11Device->GetImmediateContext(context.GetAddressOf());
+    context->CopyResource(nativeDest, nativeSrc);
     return true;
 }
 
@@ -99,7 +103,9 @@ bool D3D11GraphicsDevice::CopyResourceFromNativeV(ITexture2D* dest, void* native
         return false;
     if (nativeSrc == nullptr || nativeDest == nullptr)
         return false;
-    m_d3d11Context->CopyResource(nativeDest, nativeSrc);
+    ComPtr<ID3D11DeviceContext> context;
+    m_d3d11Device->GetImmediateContext(context.GetAddressOf());
+    context->CopyResource(nativeDest, nativeSrc);
     return true;
 }
 
@@ -112,7 +118,9 @@ rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D*
     if (nullptr == nativeTex)
         return nullptr;
 
-    const HRESULT hr = m_d3d11Context->Map(nativeTex, 0, D3D11_MAP_READ, 0, &resource);
+    ComPtr<ID3D11DeviceContext> context;
+    m_d3d11Device->GetImmediateContext(context.GetAddressOf());
+    const HRESULT hr = context->Map(nativeTex, 0, D3D11_MAP_READ, 0, &resource);
     assert(hr == S_OK);
     if (hr!=S_OK) {
         return nullptr;
@@ -125,7 +133,7 @@ rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D*
         width, height, resource.RowPitch, static_cast<uint8_t*>(resource.pData)
     );
 
-    m_d3d11Context->Unmap(nativeTex, 0);
+    context->Unmap(nativeTex, 0);
     return i420_buffer;
 }
 

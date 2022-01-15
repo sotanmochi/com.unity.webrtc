@@ -128,7 +128,7 @@ namespace webrtc
         const NvEncInputFrame* dst, const rtc::scoped_refptr<VideoFrame> frame,
         CUcontext context, CUmemorytype memoryType)
     {
-        auto buffer = static_cast<CudaMemoryBuffer>(
+        auto buffer = static_cast<CudaMemoryBuffer*>(
             frame->GetGpuMemoryBuffer());
         std::shared_timed_mutex* mutex = buffer->mutex();
         std::shared_lock<std::shared_timed_mutex> lock(*mutex);
