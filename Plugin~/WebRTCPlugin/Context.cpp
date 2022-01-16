@@ -86,12 +86,6 @@ namespace webrtc
         m_contexts.clear();
     }
 
-    UnityVideoTrackSource* GetSource(MediaStreamTrackInterface* track)
-    {
-        VideoTrackInterface* videoTrack = static_cast<VideoTrackInterface*>(track);
-        return static_cast<UnityVideoTrackSource*>(videoTrack->GetSource());
-    }
-
     bool Convert(const std::string& str, PeerConnectionInterface::RTCConfiguration& config)
     {
         config = PeerConnectionInterface::RTCConfiguration{};
@@ -258,25 +252,6 @@ namespace webrtc
             m_signalingThread->Quit();
             m_signalingThread.reset();
         }
-    }
-
-    UnityVideoTrackSource* Context::GetVideoSource(const MediaStreamTrackInterface* track)
-    {
-        if (!ExistsRefPtr(track))
-        {
-            RTC_LOG(LS_INFO) << "track is not found";
-            return nullptr;
-        }
-
-        const VideoTrackInterface* videoTrack = static_cast<const VideoTrackInterface*>(track);
-        webrtc::VideoTrackSourceInterface* source = videoTrack->GetSource();
-
-        if (!ExistsRefPtr(source))
-        {
-            RTC_LOG(LS_INFO) << "source is not found";
-            return nullptr;
-        }
-        return static_cast<UnityVideoTrackSource*>(source);
     }
 
     UnityEncoderType Context::GetEncoderType() const

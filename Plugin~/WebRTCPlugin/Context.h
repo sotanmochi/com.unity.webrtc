@@ -100,9 +100,9 @@ namespace webrtc
         webrtc::VideoTrackInterface* CreateVideoTrack(const std::string& label, webrtc::VideoTrackSourceInterface* source);
         webrtc::AudioTrackInterface* CreateAudioTrack(const std::string& label, webrtc::AudioSourceInterface* source);
         void StopMediaStreamTrack(webrtc::MediaStreamTrackInterface* track);
-        UnityVideoTrackSource* GetVideoSource(const MediaStreamTrackInterface* track);
+        UnityVideoTrackSource* GetVideoSource(
+            const MediaStreamTrackInterface* track);
         bool ExistsVideoSource(UnityVideoTrackSource* source);
-
 
         // PeerConnection
         PeerConnectionObject* CreatePeerConnection(const webrtc::PeerConnectionInterface::RTCConfiguration& config);
