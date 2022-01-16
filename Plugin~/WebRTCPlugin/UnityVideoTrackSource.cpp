@@ -1,50 +1,10 @@
 #include "pch.h"
 #include "UnityVideoTrackSource.h"
-#include "VideoFrameBufferCreatorInterface.h"
 
 namespace unity
 {
 namespace webrtc
 {
-
-//class I420FrameAdapter : public webrtc::I420BufferInterface {
-//public:
-//    explicit I420FrameAdapter(rtc::scoped_refptr<VideoFrame> frame)
-//        : frame_(std::move(frame)) {
-//        //RTC_DCHECK_EQ(frame_->format(), media::PIXEL_FORMAT_I420);
-//        //RTC_DCHECK_EQ(frame_->visible_rect().size(), frame_->natural_size());
-//    }
-//
-//    int width() const override { return frame_->width(); }
-//    int height() const override { return frame_->height(); }
-//
-//    const uint8_t* DataY() const override {
-//        return frame_->visible_data(VideoFrame::kYPlane);
-//    }
-//
-//    const uint8_t* DataU() const override {
-//        return frame_->visible_data(VideoFrame::kUPlane);
-//    }
-//
-//    const uint8_t* DataV() const override {
-//        return frame_->visible_data(VideoFrame::kVPlane);
-//    }
-//
-//    int StrideY() const override {
-//        return frame_->stride(VideoFrame::kYPlane);
-//    }
-//
-//    int StrideU() const override {
-//        return frame_->stride(VideoFrame::kUPlane);
-//    }
-//
-//    int StrideV() const override {
-//        return frame_->stride(VideoFrame::kVPlane);
-//    }
-//
-//protected:
-//    rtc::scoped_refptr<VideoFrame> frame_;
-//};
 
 rtc::scoped_refptr<I420BufferInterface> VideoFrameAdapter::ToI420() {
     return ConvertToVideoFrameBuffer(frame_)->ToI420();

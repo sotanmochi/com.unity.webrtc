@@ -9,7 +9,6 @@ namespace webrtc {
 using namespace ::webrtc;
 
 class IGraphicsDevice;
-class VideoFrameBufferCreatorInterface;
 
 enum VIDEO_SOURCE_DEST_MEMORY_TYPE_FLAG
 {
@@ -102,7 +101,6 @@ private:
     const bool is_screencast_;
     const absl::optional<bool> needs_denoising_;
     std::shared_timed_mutex m_mutex;
-//    std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator;
 };
 
 } // end namespace webrtc

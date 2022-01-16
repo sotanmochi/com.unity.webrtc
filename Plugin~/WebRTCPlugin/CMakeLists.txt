@@ -44,8 +44,6 @@ target_sources(WebRTCLib
     WebRTCPlugin.h
     UnityLogStream.h
     UnityLogStream.cpp
-    VideoFrameBufferCreatorInterface.cpp
-    VideoFrameBufferCreatorInterface.h
     VideoFrame.cpp
     VideoFrame.h
 )

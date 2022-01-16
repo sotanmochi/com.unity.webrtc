@@ -284,29 +284,6 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
 
     switch(event)
     {
-        //case VideoStreamRenderEventID::Initialize:
-        //{
-            //const VideoEncoderParameter* param = s_context->GetEncoderParameter(track);
-            //const UnityEncoderType encoderType = s_context->GetEncoderType();
-
-            //UnityVideoTrackSource* source = s_context->GetVideoSource(track);
-            //UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
-
-            //std::unique_ptr<VideoFrameBufferCreatorInterface> m_bufferCreator =
-            //    VideoFrameBufferCreatorInterface::Create(device, ptr, device->GetGfxRenderer(), format, memoryType);
-
-
-            //void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
-            //    param->textureHandle, s_gfxDevice.get(), gfxRenderer);
-            //source->Init();
-            //s_mapEncoder[track] = EncoderFactory::GetInstance().Init(
-            //    param->width, param->height, s_gfxDevice.get(), encoderType, param->textureFormat);
-            //if (!s_context->InitializeEncoder(s_mapEncoder[track].get(), track))
-            //{
-            //    // DebugLog("Encoder initialization failed.");
-            //}
-        //    return;
-        //}
         case VideoStreamRenderEventID::Encode:
         {
             UnityVideoTrackSource* source = encodeData->source;
@@ -331,10 +308,6 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             }
             return;
         }
-        //case VideoStreamRenderEventID::Finalize:
-        //{
-        //    return;
-        //}
         default: {
             RTC_DCHECK(0);
         }
