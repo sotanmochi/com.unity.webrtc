@@ -46,8 +46,8 @@ namespace Unity.WebRTC
             return tex;
         }
 
-        internal VideoStreamTrack(Texture texture, RenderTexture dest, int width, int height, bool useGpu, bool useCpu)
-            : this(dest.GetNativeTexturePtr(), width, height, texture.graphicsFormat, useGpu, useCpu)
+        internal VideoStreamTrack(Texture texture, RenderTexture dest, int width, int height)
+            : this(dest.GetNativeTexturePtr(), width, height, texture.graphicsFormat)
         {
             m_needFlip = true;
             m_sourceTexture = texture;
@@ -103,14 +103,12 @@ namespace Unity.WebRTC
         /// </summary>
         /// <param name="source"></param>
         /// <param name="needFlip"></param>
-        public VideoStreamTrack(Texture source, bool needFlip = true, bool useGpu = true, bool useCpu = true)
+        public VideoStreamTrack(Texture source, bool needFlip = true)
             : this(source,
                 CreateRenderTexture(source.width, source.height),
                 source.width,
                 source.height,
-                needFlip,
-                useGpu,
-                useCpu)
+                needFlip)
         {
         }
 
@@ -132,7 +130,8 @@ namespace Unity.WebRTC
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <param name="format"></param>
-        public VideoStreamTrack(IntPtr texturePtr, int width, int height, GraphicsFormat format, bool needFlip, bool useGpu = true, bool useCpu = true)
+        /// <param name="needFlip"></param>
+        public VideoStreamTrack(IntPtr texturePtr, int width, int height, GraphicsFormat format, bool needFlip = true)
             : this(Guid.NewGuid().ToString(), new VideoTrackSource(), needFlip)
         {
             var error = WebRTC.ValidateTextureSize(width, height, Application.platform, WebRTC.GetEncoderType());
@@ -255,9 +254,9 @@ namespace Unity.WebRTC
         }
 
         IntPtr ptr_ = IntPtr.Zero;
-        EncodeData data;
+        EncodeData data_;
 
-        public VideoTrackSource(IntPtr texturePtr, GraphicsFormat format, bool useGpu, bool useCpu)
+        public VideoTrackSource()
             : base(WebRTC.Context.CreateVideoTrackSource())
         {
             WebRTC.Table.Add(self, this);
@@ -271,13 +270,13 @@ namespace Unity.WebRTC
 
         public void Update(Texture texture)
         {
-            if (data.ptrTexture != texture.GetNativeTexturePtr())
+            if (data_.ptrTexture != texture.GetNativeTexturePtr())
             {
-                data.ptrTexture = texture.GetNativeTexturePtr();
-                data.ptrTrackSource = self;
-                data.width = texture.width;
-                data.height = texture.height;
-                Marshal.StructureToPtr(data, ptr_, false);
+                data_.ptrTexture = texture.GetNativeTexturePtr();
+                data_.ptrTrackSource = self;
+                data_.width = texture.width;
+                data_.height = texture.height;
+                Marshal.StructureToPtr(data_, ptr_, false);
             }
             WebRTC.Context.Encode(ptr_);
         }

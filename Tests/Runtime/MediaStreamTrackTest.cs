@@ -58,7 +58,7 @@ namespace Unity.WebRTC.RuntimeTest
             var format = WebRTC.GetSupportedRenderTextureFormat(SystemInfo.graphicsDeviceType);
             var rt = new RenderTexture(width, height, 0, format);
             rt.Create();
-            var source = new VideoTrackSource(rt.GetNativeTexturePtr(), rt.graphicsFormat, false, true);
+            var source = new VideoTrackSource();
             var track = new VideoStreamTrack(WebRTC.Context.CreateVideoTrack(guid, source.self));
             Assert.That(track, Is.Not.Null);
             Assert.That(track.Id, Is.EqualTo(guid));
