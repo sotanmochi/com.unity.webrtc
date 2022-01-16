@@ -22,13 +22,15 @@ D3D11GraphicsDevice::D3D11GraphicsDevice(
     : IGraphicsDevice(renderer)
     , m_d3d11Device(nativeDevice)
 {
-    //m_d3d11Device->GetImmediateContext(&m_d3d11Context);
+    // Enable multithread protection
+    ComPtr<ID3D11Multithread> thread;
+    m_d3d11Device->QueryInterface(IID_PPV_ARGS(&thread));
+    thread->SetMultithreadProtected(true);
 }
 
 
 //---------------------------------------------------------------------------------------------------------------------
 D3D11GraphicsDevice::~D3D11GraphicsDevice() {
-    //SAFE_RELEASE(m_d3d11Context);
 }
 
 //---------------------------------------------------------------------------------------------------------------------
@@ -122,11 +124,11 @@ rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D*
     ID3D11Resource* pResource =
         reinterpret_cast<ID3D11Resource*>(tex->GetNativeTexturePtrV());
     if (nullptr == pResource)
-        return nullptr;
+         return nullptr;
 
     ComPtr<ID3D11DeviceContext> context;
     m_d3d11Device->GetImmediateContext(context.GetAddressOf());
-    
+
     const HRESULT hr = context->Map(
         pResource, 0, D3D11_MAP_READ, 0, &pMappedResource);
     if (hr != S_OK)
@@ -135,6 +137,7 @@ rtc::scoped_refptr<I420Buffer> D3D11GraphicsDevice::ConvertRGBToI420(ITexture2D*
     const uint32_t width = tex->GetWidth();
     const uint32_t height = tex->GetHeight();
 
+    // todo(kazuki) replace to using libyuv function
     rtc::scoped_refptr<I420Buffer> i420_buffer =
         GraphicsUtility::ConvertRGBToI420Buffer(
         width, height, pMappedResource.RowPitch,

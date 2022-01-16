@@ -16,12 +16,11 @@ GpuMemoryBufferFromUnity::GpuMemoryBufferFromUnity(
 {
     texture_.reset(device_->CreateCPUReadTextureV(size.width(), size.height(), format));
     device_->CopyResourceFromNativeV(texture_.get(), ptr);
-    i420buffer_ = device_->ConvertRGBToI420(texture_.get());
 }
 
 rtc::scoped_refptr<I420BufferInterface> GpuMemoryBufferFromUnity::ToI420()
 {
-    return i420buffer_;
+    return device_->ConvertRGBToI420(texture_.get());
 }
 
 GpuMemoryBufferFromUnity::~GpuMemoryBufferFromUnity()

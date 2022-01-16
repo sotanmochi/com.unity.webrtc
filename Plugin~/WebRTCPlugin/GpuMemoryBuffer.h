@@ -44,9 +44,6 @@ public:
 private:
     IGraphicsDevice* device_;
     std::unique_ptr<ITexture2D> texture_;
-
-    //todo:: remove 
-    rtc::scoped_refptr<I420BufferInterface> i420buffer_;
 };
 
 class CudaMemoryBuffer : public GpuMemoryBuffer
