@@ -251,6 +251,7 @@ namespace Unity.WebRTC
             public IntPtr ptrTrackSource;
             public int width;
             public int height;
+            public GraphicsFormat format;
         }
 
         IntPtr ptr_ = IntPtr.Zero;

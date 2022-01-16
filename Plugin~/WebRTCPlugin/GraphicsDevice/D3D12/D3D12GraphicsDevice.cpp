@@ -280,26 +280,5 @@ rtc::scoped_refptr<webrtc::I420Buffer> D3D12GraphicsDevice::ConvertRGBToI420(
     return i420_buffer; 
 }
 
-ID3D11Texture2D* D3D12GraphicsDevice::GetTempTexture(
-    uint32_t w, uint32_t h)
-{
-    ID3D11Texture2D* texture = nullptr;
-    D3D11_TEXTURE2D_DESC desc = { 0 };
-    desc.Width = w;
-    desc.Height = h;
-    desc.MipLevels = 1;
-    desc.ArraySize = 1;
-    desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-    desc.SampleDesc.Count = 1;
-    desc.Usage = D3D11_USAGE_DEFAULT;
-    desc.BindFlags = 0;
-    desc.CPUAccessFlags = 0;
-    if(!ck(m_d3d11Device->CreateTexture2D(&desc, NULL, &texture)))
-    {
-        return nullptr;
-    }
-    return texture;
-}
-
 } // end namespace webrtc
 } // end namespace unity

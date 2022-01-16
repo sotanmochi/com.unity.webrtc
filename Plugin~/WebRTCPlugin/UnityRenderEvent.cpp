@@ -120,7 +120,6 @@ static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType ev
         /// First time, s_UnityInterfaces return UnityGfxRenderer as kUnityGfxRendererNull.
         /// The actual value of UnityGfxRenderer is returned on second time.
 
-//        s_mapEncoder.clear();
         s_mapVideoRenderer.clear();
 
         UnityGfxRenderer renderer =
@@ -151,7 +150,6 @@ static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType ev
     }
     case kUnityGfxDeviceEventShutdown:
     {
-//        s_mapEncoder.clear();
         s_mapVideoRenderer.clear();
 
         if (s_gfxDevice != nullptr)
@@ -253,6 +251,8 @@ void PluginUnload()
     s_clock.reset();
 }
 
+// Data format used by the managed code.
+// CommandBuffer.IssuePluginEventAndData method pass data packed by this format. 
 struct EncodeData
 {
     void* texture;
@@ -338,10 +338,7 @@ static void UNITY_INTERFACE_API TextureUpdateCallback(int eventID, void* data)
 
         auto renderer = s_context->GetVideoRenderer(params->userData);
         if (renderer == nullptr)
-        {
-            // DebugLog("VideoRenderer not found, rendererId:%d", params->userData);
             return;
-        }
         s_mapVideoRenderer[params->userData] = renderer;
         {
             ScopedProfiler profiler(*s_MarkerDecode);

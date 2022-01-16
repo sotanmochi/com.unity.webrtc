@@ -138,14 +138,6 @@ namespace webrtc
         void GetRtpReceiverCapabilities(
             cricket::MediaType kind, RtpCapabilities* capabilities) const;
 
-        // You must call these methods on Rendering thread.
-        //bool InitializeEncoder(IEncoder* encoder, webrtc::MediaStreamTrackInterface* track);
-        //bool FinalizeEncoder(IEncoder* encoder);
-        // You must call these methods on Rendering thread.
-        //const VideoEncoderParameter* GetEncoderParameter(const webrtc::MediaStreamTrackInterface* track);
-        //void SetEncoderParameter(const MediaStreamTrackInterface* track, int width, int height,
-        //    UnityRenderingExtTextureFormat format, void* textureHandle);
-
         // AudioDevice
         rtc::scoped_refptr<DummyAudioDevice> GetAudioDevice() const { return m_audioDevice; }
 
