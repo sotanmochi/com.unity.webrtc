@@ -313,14 +313,17 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             if (source == nullptr)
                 return;
             int64_t timestamp_us = s_clock->TimeInMicroseconds();
-            auto device = GraphicsUtility::GetGraphicsDevice();
+            IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
+            UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
+            void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
+                encodeData->texture, device, gfxRenderer);
             Size size(encodeData->width, encodeData->height);
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
 
                 std::unique_ptr<GpuMemoryBuffer> buffer =
                     std::make_unique<GpuMemoryBufferFromUnity>(
-                        device, encodeData->texture, size, encodeData->format);
+                        device, ptr, size, encodeData->format);
 
                 auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
                     size, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
