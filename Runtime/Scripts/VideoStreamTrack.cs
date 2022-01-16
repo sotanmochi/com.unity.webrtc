@@ -14,16 +14,6 @@ namespace Unity.WebRTC
     public delegate void OnVideoReceived(Texture renderer);
 
     /// <summary>
-    ///
-    /// </summary>
-    [Flags]
-    public enum VideoSourceMemoryType
-    {
-        GpuMemory = 1,
-        CpuMemory = 1 << 1
-    }
-
-    /// <summary>
     /// 
     /// </summary>
     public class VideoStreamTrack : MediaStreamTrack

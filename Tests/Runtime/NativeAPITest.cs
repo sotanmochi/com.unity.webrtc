@@ -258,8 +258,6 @@ namespace Unity.WebRTC.RuntimeTest
             const int width = 1280;
             const int height = 720;
             var renderTexture = CreateRenderTexture(width, height);
-            var texturePtr = renderTexture.GetNativeTexturePtr();
-            var format = renderTexture.graphicsFormat;
             var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
 
@@ -359,8 +357,6 @@ namespace Unity.WebRTC.RuntimeTest
             const int width = 1280;
             const int height = 720;
             var renderTexture = CreateRenderTexture(width, height);
-            var texturePtr = renderTexture.GetNativeTexturePtr();
-            var format = renderTexture.graphicsFormat;
             var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var renderer = NativeMethods.CreateVideoRenderer(context, OnVideoFrameResize, true);
@@ -466,8 +462,6 @@ namespace Unity.WebRTC.RuntimeTest
             const int height = 720;
             var renderTexture = CreateRenderTexture(width, height);
             var receiveTexture = CreateRenderTexture(width, height);
-            var texturePtr = renderTexture.GetNativeTexturePtr();
-            var format = renderTexture.graphicsFormat;
             var source = NativeMethods.ContextCreateVideoTrackSource(context);
             var track = NativeMethods.ContextCreateVideoTrack(context, "video", source);
             var renderer = NativeMethods.CreateVideoRenderer(context, OnVideoFrameResize, true);
