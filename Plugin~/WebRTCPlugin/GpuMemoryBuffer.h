@@ -43,9 +43,9 @@ public:
     ~GpuMemoryBufferFromUnity() override;
 private:
     IGraphicsDevice* device_;
-    NativeTexPtr ptr_;
     std::unique_ptr<ITexture2D> texture_;
 
+    //todo:: remove 
     rtc::scoped_refptr<I420BufferInterface> i420buffer_;
 };
 
