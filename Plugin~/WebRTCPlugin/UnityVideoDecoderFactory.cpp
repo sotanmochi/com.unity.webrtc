@@ -25,8 +25,10 @@ namespace webrtc
 #endif
     }
 
-    UnityVideoDecoderFactory::UnityVideoDecoderFactory(bool forTest)
-    : internal_decoder_factory_(CreateDecoderFactory())
+    UnityVideoDecoderFactory::UnityVideoDecoderFactory(
+        IGraphicsDevice* gfxDevice, bool forTest)
+    : gfxDevice_(gfxDevice)
+    , internal_decoder_factory_(CreateDecoderFactory())
     , forTest_(forTest)
     {
     }

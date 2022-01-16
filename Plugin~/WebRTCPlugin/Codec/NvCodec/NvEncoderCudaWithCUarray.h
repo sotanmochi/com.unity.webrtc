@@ -13,7 +13,7 @@ namespace webrtc
 /**
 *  @brief Encoder for CUDA device memory.
 */
-class NvEncoderCudaWithCUarray : public NvEncoder
+class NvEncoderCudaWithCUarray : public ::NvEncoder
 {
 public:
     NvEncoderCudaWithCUarray(CUcontext cuContext, uint32_t nWidth, uint32_t nHeight, NV_ENC_BUFFER_FORMAT eBufferFormat,

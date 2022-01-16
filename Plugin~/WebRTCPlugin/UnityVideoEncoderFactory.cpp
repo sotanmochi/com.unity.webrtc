@@ -3,7 +3,7 @@
 
 #if CUDA_PLATFORM
 #include <cuda.h>
-#include "H264HardwareEncoder.h"
+#include "NvEncoder.h"
 #endif
 
 #include "DummyVideoEncoder.h"
@@ -51,8 +51,9 @@ namespace webrtc
 #endif
     }
 
-    UnityVideoEncoderFactory::UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice)
-    : m_gfxDevice(gfxDevice)
+    UnityVideoEncoderFactory::UnityVideoEncoderFactory(
+        IGraphicsDevice* gfxDevice)
+    : gfxDevice_(gfxDevice)
     , internal_encoder_factory_(CreateEncoderFactory())
 
     {
@@ -106,9 +107,9 @@ namespace webrtc
 #if CUDA_PLATFORM
         if (IsFormatSupported(GetHardwareEncoderFormats(), format))
         {
-            CUcontext context = m_gfxDevice->GetCuContext();
-            NV_ENC_BUFFER_FORMAT format = m_gfxDevice->GetEncodeBufferFormat();
-            return std::make_unique<H264HardwareEncoder>(
+            CUcontext context = gfxDevice_->GetCuContext();
+            NV_ENC_BUFFER_FORMAT format = gfxDevice_->GetEncodeBufferFormat();
+            return std::make_unique<NvEncoder>(
                 context, CU_MEMORYTYPE_ARRAY, format);
         }
 #endif

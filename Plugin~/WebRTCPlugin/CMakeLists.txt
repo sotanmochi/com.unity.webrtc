@@ -58,8 +58,8 @@ endif()
 if(Windows OR Linux)
   target_sources(WebRTCLib
     PRIVATE
-      H264HardwareEncoder.cpp
-      H264HardwareEncoder.h
+      NvEncoder.cpp
+      NvEncoder.h
       GPUMemoryBuffer.cpp
       GPUMemoryBuffer.h
     )

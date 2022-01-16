@@ -25,7 +25,7 @@ namespace webrtc
         UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice);
         ~UnityVideoEncoderFactory();
     private:
-        IGraphicsDevice* m_gfxDevice;
+        IGraphicsDevice* gfxDevice_;
         const std::unique_ptr<VideoEncoderFactory> internal_encoder_factory_;
     };
 }

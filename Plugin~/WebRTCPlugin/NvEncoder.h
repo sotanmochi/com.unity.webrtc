@@ -9,7 +9,9 @@ namespace unity
 namespace webrtc
 {
 
-class H264HardwareEncoder : public ::webrtc::VideoEncoder
+using NvEncoderInternal = ::NvEncoder;
+
+class NvEncoder : public ::webrtc::VideoEncoder
 {
 public:
     struct LayerConfig {
@@ -27,12 +29,12 @@ public:
 
         void SetStreamState(bool send_stream) {}
     };
-    H264HardwareEncoder();
-    H264HardwareEncoder(CUcontext context,
+    NvEncoder();
+    NvEncoder(CUcontext context,
         CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format);
-    H264HardwareEncoder(const H264HardwareEncoder&) = delete;
-    H264HardwareEncoder& operator=(const H264HardwareEncoder&) = delete;
-    ~H264HardwareEncoder() override;
+    NvEncoder(const NvEncoder&) = delete;
+    NvEncoder& operator=(const NvEncoder&) = delete;
+    ~NvEncoder() override;
 
     // webrtc::VideoEncoder
     // Initialize the encoder with the information from the codecSettings
@@ -57,7 +59,7 @@ protected:
 private:
     CUcontext m_context;
     CUmemorytype m_memoryType;
-    std::unique_ptr<NvEncoder> m_encoder;
+    std::unique_ptr<NvEncoderInternal> m_encoder;
 
     VideoCodec m_codec;
 

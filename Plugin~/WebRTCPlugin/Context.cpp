@@ -204,7 +204,7 @@ namespace webrtc
             std::make_unique<UnityVideoEncoderFactory>(gfxDevice);
 
         std::unique_ptr<webrtc::VideoDecoderFactory> videoDecoderFactory =
-            std::make_unique<UnityVideoDecoderFactory>(forTest);
+            std::make_unique<UnityVideoDecoderFactory>(gfxDevice, forTest);
 
         rtc::scoped_refptr<AudioEncoderFactory> audioEncoderFactory =
             CreateAudioEncoderFactory();

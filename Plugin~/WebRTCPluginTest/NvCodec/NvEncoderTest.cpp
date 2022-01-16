@@ -3,7 +3,7 @@
 //#include "base/callback.h"
 #include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
-#include "../WebRTCPlugin/H264HardwareEncoder.h"
+#include "../WebRTCPlugin/NvEncoder.h"
 //#include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "test/video_codec_settings.h"
 #include "api/test/create_frame_generator.h"
@@ -52,10 +52,10 @@ public:
 private:
 };
 
-class H264HardwareEncoderTest : public ::testing::TestWithParam<webrtc::VideoCodecType>
+class NvEncoderTest : public ::testing::TestWithParam<webrtc::VideoCodecType>
 {
 public:
-    H264HardwareEncoderTest()
+    NvEncoderTest()
         : encoder_thread_(rtc::Thread::Create())
 //        decode_complete_callback_(this)
 //        wait_for_encoded_frames_threshold_(1),
@@ -65,7 +65,7 @@ protected:
 
     std::unique_ptr<VideoEncoder> CreateEncoder()
     {
-        return H264HardwareEncoder::Create(
+        return NvEncoder::Create(
             m_context, CU_MEMORYTYPE_DEVICE, NV_ENC_BUFFER_FORMAT_ARGB);
     }
 
@@ -251,7 +251,7 @@ private:
 //    return config;
 //}
 
-TEST_F(H264HardwareEncoderTest, CreateAndInitSucceeds)
+TEST_F(NvEncoderTest, CreateAndInitSucceeds)
 {
     encoder_ = CreateEncoder();
     webrtc::VideoCodec codec = GetDefaultCodec();

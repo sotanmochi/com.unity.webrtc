@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "H264HardwareEncoder.h"
+#include "NvEncoder.h"
 #include "GpuMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
@@ -16,13 +16,13 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
-    std::unique_ptr<VideoEncoder> H264HardwareEncoder::Create(
+    std::unique_ptr<VideoEncoder> NvEncoder::Create(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
     {
-        return std::make_unique<H264HardwareEncoder>(context, memoryType, format);
+        return std::make_unique<NvEncoder>(context, memoryType, format);
     }
 
-    H264HardwareEncoder::H264HardwareEncoder(
+    NvEncoder::NvEncoder(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
     : m_context(context)
     , m_memoryType(memoryType)
@@ -35,12 +35,12 @@ namespace webrtc
         RTC_CHECK_NE(memoryType, CU_MEMORYTYPE_HOST);
     }
 
-    H264HardwareEncoder::~H264HardwareEncoder()
+    NvEncoder::~NvEncoder()
     {
         Release();
     }
 
-    int H264HardwareEncoder::InitEncode(const VideoCodec* codec,
+    int NvEncoder::InitEncode(const VideoCodec* codec,
         const VideoEncoder::Settings& settings)
     {
         if (codec == nullptr)
@@ -111,13 +111,13 @@ namespace webrtc
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t H264HardwareEncoder::RegisterEncodeCompleteCallback(EncodedImageCallback* callback)
+    int32_t NvEncoder::RegisterEncodeCompleteCallback(EncodedImageCallback* callback)
     {
         this->m_encodedCompleteCallback = callback;
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t H264HardwareEncoder::Release()
+    int32_t NvEncoder::Release()
     {
         this->m_encodedCompleteCallback = nullptr;
 
@@ -157,7 +157,7 @@ namespace webrtc
         }
     }
 
-    int32_t H264HardwareEncoder::Encode(
+    int32_t NvEncoder::Encode(
         const ::webrtc::VideoFrame& frame, const std::vector<VideoFrameType>* frameTypes)
     {
         RTC_DCHECK_EQ(frame.width(), m_codec.width);
@@ -242,7 +242,7 @@ namespace webrtc
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t H264HardwareEncoder::ProcessEncodedFrame(
+    int32_t NvEncoder::ProcessEncodedFrame(
         std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame)
     {
         m_encodedImage.SetTimestamp(inputFrame.timestamp());
@@ -287,7 +287,7 @@ namespace webrtc
     }
 
 
-    void H264HardwareEncoder::SetRates(const RateControlParameters& parameters)
+    void NvEncoder::SetRates(const RateControlParameters& parameters)
     {
         if(m_encoder == nullptr)
         {
@@ -334,7 +334,7 @@ namespace webrtc
         SetStreamState(true);
     }
 
-    void H264HardwareEncoder::SetStreamState(bool sendStream)
+    void NvEncoder::SetStreamState(bool sendStream)
     {
         m_keyframeRequest = sendStream;
     }
