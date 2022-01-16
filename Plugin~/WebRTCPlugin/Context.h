@@ -60,7 +60,6 @@ namespace webrtc
 
         // Utility
         UnityEncoderType GetEncoderType() const;
-        CodecInitializationResult GetInitializationResult(webrtc::MediaStreamTrackInterface* track);
 
         bool ExistsRefPtr(const rtc::RefCountInterface* ptr) {
             return m_mapRefPtr.find(ptr) != m_mapRefPtr.end(); }

@@ -6,7 +6,6 @@
 #include "UnityLogStream.h"
 #include "Context.h"
 #include "UnityAudioTrackSource.h"
-//#include "Codec/EncoderFactory.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 
 #if defined(SUPPORT_VULKAN)
@@ -249,18 +248,6 @@ extern "C"
     {
         return context->GetEncoderType();
     }
-
-    UNITY_INTERFACE_EXPORT CodecInitializationResult GetInitializationResult(Context* context, MediaStreamTrackInterface* track)
-    {
-        return context->GetInitializationResult(track);
-    }
-
-//    UNITY_INTERFACE_EXPORT void ContextSetVideoEncoderParameter(
-//        Context* context, MediaStreamTrackInterface* track, int width, int height,
-//        UnityRenderingExtTextureFormat textureFormat, void* textureHandle)
-//    {
-//        context->SetEncoderParameter(track, width, height, textureFormat, textureHandle);
-//    }
 
     UNITY_INTERFACE_EXPORT MediaStreamInterface* ContextCreateMediaStream(Context* context, const char* streamId)
     {

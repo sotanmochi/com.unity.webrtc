@@ -271,11 +271,6 @@ namespace Unity.WebRTC
             NativeMethods.ContextDeleteStatsReport(self, report);
         }
 
-        public CodecInitializationResult GetInitializationResult(IntPtr track)
-        {
-            return NativeMethods.GetInitializationResult(self, track);
-        }
-
         public void GetSenderCapabilities(TrackKind kind, out IntPtr capabilities)
         {
             NativeMethods.ContextGetSenderCapabilities(self, kind, out capabilities);

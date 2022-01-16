@@ -407,9 +407,6 @@ namespace Unity.WebRTC.RuntimeTest
             instance.Dispose();
         }
 
-        /// <todo>
-        /// NativeMethods.GetInitializationResult returns CodecInitializationResult.NotInitialized after executed InitializeEncoder
-        /// </todo>
         [UnityTest]
         public IEnumerator CallVideoEncoderMethods()
         {

@@ -186,7 +186,8 @@ namespace webrtc
     }
 #pragma warning(pop)
 
-    Context::Context(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
+    Context::Context(
+        int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
         : m_uid(uid)
         , m_workerThread(rtc::Thread::CreateWithSocketServer())
         , m_signalingThread(rtc::Thread::CreateWithSocketServer())
@@ -281,15 +282,6 @@ namespace webrtc
     UnityEncoderType Context::GetEncoderType() const
     {
         return m_encoderType;
-    }
-
-    CodecInitializationResult Context::GetInitializationResult(MediaStreamTrackInterface* track)
-    {
-        UnityVideoTrackSource* source = GetVideoSource(track);
-        // todo(kazuki):
-        //if (source != nullptr)
-        //    return source->GetCodecInitializationResult();
-        return CodecInitializationResult::NotInitialized;
     }
 
     webrtc::MediaStreamInterface* Context::CreateMediaStream(const std::string& streamId)

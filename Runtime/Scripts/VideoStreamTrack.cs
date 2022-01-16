@@ -55,20 +55,6 @@ namespace Unity.WebRTC
         }
 
         /// <summary>
-        /// note:
-        /// The videotrack cannot be used if the encoder has not been initialized.
-        /// Do not use it until the initialization is complete.
-        /// </summary>
-        [Obsolete("Remove this for next version")]
-        public bool IsEncoderInitialized
-        {
-            get
-            {
-                return WebRTC.Context.GetInitializationResult(GetSelfOrThrow()) == CodecInitializationResult.Success;
-            }
-        }
-
-        /// <summary>
         /// encoded / decoded texture
         /// </summary>
         public Texture Texture
