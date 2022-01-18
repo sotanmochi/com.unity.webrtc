@@ -46,6 +46,8 @@ target_sources(WebRTCLib
     UnityLogStream.cpp
     VideoFrame.cpp
     VideoFrame.h
+    GPUMemoryBuffer.cpp
+    GPUMemoryBuffer.h
 )
 
 if(iOS OR macOS)
@@ -53,16 +55,6 @@ if(iOS OR macOS)
     PRIVATE
       ../libcxx/debug.cpp
   )
-endif()
-
-if(Windows OR Linux)
-  target_sources(WebRTCLib
-    PRIVATE
-      NvEncoder.cpp
-      NvEncoder.h
-      GPUMemoryBuffer.cpp
-      GPUMemoryBuffer.h
-    )
 endif()
 
 add_subdirectory(Codec)

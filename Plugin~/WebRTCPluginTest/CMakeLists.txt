@@ -6,6 +6,7 @@ target_sources(WebRTCLibTest
     pch.h
     ContextTest.cpp
     GraphicsDeviceTest.cpp
+    GpuMemoryBufferTest.cpp
     GraphicsDeviceTestBase.cpp
     GraphicsDeviceTestBase.h
     VideoFrameTest.cpp

@@ -3,10 +3,10 @@
 
 #if CUDA_PLATFORM
 #include <cuda.h>
-#include "NvEncoder.h"
+#include "Codec/NvCodec/NvCodec.h"
+#include "Codec/NvCodec/NvEncoder.h"
 #endif
 
-#include "DummyVideoEncoder.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 
 #if UNITY_OSX || UNITY_IOS
@@ -64,7 +64,8 @@ namespace webrtc
     std::vector<webrtc::SdpVideoFormat> UnityVideoEncoderFactory::GetHardwareEncoderFormats() const
     {
 #if CUDA_PLATFORM
-        return NvEncoder::SupportedH264Codecs();
+        CUcontext context = gfxDevice_->GetCuContext();
+        return SupportedNvEncoderCodecs(context);
 #else
         auto formats = internal_encoder_factory_->GetSupportedFormats();
         std::vector<webrtc::SdpVideoFormat> filtered;

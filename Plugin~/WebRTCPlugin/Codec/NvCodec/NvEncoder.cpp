@@ -16,35 +16,6 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
-    absl::optional<H264Profile> GuidToProfile(GUID& guid)
-    {
-        if (guid == NV_ENC_H264_PROFILE_BASELINE_GUID)
-            return H264Profile::kProfileBaseline;
-        if (guid == NV_ENC_H264_PROFILE_MAIN_GUID)
-            return H264Profile::kProfileMain;
-        if (guid == NV_ENC_H264_PROFILE_HIGH_GUID)
-            return H264Profile::kProfileHigh;
-        if (guid == NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID)
-            return H264Profile::kProfileConstrainedHigh;
-        return absl::nullopt;
-    }
-
-    H264Level Cast(NV_ENC_LEVEL level)
-    {
-        return (H264Level)level;
-    }
-
-    std::vector<SdpVideoFormat> NvEncoder::SupportedH264Codecs()
-    {
-
-        // NvEncGetEncodeCaps(0, NV_ENC_CAPS_LEVEL_MAX)
-        // NvEncGetEncodeCaps(0, NV_ENC_CAPS_LEVEL_MIN)
-
-        return { webrtc::CreateH264Format(
-            webrtc::H264::kProfileConstrainedBaseline,
-            webrtc::H264::kLevel5_1, "1") };
-    }
-
     std::unique_ptr<VideoEncoder> NvEncoder::Create(
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
     {

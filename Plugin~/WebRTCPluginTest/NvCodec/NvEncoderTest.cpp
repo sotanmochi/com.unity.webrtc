@@ -3,7 +3,7 @@
 //#include "base/callback.h"
 #include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
-#include "../WebRTCPlugin/NvEncoder.h"
+#include "../WebRTCPlugin/Codec/NvCodec/NvEncoder.h"
 //#include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "test/video_codec_settings.h"
 #include "api/test/create_frame_generator.h"
