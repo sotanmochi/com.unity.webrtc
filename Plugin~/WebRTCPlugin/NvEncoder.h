@@ -14,6 +14,8 @@ using NvEncoderInternal = ::NvEncoder;
 class NvEncoder : public ::webrtc::VideoEncoder
 {
 public:
+    static std::vector<SdpVideoFormat> SupportedH264Codecs();
+
     struct LayerConfig {
         int simulcast_idx = 0;
         int width = -1;

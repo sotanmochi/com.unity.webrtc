@@ -64,9 +64,7 @@ namespace webrtc
     std::vector<webrtc::SdpVideoFormat> UnityVideoEncoderFactory::GetHardwareEncoderFormats() const
     {
 #if CUDA_PLATFORM
-        return { webrtc::CreateH264Format(
-            webrtc::H264::kProfileConstrainedBaseline,
-            webrtc::H264::kLevel5_1, "1") };
+        return NvEncoder::SupportedH264Codecs();
 #else
         auto formats = internal_encoder_factory_->GetSupportedFormats();
         std::vector<webrtc::SdpVideoFormat> filtered;
@@ -83,11 +81,13 @@ namespace webrtc
 
     std::vector<webrtc::SdpVideoFormat> UnityVideoEncoderFactory::GetSupportedFormats() const
     {
-         std::vector <webrtc::SdpVideoFormat> formats = internal_encoder_factory_->GetSupportedFormats();
-         std::vector < webrtc::SdpVideoFormat> formats2 =
-             GetHardwareEncoderFormats();
-         formats.insert(formats.end(), formats2.begin(), formats2.end());
-        return formats;
+        std::vector<SdpVideoFormat> supported_codecs;
+
+        for (const webrtc::SdpVideoFormat& format : internal_encoder_factory_->GetSupportedFormats())
+            supported_codecs.push_back(format);
+        for (const webrtc::SdpVideoFormat& format : GetHardwareEncoderFormats())
+            supported_codecs.push_back(format);
+        return supported_codecs;
     }
 
     webrtc::VideoEncoderFactory::CodecInfo UnityVideoEncoderFactory::QueryVideoEncoder(
