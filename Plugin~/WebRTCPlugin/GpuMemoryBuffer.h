@@ -1,5 +1,4 @@
 #pragma once
-#include <cuda.h>
 #include <shared_mutex>
 #include "Size.h"
 #include "GraphicsDevice/GraphicsDevice.h"

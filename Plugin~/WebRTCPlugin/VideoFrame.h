@@ -33,7 +33,7 @@ public:
     void set_timestamp(TimeDelta timestamp) { timestamp_ = timestamp; }
 
     GpuMemoryBuffer* GetGpuMemoryBuffer() const;
-    bool VideoFrame::HasGpuMemoryBuffer() const;
+    bool HasGpuMemoryBuffer() const;
 
     static rtc::scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
         const Size& size,
@@ -46,7 +46,7 @@ public:
     static rtc::scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
         rtc::scoped_refptr<VideoFrame> video_frame);
 protected:
-    VideoFrame::VideoFrame(
+    VideoFrame(
         const Size& size,
         std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
         TimeDelta timestamp);
