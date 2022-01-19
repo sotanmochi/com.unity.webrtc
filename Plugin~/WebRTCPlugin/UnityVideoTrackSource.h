@@ -8,14 +8,6 @@ namespace webrtc {
 
 using namespace ::webrtc;
 
-class IGraphicsDevice;
-
-enum VIDEO_SOURCE_DEST_MEMORY_TYPE_FLAG
-{
-    GPU_MEMORY = 0x1L,
-    CPU_MEMORY = 0x2L,
-};
-
 class VideoFrameAdapter : public VideoFrameBuffer
 {
 public:
