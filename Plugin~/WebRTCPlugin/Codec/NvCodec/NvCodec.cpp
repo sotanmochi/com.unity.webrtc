@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "NvCodec.h"
 #include "NvEncoder/NvEncoderCuda.h"
+#include "NvEncoderImpl.h"
 
 namespace unity
 {
@@ -35,6 +36,14 @@ namespace webrtc
         int GetLevelMin(GUID encodeGUID)
         {
             return GetCapabilityValue(encodeGUID, NV_ENC_CAPS_LEVEL_MIN);
+        }
+        int GetMaxWidth(GUID encodeGUID)
+        {
+            return GetCapabilityValue(encodeGUID, NV_ENC_CAPS_WIDTH_MAX);
+        }
+        int GetMaxHeight(GUID encodeGUID)
+        {
+            return GetCapabilityValue(encodeGUID, NV_ENC_CAPS_HEIGHT_MAX);
         }
     };
 
@@ -75,16 +84,11 @@ namespace webrtc
 
         auto encoder = std::make_unique<NvEncoderCudaCapability>(context);
 
-        int minLevel = encoder->GetLevelMin(NV_ENC_CODEC_H264_GUID);
         int maxLevel = encoder->GetLevelMax(NV_ENC_CODEC_H264_GUID);
+        H264Level supportedMaxLevel = static_cast<H264Level>(maxLevel);
 
-        std::vector<H264Level> supportedLevels;
-        for (auto& level : levels) {
-            if (minLevel <= (int)level && (int)level <= maxLevel)
-                supportedLevels.push_back(level);
-        }
-
-        std::vector<GUID> profileGUIDs = encoder->GetEncodeProfileGUIDs(NV_ENC_CODEC_H264_GUID);
+        std::vector<GUID> profileGUIDs =
+            encoder->GetEncodeProfileGUIDs(NV_ENC_CODEC_H264_GUID);
 
         std::vector<H264Profile> supportedProfiles;
         for (auto& guid : profileGUIDs) {
@@ -95,9 +99,8 @@ namespace webrtc
 
         std::vector<SdpVideoFormat> supportedFormats;
         for (auto& profile : supportedProfiles) {
-            for (auto& level : supportedLevels) {
-                supportedFormats.push_back(CreateH264Format(profile, level, "1"));
-            }
+            supportedFormats.push_back(
+                CreateH264Format(profile, supportedMaxLevel, "1"));
         }
         return supportedFormats;
     }
@@ -107,6 +110,14 @@ namespace webrtc
         std::vector<SdpVideoFormat> supportedFormats;
         // todo
         return supportedFormats;
+    }
+
+    std::unique_ptr<NvEncoder> NvEncoder::Create(
+        const cricket::VideoCodec& codec,
+        CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
+    {
+        return std::make_unique<NvEncoderImpl>(
+            codec, context, memoryType, format);
     }
 }
 }

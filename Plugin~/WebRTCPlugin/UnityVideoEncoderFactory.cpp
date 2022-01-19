@@ -1,10 +1,10 @@
 #include "pch.h"
+#include "absl/strings/match.h"
 #include "UnityVideoEncoderFactory.h"
 
 #if CUDA_PLATFORM
 #include <cuda.h>
 #include "Codec/NvCodec/NvCodec.h"
-#include "Codec/NvCodec/NvEncoder.h"
 #endif
 
 #include "GraphicsDevice/GraphicsUtility.h"
@@ -109,9 +109,11 @@ namespace webrtc
         if (IsFormatSupported(GetHardwareEncoderFormats(), format))
         {
             CUcontext context = gfxDevice_->GetCuContext();
-            NV_ENC_BUFFER_FORMAT format = gfxDevice_->GetEncodeBufferFormat();
-            return std::make_unique<NvEncoder>(
-                context, CU_MEMORYTYPE_ARRAY, format);
+            NV_ENC_BUFFER_FORMAT bufferFormat = gfxDevice_->GetEncodeBufferFormat();
+
+            if (absl::EqualsIgnoreCase(format.name, cricket::kH264CodecName))
+                return NvEncoder::Create(cricket::VideoCodec(format),
+                    context, CU_MEMORYTYPE_ARRAY, bufferFormat);
         }
 #endif
         return internal_encoder_factory_->CreateVideoEncoder(format);

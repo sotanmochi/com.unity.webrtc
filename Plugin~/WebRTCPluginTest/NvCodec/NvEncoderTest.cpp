@@ -3,7 +3,7 @@
 //#include "base/callback.h"
 #include "GpuMemoryBuffer.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
-#include "../WebRTCPlugin/Codec/NvCodec/NvEncoder.h"
+#include "../WebRTCPlugin/Codec/NvCodec/NvCodec.h"
 //#include "modules/video_coding/codecs/test/video_codec_unittest.h"
 #include "test/video_codec_settings.h"
 #include "api/test/create_frame_generator.h"
@@ -65,7 +65,7 @@ protected:
 
     std::unique_ptr<VideoEncoder> CreateEncoder()
     {
-        return NvEncoder::Create(
+        return NvEncoder::Create(cricket::VideoCodec(),
             m_context, CU_MEMORYTYPE_DEVICE, NV_ENC_BUFFER_FORMAT_ARGB);
     }
 

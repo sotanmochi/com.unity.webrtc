@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "NvEncoder.h"
+#include "NvEncoderImpl.h"
 #include "GpuMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
@@ -16,13 +16,7 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
-    std::unique_ptr<VideoEncoder> NvEncoder::Create(
-        CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
-    {
-        return std::make_unique<NvEncoder>(context, memoryType, format);
-    }
-
-    NvEncoder::NvEncoder(
+    NvEncoderImpl::NvEncoderImpl(const cricket::VideoCodec& codec,
         CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
     : m_context(context)
     , m_memoryType(memoryType)
@@ -35,12 +29,12 @@ namespace webrtc
         RTC_CHECK_NE(memoryType, CU_MEMORYTYPE_HOST);
     }
 
-    NvEncoder::~NvEncoder()
+    NvEncoderImpl::~NvEncoderImpl()
     {
         Release();
     }
 
-    int NvEncoder::InitEncode(const VideoCodec* codec,
+    int NvEncoderImpl::InitEncode(const VideoCodec* codec,
         const VideoEncoder::Settings& settings)
     {
         if (codec == nullptr)
@@ -111,13 +105,13 @@ namespace webrtc
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t NvEncoder::RegisterEncodeCompleteCallback(EncodedImageCallback* callback)
+    int32_t NvEncoderImpl::RegisterEncodeCompleteCallback(EncodedImageCallback* callback)
     {
         this->m_encodedCompleteCallback = callback;
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t NvEncoder::Release()
+    int32_t NvEncoderImpl::Release()
     {
         this->m_encodedCompleteCallback = nullptr;
 
@@ -157,7 +151,7 @@ namespace webrtc
         }
     }
 
-    int32_t NvEncoder::Encode(
+    int32_t NvEncoderImpl::Encode(
         const ::webrtc::VideoFrame& frame, const std::vector<VideoFrameType>* frameTypes)
     {
         RTC_DCHECK_EQ(frame.width(), m_codec.width);
@@ -242,7 +236,7 @@ namespace webrtc
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    int32_t NvEncoder::ProcessEncodedFrame(
+    int32_t NvEncoderImpl::ProcessEncodedFrame(
         std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame)
     {
         m_encodedImage.SetTimestamp(inputFrame.timestamp());
@@ -287,7 +281,7 @@ namespace webrtc
     }
 
 
-    void NvEncoder::SetRates(const RateControlParameters& parameters)
+    void NvEncoderImpl::SetRates(const RateControlParameters& parameters)
     {
         if(m_encoder == nullptr)
         {
@@ -334,7 +328,7 @@ namespace webrtc
         SetStreamState(true);
     }
 
-    void NvEncoder::SetStreamState(bool sendStream)
+    void NvEncoderImpl::SetStreamState(bool sendStream)
     {
         m_keyframeRequest = sendStream;
     }

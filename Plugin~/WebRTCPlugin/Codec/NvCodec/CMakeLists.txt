@@ -1,9 +1,9 @@
 target_sources(WebRTCLib
   PRIVATE
-    NvEncoderCudaWithCUarray.cpp
-    NvEncoderCudaWithCUarray.h
     NvCodec.cpp
     NvCodec.h
-    NvEncoder.cpp
-    NvEncoder.h
+    NvEncoderCudaWithCUarray.cpp
+    NvEncoderCudaWithCUarray.h
+    NvEncoderImpl.cpp
+    NvEncoderImpl.h
 )

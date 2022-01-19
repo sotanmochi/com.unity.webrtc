@@ -1,6 +1,7 @@
 #pragma once
 #include <cuda.h>
 #include <NvEncoder/NvEncoderCuda.h>
+#include "NvCodec.h"
 
 using namespace webrtc;
 
@@ -11,7 +12,7 @@ namespace webrtc
 
 using NvEncoderInternal = ::NvEncoder;
 
-class NvEncoder : public ::webrtc::VideoEncoder
+class NvEncoderImpl : public unity::webrtc::NvEncoder
 {
 public:
     struct LayerConfig {
@@ -29,12 +30,13 @@ public:
 
         void SetStreamState(bool send_stream) {}
     };
-    NvEncoder();
-    NvEncoder(CUcontext context,
-        CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format);
-    NvEncoder(const NvEncoder&) = delete;
-    NvEncoder& operator=(const NvEncoder&) = delete;
-    ~NvEncoder() override;
+    NvEncoderImpl();
+    NvEncoderImpl(const cricket::VideoCodec& codec,
+        CUcontext context, CUmemorytype memoryType,
+        NV_ENC_BUFFER_FORMAT format);
+    NvEncoderImpl(const NvEncoderImpl&) = delete;
+    NvEncoderImpl& operator=(const NvEncoderImpl&) = delete;
+    ~NvEncoderImpl() override;
 
     // webrtc::VideoEncoder
     // Initialize the encoder with the information from the codecSettings
@@ -51,8 +53,6 @@ public:
     // Default fallback: Just use the sum of bitrates as the single target rate.
     virtual void SetRates(const RateControlParameters& parameters) override;
 
-    static std::unique_ptr<VideoEncoder> Create(
-        CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format);
 protected:
     int32_t ProcessEncodedFrame(std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame);
     void SetStreamState(bool sendStream);
