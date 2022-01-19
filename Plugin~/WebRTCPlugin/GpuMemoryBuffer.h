@@ -46,24 +46,6 @@ private:
     std::unique_ptr<ITexture2D> texture_;
 };
 
-class CudaMemoryBuffer : public GpuMemoryBuffer
-{
-public:
-    CudaMemoryBuffer(CUarray array, std::shared_timed_mutex& mutex)
-        : m_array(array)
-        , m_mutex(&mutex) {}
-    std::shared_timed_mutex* mutex() const { return m_mutex; }
-//    CUstream ToStream() const;
-    CUdeviceptr ToDevicePtr() const { return m_devicePtr; }
-    CUarray ToArray() const { return m_array; }
-    rtc::scoped_refptr<I420BufferInterface> ToI420() override;
-private:
-    CUdeviceptr m_devicePtr;
-    CUarray m_array;
-    CUmemorytype m_memoryType;
-    std::shared_timed_mutex* m_mutex;
-};
-
 class FakeGpuMemoryBuffer : public GpuMemoryBuffer
 {
 public:

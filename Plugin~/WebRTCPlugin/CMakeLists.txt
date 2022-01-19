@@ -46,9 +46,16 @@ target_sources(WebRTCLib
     UnityLogStream.cpp
     VideoFrame.cpp
     VideoFrame.h
-    GPUMemoryBuffer.cpp
-    GPUMemoryBuffer.h
+    GpuMemoryBuffer.cpp
+    GpuMemoryBuffer.h
 )
+
+if(Windows OR Linux)
+  target_sources(WebRTCLib
+    PRIVATE
+      CudaMemoryBuffer.h
+  )
+endif()
 
 if(iOS OR macOS)
   target_sources(WebRTCLib

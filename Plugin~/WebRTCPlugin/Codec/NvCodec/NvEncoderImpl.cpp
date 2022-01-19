@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "NvEncoderImpl.h"
-#include "GpuMemoryBuffer.h"
+#include "CudaMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
 #include "Codec/NvCodec/NvEncoderCudaWithCUarray.h"
