@@ -471,9 +471,11 @@ namespace Unity.WebRTC
         ///
         /// </summary>
         /// <returns></returns>
+        [Obsolete]
         public static EncoderType GetEncoderType()
         {
-            return s_context.GetEncoderType();
+            // todo(kazuki): remove this APi
+            return EncoderType.Hardware;
         }
 
         /// <summary>
@@ -1054,8 +1056,6 @@ namespace Unity.WebRTC
         [DllImport(WebRTC.Lib)]
         public static extern void AudioTrackSinkProcessAudio(
             IntPtr sink, float[] data, int length, int channels, int sampleRate);
-        [DllImport(WebRTC.Lib)]
-        public static extern EncoderType ContextGetEncoderType(IntPtr context);
         [DllImport(WebRTC.Lib)]
         [return: MarshalAs(UnmanagedType.U1)]
         public static extern bool MediaStreamAddTrack(IntPtr stream, IntPtr track);

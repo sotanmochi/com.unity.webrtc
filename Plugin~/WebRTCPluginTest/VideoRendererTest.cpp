@@ -37,7 +37,7 @@ public:
         EXPECT_NE(nullptr, m_device);
 //        EXPECT_NE(nullptr, encoder_);
 
-        context = std::make_unique<Context>();
+        context = std::make_unique<Context>(m_device);
     }
     ~VideoRendererTest() override
     {

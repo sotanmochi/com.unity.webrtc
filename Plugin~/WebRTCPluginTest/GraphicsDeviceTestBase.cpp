@@ -429,7 +429,7 @@ GraphicsDeviceTestBase::GraphicsDeviceTestBase()
     : m_pNativeGfxDevice(nullptr)
     , m_device(nullptr)
 {
-    std::tie(m_unityGfxRenderer, m_encoderType, m_textureFormat) = GetParam();
+    std::tie(m_unityGfxRenderer, m_textureFormat) = GetParam();
     m_pNativeGfxDevice = CreateGfxDevice(m_unityGfxRenderer);
     const auto unityInterface = CreateUnityInterface(m_unityGfxRenderer);
 

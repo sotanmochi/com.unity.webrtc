@@ -24,7 +24,8 @@ namespace webrtc
         static ContextManager* GetInstance() { return &s_instance; }
      
         Context* GetContext(int uid) const;
-        Context* CreateContext(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest);
+        Context* CreateContext(
+            int uid, IGraphicsDevice* gfxDevice, bool forTest);
         void DestroyContext(int uid);
         void SetCurContext(Context*);
         bool Exists(Context* context);
@@ -52,14 +53,9 @@ namespace webrtc
     public:
         
         explicit Context(
-            int uid = -1,
             IGraphicsDevice* gfxDevice = nullptr,
-            UnityEncoderType encoderType = UnityEncoderHardware,
             bool forTest = false);
         ~Context();
-
-        // Utility
-        UnityEncoderType GetEncoderType() const;
 
         bool ExistsRefPtr(const rtc::RefCountInterface* ptr) {
             return m_mapRefPtr.find(ptr) != m_mapRefPtr.end(); }
@@ -145,8 +141,6 @@ namespace webrtc
         std::mutex mutex;
 
     private:
-        int m_uid;
-        UnityEncoderType m_encoderType;
         std::unique_ptr<rtc::Thread> m_workerThread;
         std::unique_ptr<rtc::Thread> m_signalingThread;
         std::unique_ptr<TaskQueueFactory> m_taskQueueFactory;

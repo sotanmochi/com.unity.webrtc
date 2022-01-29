@@ -40,7 +40,7 @@ namespace webrtc
         return nullptr;
     }
 
-    Context* ContextManager::CreateContext(int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
+    Context* ContextManager::CreateContext(int uid, IGraphicsDevice* gfxDevice, bool forTest)
     {
         auto it = s_instance.m_contexts.find(uid);
         if (it != s_instance.m_contexts.end())
@@ -48,7 +48,7 @@ namespace webrtc
             DebugLog("Using already created context with ID %d", uid);
             return nullptr;
         }
-        auto ctx = new Context(uid, gfxDevice, encoderType, forTest);
+        auto ctx = new Context(gfxDevice, forTest);
         s_instance.m_contexts[uid].reset(ctx);
         return ctx;
     }
@@ -181,12 +181,10 @@ namespace webrtc
 #pragma warning(pop)
 
     Context::Context(
-        int uid, IGraphicsDevice* gfxDevice, UnityEncoderType encoderType, bool forTest)
-        : m_uid(uid)
-        , m_workerThread(rtc::Thread::CreateWithSocketServer())
+        IGraphicsDevice* gfxDevice, bool forTest)
+        : m_workerThread(rtc::Thread::CreateWithSocketServer())
         , m_signalingThread(rtc::Thread::CreateWithSocketServer())
         , m_taskQueueFactory(CreateDefaultTaskQueueFactory())
-        , m_encoderType(encoderType)
     {
         m_workerThread->Start();
         m_signalingThread->Start();
@@ -252,11 +250,6 @@ namespace webrtc
             m_signalingThread->Quit();
             m_signalingThread.reset();
         }
-    }
-
-    UnityEncoderType Context::GetEncoderType() const
-    {
-        return m_encoderType;
     }
 
     webrtc::MediaStreamInterface* Context::CreateMediaStream(const std::string& streamId)

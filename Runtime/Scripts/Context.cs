@@ -78,11 +78,6 @@ namespace Unity.WebRTC
             NativeMethods.ContextDeleteRefPtr(self, ptr);
         }
 
-        public EncoderType GetEncoderType()
-        {
-            return NativeMethods.ContextGetEncoderType(self);
-        }
-
         public IntPtr CreatePeerConnection()
         {
             return NativeMethods.ContextCreatePeerConnection(self);

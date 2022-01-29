@@ -242,11 +242,6 @@ extern "C"
         return true;
     }
 
-    UNITY_INTERFACE_EXPORT UnityEncoderType ContextGetEncoderType(Context* context)
-    {
-        return context->GetEncoderType();
-    }
-
     UNITY_INTERFACE_EXPORT MediaStreamInterface* ContextCreateMediaStream(Context* context, const char* streamId)
     {
         return context->CreateMediaStream(streamId);
@@ -430,7 +425,7 @@ extern "C"
         delegateSetResolution = func;
     }
 
-    UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid, UnityEncoderType encoderType, bool forTest)
+    UNITY_INTERFACE_EXPORT Context* ContextCreate(int uid, bool forTest)
     {
         auto ctx = ContextManager::GetInstance()->GetContext(uid);
         if (ctx != nullptr)
@@ -439,7 +434,7 @@ extern "C"
             return ctx;
         }
         IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
-        ctx = ContextManager::GetInstance()->CreateContext(uid, device, encoderType, forTest);
+        ctx = ContextManager::GetInstance()->CreateContext(uid, device, forTest);
         return ctx;
     }
 

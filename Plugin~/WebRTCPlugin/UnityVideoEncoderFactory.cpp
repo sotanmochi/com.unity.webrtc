@@ -55,8 +55,8 @@ namespace webrtc
         IGraphicsDevice* gfxDevice)
     : gfxDevice_(gfxDevice)
     , internal_encoder_factory_(CreateEncoderFactory())
-
     {
+        RTC_DCHECK(gfxDevice_);
     }
     
     UnityVideoEncoderFactory::~UnityVideoEncoderFactory() = default;

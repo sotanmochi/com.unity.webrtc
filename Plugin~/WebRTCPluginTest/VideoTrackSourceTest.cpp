@@ -43,7 +43,7 @@ public:
 
         EXPECT_NE(nullptr, m_device);
 
-        context = std::make_unique<Context>();
+        context = std::make_unique<Context>(m_device);
     }
     ~VideoTrackSourceTest() override
     {
@@ -73,7 +73,6 @@ protected:
 
 TEST_P(VideoTrackSourceTest, CreateVideoFrameAdapter)
 {
-
     auto frame = CreateTestFrame(Size(width, height));
 
     rtc::scoped_refptr<VideoFrameAdapter> frame_adapter(

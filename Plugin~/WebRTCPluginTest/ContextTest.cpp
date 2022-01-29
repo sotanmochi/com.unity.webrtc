@@ -26,7 +26,7 @@ protected:
         GraphicsDeviceTestBase::SetUp();
         EXPECT_NE(nullptr, m_device);
 
-        context = std::make_unique<Context>();
+        context = std::make_unique<Context>(m_device);
         callback_videoframeresize = &OnFrameSizeChange;
     }
 

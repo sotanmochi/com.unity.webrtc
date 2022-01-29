@@ -72,14 +72,6 @@ namespace Unity.WebRTC.RuntimeTest
         }
 
         [Test]
-        public void GetEncoderType()
-        {
-            var context = NativeMethods.ContextCreate(0, encoderType, true);
-            Assert.AreEqual(encoderType, NativeMethods.ContextGetEncoderType(context));
-            NativeMethods.ContextDestroy(0);
-        }
-
-        [Test]
         public void CreateAndDeletePeerConnection()
         {
             var context = NativeMethods.ContextCreate(0, encoderType, true);
