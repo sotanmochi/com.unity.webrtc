@@ -14,7 +14,7 @@ namespace Unity.WebRTC
     public delegate void OnVideoReceived(Texture renderer);
 
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class VideoStreamTrack : MediaStreamTrack
     {
@@ -266,6 +266,7 @@ namespace Unity.WebRTC
                 data_.ptrTrackSource = self;
                 data_.width = texture.width;
                 data_.height = texture.height;
+                data_.format = texture.graphicsFormat;
                 Marshal.StructureToPtr(data_, ptr_, false);
             }
             WebRTC.Context.Encode(ptr_);

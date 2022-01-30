@@ -6,6 +6,17 @@ namespace unity
 namespace webrtc
 {
 
+::webrtc::VideoFrame VideoFrameAdapter::CreateVideoFrame( rtc::scoped_refptr<VideoFrame> frame)
+{
+    rtc::scoped_refptr<VideoFrameAdapter> adapter(
+      new rtc::RefCountedObject<VideoFrameAdapter>(
+          std::move(frame)));
+
+    return ::webrtc::VideoFrame::Builder()
+      .set_video_frame_buffer(adapter)
+      .build();
+}
+
 rtc::scoped_refptr<I420BufferInterface> VideoFrameAdapter::ToI420() {
     return ConvertToVideoFrameBuffer(frame_)->ToI420();
 }

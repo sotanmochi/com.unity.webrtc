@@ -38,21 +38,17 @@ static tuple<UnityGfxRenderer, UnityRenderingExtTextureFormat> VALUES_TEST_ENV[]
     { kUnityGfxRendererD3D12, kUnityRenderingExtFormatB8G8R8A8_UNorm },
 #endif // SUPPORT_D3D12
 #if SUPPORT_METAL
-    { kUnityGfxRendererMetal, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_SRGB },
-    { kUnityGfxRendererMetal, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_UNorm }
+    { kUnityGfxRendererMetal, kUnityRenderingExtFormatB8G8R8A8_SRGB },
+    { kUnityGfxRendererMetal, kUnityRenderingExtFormatB8G8R8A8_UNorm }
 #endif // SUPPORT_METAL
 // todo::(kazuki) windows support
 #if SUPPORT_OPENGL_UNIFIED & UNITY_LINUX
-    { kUnityGfxRendererOpenGLCore, UnityEncoderType::UnityEncoderHardware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_SRGB },
-    { kUnityGfxRendererOpenGLCore, UnityEncoderType::UnityEncoderHardware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_UNorm },
-    { kUnityGfxRendererOpenGLCore, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_SRGB },
-    { kUnityGfxRendererOpenGLCore, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_UNorm },
+    { kUnityGfxRendererOpenGLCore, kUnityRenderingExtFormatB8G8R8A8_SRGB },
+    { kUnityGfxRendererOpenGLCore, kUnityRenderingExtFormatB8G8R8A8_UNorm },
 #endif // SUPPORT_OPENGL_UNIFIED
 #if SUPPORT_OPENGL_ES
-    { kUnityGfxRendererOpenGLES30, UnityEncoderType::UnityEncoderHardware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_SRGB },
-    { kUnityGfxRendererOpenGLES30, UnityEncoderType::UnityEncoderHardware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_UNorm },
-    { kUnityGfxRendererOpenGLES30, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_SRGB },
-    { kUnityGfxRendererOpenGLES30, UnityEncoderType::UnityEncoderSoftware, UnityRenderingExtTextureFormat::kUnityRenderingExtFormatB8G8R8A8_UNorm },
+    { kUnityGfxRendererOpenGLES30, kUnityRenderingExtFormatB8G8R8A8_SRGB },
+    { kUnityGfxRendererOpenGLES30, kUnityRenderingExtFormatB8G8R8A8_UNorm },
 #endif // SUPPORT_OPENGL_ES
 #if SUPPORT_VULKAN
     { kUnityGfxRendererVulkan, kUnityRenderingExtFormatB8G8R8A8_SRGB },

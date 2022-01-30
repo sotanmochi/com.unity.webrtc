@@ -11,10 +11,12 @@ using namespace ::webrtc;
 class VideoFrameAdapter : public VideoFrameBuffer
 {
 public:
-    VideoFrameAdapter(rtc::scoped_refptr<VideoFrame> frame)
+    explicit VideoFrameAdapter(rtc::scoped_refptr<VideoFrame> frame)
         : frame_(std::move(frame))
         , size_(frame_->size())
         {}
+
+    static ::webrtc::VideoFrame CreateVideoFrame(rtc::scoped_refptr<VideoFrame> frame);
 
     rtc::scoped_refptr<VideoFrame> GetVideoFrame() const { return frame_; }
 
@@ -30,8 +32,6 @@ protected:
 private:
     rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToVideoFrameBuffer(
         rtc::scoped_refptr<VideoFrame> video_frame);
-    rtc::scoped_refptr <VideoFrame> ConstructVideoFrameFromGpu(
-        rtc::scoped_refptr <VideoFrame> video_frame);
     const rtc::scoped_refptr<VideoFrame> frame_;
     const Size size_;
 };
