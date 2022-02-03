@@ -1,6 +1,6 @@
 target_sources(WebRTCLibTest
   PRIVATE
     CudaDeviceTest.cpp
-    NvEncoderTest.cpp
+    NvEncoderImplTest.cpp
     NvCodecTest.cpp
 )

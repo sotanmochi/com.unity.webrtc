@@ -40,19 +40,18 @@ public:
 
     // webrtc::VideoEncoder
     // Initialize the encoder with the information from the codecSettings
-    virtual int InitEncode(const VideoCodec* codec_settings,
+    int32_t InitEncode(const VideoCodec* codec_settings,
         const VideoEncoder::Settings& settings) override;
-    // Register an encode complete m_encodedCompleteCallback object.
-    virtual int32_t RegisterEncodeCompleteCallback(EncodedImageCallback* callback) override;
     // Free encoder memory.
-    virtual int32_t Release() override;
+    int32_t Release() override;
+    // Register an encode complete m_encodedCompleteCallback object.
+    int32_t RegisterEncodeCompleteCallback(EncodedImageCallback* callback) override;
     // Encode an I420 image (as a part of a video stream). The encoded image
     // will be returned to the user through the encode complete m_encodedCompleteCallback.
-    virtual int32_t Encode(const ::webrtc::VideoFrame& frame,
+    int32_t Encode(const ::webrtc::VideoFrame& frame,
         const std::vector<VideoFrameType>* frame_types) override;
     // Default fallback: Just use the sum of bitrates as the single target rate.
-    virtual void SetRates(const RateControlParameters& parameters) override;
-
+    void SetRates(const RateControlParameters& parameters) override;
 protected:
     int32_t ProcessEncodedFrame(std::vector<uint8_t>& packet, const ::webrtc::VideoFrame& inputFrame);
     void SetStreamState(bool sendStream);
