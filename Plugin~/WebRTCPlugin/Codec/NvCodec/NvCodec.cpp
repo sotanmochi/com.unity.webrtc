@@ -3,6 +3,8 @@
 #include "NvCodec.h"
 #include "NvEncoder/NvEncoderCuda.h"
 #include "NvEncoderImpl.h"
+#include "NvDecoder/NvDecoder.h"
+#include "NvDecoderImpl.h"
 
 namespace unity
 {
@@ -114,7 +116,9 @@ namespace webrtc
         return std::make_unique<NvEncoderImpl>(codec, context, memoryType, format);
     }
 
-    std::unique_ptr<NvDecoder> NvDecoder::Create() { return nullptr; }
-
+    std::unique_ptr<NvDecoder> NvDecoder::Create(CUcontext context)
+    {
+        return std::make_unique<NvDecoderImpl>(context);
+    }
 }
 }
