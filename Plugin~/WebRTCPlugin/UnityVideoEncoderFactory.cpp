@@ -7,8 +7,6 @@
 #include "Codec/NvCodec/NvCodec.h"
 #endif
 
-#include "GraphicsDevice/GraphicsUtility.h"
-
 #if UNITY_OSX || UNITY_IOS
 #import "sdk/objc/components/video_codec/RTCDefaultVideoEncoderFactory.h"
 #import "sdk/objc/native/api/video_encoder_factory.h"
@@ -22,10 +20,9 @@ namespace unity
 {    
 namespace webrtc
 {
-
-    bool IsFormatSupported(
+    bool UnityVideoEncoderFactory::IsFormatSupported(
         const std::vector<webrtc::SdpVideoFormat>& supported_formats,
-        const webrtc::SdpVideoFormat& format)
+        const webrtc::SdpVideoFormat& format) const
     {
         for (const webrtc::SdpVideoFormat& supported_format : supported_formats)
         {

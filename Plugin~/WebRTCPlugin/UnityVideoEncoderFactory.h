@@ -1,4 +1,5 @@
 #pragma once
+#include "GraphicsDevice/IGraphicsDevice.h"
 
 namespace unity
 {
@@ -21,6 +22,7 @@ namespace webrtc
         virtual std::unique_ptr<VideoEncoder> CreateVideoEncoder(const SdpVideoFormat& format) override;
 
         virtual std::vector<SdpVideoFormat> GetHardwareEncoderFormats() const;
+        virtual bool IsFormatSupported(const std::vector<webrtc::SdpVideoFormat>& supported_formats,const webrtc::SdpVideoFormat& format) const;
 
         UnityVideoEncoderFactory(IGraphicsDevice* gfxDevice);
         ~UnityVideoEncoderFactory();

@@ -1,4 +1,5 @@
 #pragma once
+#include "GraphicsDevice/IGraphicsDevice.h"
 
 namespace unity
 {
@@ -11,9 +12,13 @@ namespace webrtc
     class UnityVideoDecoderFactory : public webrtc::VideoDecoderFactory
     {
     public:
-        std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
-        std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(const webrtc::SdpVideoFormat& format) override;
+        virtual std::vector<webrtc::SdpVideoFormat> GetSupportedFormats() const override;
+        virtual std::unique_ptr<webrtc::VideoDecoder> CreateVideoDecoder(const webrtc::SdpVideoFormat& format) override;
+        virtual std::vector<SdpVideoFormat> GetHardwareDecoderFormats() const;
+        virtual bool IsFormatSupported(const std::vector<webrtc::SdpVideoFormat>& supported_formats,const webrtc::SdpVideoFormat& format) const;
+
         UnityVideoDecoderFactory(IGraphicsDevice* gfxDevice, bool forTest);
+        ~UnityVideoDecoderFactory();
     private:
         IGraphicsDevice* gfxDevice_;
         const std::unique_ptr<VideoDecoderFactory> internal_decoder_factory_;
