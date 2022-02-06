@@ -1,10 +1,11 @@
 #include "pch.h"
+
 #include "NvEncoderImpl.h"
+#include "../Utils/NvCodecUtils.h"
+#include "Codec/NvCodec/NvEncoderCudaWithCUarray.h"
 #include "CudaMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
-#include "Codec/NvCodec/NvEncoderCudaWithCUarray.h"
-#include "../Utils/NvCodecUtils.h"
 #include "UnityVideoTrackSource.h"
 #include "api/video/video_codec_type.h"
 
@@ -16,26 +17,25 @@ namespace webrtc
 {
     using namespace ::webrtc;
 
-    NvEncoderImpl::NvEncoderImpl(const cricket::VideoCodec& codec,
-        CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
-    : m_context(context)
-    , m_memoryType(memoryType)
-    , m_format(format)
-    , m_encoder(nullptr)
-    , m_encode_fps(1000, 1000)
-    , m_clock(Clock::GetRealTimeClock())
+    NvEncoderImpl::NvEncoderImpl(
+        const cricket::VideoCodec& codec,
+        CUcontext context,
+        CUmemorytype memoryType,
+        NV_ENC_BUFFER_FORMAT format)
+        : m_context(context)
+        , m_memoryType(memoryType)
+        , m_format(format)
+        , m_encoder(nullptr)
+        , m_encode_fps(1000, 1000)
+        , m_clock(Clock::GetRealTimeClock())
     {
         // not implemented for host memory
         RTC_CHECK_NE(memoryType, CU_MEMORYTYPE_HOST);
     }
 
-    NvEncoderImpl::~NvEncoderImpl()
-    {
-        Release();
-    }
+    NvEncoderImpl::~NvEncoderImpl() { Release(); }
 
-    int NvEncoderImpl::InitEncode(const VideoCodec* codec,
-        const VideoEncoder::Settings& settings)
+    int NvEncoderImpl::InitEncode(const VideoCodec* codec, const VideoEncoder::Settings& settings)
     {
         if (codec == nullptr)
         {
@@ -58,22 +58,20 @@ namespace webrtc
         m_codec = *codec;
 
         const CUresult result = cuCtxSetCurrent(m_context);
-        if(!ck(result))
+        if (!ck(result))
         {
             return WEBRTC_VIDEO_CODEC_ENCODER_FAILURE;
         }
 
-        if(m_memoryType == CU_MEMORYTYPE_DEVICE)
+        if (m_memoryType == CU_MEMORYTYPE_DEVICE)
         {
             m_encoder = std::make_unique<NvEncoderCuda>(
-                m_context, codec->width, codec->height,
-                m_format, 0);
+                m_context, codec->width, codec->height, m_format, 0);
         }
-        else if(m_memoryType == CU_MEMORYTYPE_ARRAY)
+        else if (m_memoryType == CU_MEMORYTYPE_ARRAY)
         {
             m_encoder = std::make_unique<NvEncoderCudaWithCUarray>(
-                m_context, codec->width, codec->height,
-                m_format, 0);
+                m_context, codec->width, codec->height, m_format, 0);
         }
 
         m_bitrateAdjuster = std::make_unique<BitrateAdjuster>(0.5f, 0.95f);
@@ -82,7 +80,8 @@ namespace webrtc
         m_nvEncConfig = { NV_ENC_CONFIG_VER };
         m_nvEncInitializeParams.encodeConfig = &m_nvEncConfig;
         m_nvEncInitializeParams.frameRateNum = m_codec.maxFramerate;
-        m_encoder->CreateDefaultEncoderParams(&m_nvEncInitializeParams,
+        m_encoder->CreateDefaultEncoderParams(
+            &m_nvEncInitializeParams,
             NV_ENC_CODEC_H264_GUID,
             NV_ENC_PRESET_LOW_LATENCY_DEFAULT_GUID);
         m_nvEncConfig.profileGUID = NV_ENC_H264_PROFILE_BASELINE_GUID;
@@ -90,13 +89,15 @@ namespace webrtc
         m_nvEncConfig.frameIntervalP = 1;
         m_nvEncConfig.encodeCodecConfig.h264Config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
         m_nvEncConfig.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR_LOWDELAY_HQ;
-        //m_nvEncConfig.rcParams.averageBitRate = (static_cast<unsigned int>(5.0f *
+        // m_nvEncConfig.rcParams.averageBitRate = (static_cast<unsigned int>(5.0f *
         //        m_nvEncInitializeParams.encodeWidth *
         //        m_nvEncInitializeParams.encodeHeight) / (1280 * 720)) * 100000;
 
         m_nvEncConfig.rcParams.averageBitRate = m_bitrateAdjuster->GetAdjustedBitrateBps();
-        m_nvEncConfig.rcParams.vbvBufferSize = (m_nvEncConfig.rcParams.averageBitRate *
-                m_nvEncInitializeParams.frameRateDen / m_nvEncInitializeParams.frameRateNum) * 5;
+        m_nvEncConfig.rcParams.vbvBufferSize =
+            (m_nvEncConfig.rcParams.averageBitRate * m_nvEncInitializeParams.frameRateDen /
+             m_nvEncInitializeParams.frameRateNum) *
+            5;
         m_nvEncConfig.rcParams.maxBitRate = m_nvEncConfig.rcParams.averageBitRate;
         m_nvEncConfig.rcParams.vbvInitialDelay = m_nvEncConfig.rcParams.vbvBufferSize;
 
@@ -118,35 +119,50 @@ namespace webrtc
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-    void CopyResource (
-        const NvEncInputFrame* dst, const rtc::scoped_refptr<VideoFrame> frame,
-        CUcontext context, CUmemorytype memoryType)
+    void CopyResource(
+        const NvEncInputFrame* dst,
+        const rtc::scoped_refptr<VideoFrame> frame,
+        CUcontext context,
+        CUmemorytype memoryType)
     {
-        auto buffer = static_cast<CudaMemoryBuffer*>(
-            frame->GetGpuMemoryBuffer());
+        auto buffer = static_cast<CudaMemoryBuffer*>(frame->GetGpuMemoryBuffer());
         std::shared_timed_mutex* mutex = buffer->mutex();
         std::shared_lock<std::shared_timed_mutex> lock(*mutex);
 
         Size size = frame->size();
 
-        if(memoryType == CU_MEMORYTYPE_DEVICE)
+        if (memoryType == CU_MEMORYTYPE_DEVICE)
         {
             const CUdeviceptr devicePtr = buffer->ToDevicePtr();
 
             NvEncoderCuda::CopyToDeviceFrame(
-                context, reinterpret_cast<void*>(devicePtr), 0, reinterpret_cast<CUdeviceptr>(dst->inputPtr),
-                dst->pitch, size.width(), size.height(),
-                CU_MEMORYTYPE_DEVICE, dst->bufferFormat, dst->chromaOffsets,
+                context,
+                reinterpret_cast<void*>(devicePtr),
+                0,
+                reinterpret_cast<CUdeviceptr>(dst->inputPtr),
+                dst->pitch,
+                size.width(),
+                size.height(),
+                CU_MEMORYTYPE_DEVICE,
+                dst->bufferFormat,
+                dst->chromaOffsets,
                 dst->numChromaPlanes);
         }
-        else if(memoryType == CU_MEMORYTYPE_ARRAY)
+        else if (memoryType == CU_MEMORYTYPE_ARRAY)
         {
             const CUarray array = buffer->ToArray();
 
             NvEncoderCudaWithCUarray::CopyToDeviceFrame(
-                context, static_cast<void*>(array), 0, static_cast<CUarray>(dst->inputPtr),
-                dst->pitch, size.width(), size.height(),
-                CU_MEMORYTYPE_ARRAY, dst->bufferFormat, dst->chromaOffsets,
+                context,
+                static_cast<void*>(array),
+                0,
+                static_cast<CUarray>(dst->inputPtr),
+                dst->pitch,
+                size.width(),
+                size.height(),
+                CU_MEMORYTYPE_ARRAY,
+                dst->bufferFormat,
+                dst->chromaOffsets,
                 dst->numChromaPlanes);
         }
     }
@@ -158,11 +174,11 @@ namespace webrtc
         RTC_DCHECK_EQ(frame.height(), m_codec.height);
 
         CUcontext current;
-        if(!ck(cuCtxGetCurrent(&current)))
+        if (!ck(cuCtxGetCurrent(&current)))
         {
             return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
         }
-        if(current != m_context)
+        if (current != m_context)
         {
             return WEBRTC_VIDEO_CODEC_UNINITIALIZED;
         }
@@ -172,11 +188,11 @@ namespace webrtc
         }
 
         bool send_key_frame = false;
-        //if (m_configuration.key_frame_request && m_configuration.sending)
+        // if (m_configuration.key_frame_request && m_configuration.sending)
         //{
         //    send_key_frame = true;
         //}
-        //if (!send_key_frame && frameTypes)
+        // if (!send_key_frame && frameTypes)
         //{
         //    for (size_t i = 0; i < frameTypes->size(); ++i)
         //    {
@@ -186,20 +202,20 @@ namespace webrtc
         //        }
         //    }
         //}
-        if(m_keyframeRequest)
+        if (m_keyframeRequest)
         {
             send_key_frame = true;
         }
         if (!send_key_frame && frameTypes)
         {
-            if ((*frameTypes)[0] == VideoFrameType::kVideoFrameKey) {
+            if ((*frameTypes)[0] == VideoFrameType::kVideoFrameKey)
+            {
                 send_key_frame = true;
             }
         }
 
         rtc::scoped_refptr<VideoFrame> video_frame =
-            static_cast<VideoFrameAdapter*>(
-                frame.video_frame_buffer().get())->GetVideoFrame();
+            static_cast<VideoFrameAdapter*>(frame.video_frame_buffer().get())->GetVideoFrame();
 
         Size size = video_frame->size();
         RTC_DCHECK_EQ(m_encoder->GetEncodeWidth(), size.width());
@@ -213,8 +229,7 @@ namespace webrtc
         picParams.encodePicFlags = 0;
         if (send_key_frame)
         {
-            picParams.encodePicFlags =
-                NV_ENC_PIC_FLAG_FORCEINTRA | NV_ENC_PIC_FLAG_FORCEIDR;
+            picParams.encodePicFlags = NV_ENC_PIC_FLAG_FORCEINTRA | NV_ENC_PIC_FLAG_FORCEIDR;
             m_keyframeRequest = false;
         }
 
@@ -253,7 +268,8 @@ namespace webrtc
             H264::FindNaluIndices(packet.data(), packet.size());
         for (uint32_t i = 0; i < naluIndices.size(); i++)
         {
-            const H264::NaluType naluType = H264::ParseNaluType(packet[naluIndices[i].payload_start_offset]);
+            const H264::NaluType naluType =
+                H264::ParseNaluType(packet[naluIndices[i].payload_start_offset]);
             if (naluType == H264::kIdr)
             {
                 m_encodedImage._frameType = VideoFrameType::kVideoFrameKey;
@@ -274,16 +290,15 @@ namespace webrtc
         const auto result = m_encodedCompleteCallback->OnEncodedImage(m_encodedImage, &codecInfo);
         if (result.error != EncodedImageCallback::Result::OK)
         {
-            RTC_LOG(LS_ERROR) << "Encode m_encodedCompleteCallback failed " <<  result.error;
+            RTC_LOG(LS_ERROR) << "Encode m_encodedCompleteCallback failed " << result.error;
             return WEBRTC_VIDEO_CODEC_ERROR;
         }
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
-
     void NvEncoderImpl::SetRates(const RateControlParameters& parameters)
     {
-        if(m_encoder == nullptr)
+        if (m_encoder == nullptr)
         {
             RTC_LOG(LS_WARNING) << "while uninitialized.";
             return;
@@ -309,7 +324,10 @@ namespace webrtc
         const uint32_t bitRate = m_bitrateAdjuster->GetAdjustedBitrateBps();
 
         NV_ENC_RECONFIGURE_PARAMS reconfigureParams = { NV_ENC_RECONFIGURE_PARAMS_VER };
-        memcpy(&reconfigureParams.reInitEncodeParams, &m_nvEncInitializeParams, sizeof(m_nvEncInitializeParams));
+        memcpy(
+            &reconfigureParams.reInitEncodeParams,
+            &m_nvEncInitializeParams,
+            sizeof(m_nvEncInitializeParams));
         NV_ENC_CONFIG reInitCodecConfig = { NV_ENC_CONFIG_VER };
         memcpy(&reInitCodecConfig, m_nvEncInitializeParams.encodeConfig, sizeof(reInitCodecConfig));
         reconfigureParams.reInitEncodeParams.encodeConfig = &reInitCodecConfig;
@@ -328,9 +346,6 @@ namespace webrtc
         SetStreamState(true);
     }
 
-    void NvEncoderImpl::SetStreamState(bool sendStream)
-    {
-        m_keyframeRequest = sendStream;
-    }
+    void NvEncoderImpl::SetStreamState(bool sendStream) { m_keyframeRequest = sendStream; }
 } // end namespace webrtc
 } // end namespace unity
