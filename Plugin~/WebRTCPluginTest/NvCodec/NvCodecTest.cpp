@@ -1,8 +1,9 @@
 #include "pch.h"
+
 #include "Codec/NvCodec/NvCodec.h"
 #include "../NvCodec/Utils/NvCodecUtils.h"
-#include "modules/video_coding/codecs/test/video_codec_unittest.h"
-#include "test/video_codec_settings.h"
+//#include "modules/video_coding/codecs/test/video_codec_unittest.h"
+//#include "test/video_codec_settings.h"
 
 using testing::Values;
 
@@ -11,7 +12,7 @@ namespace unity
 namespace webrtc
 {
 
-    class NvCodecTest : public VideoCodecUnitTest
+    class NvCodecTest : public testing::Test
     {
     public:
         NvCodecTest()
@@ -25,22 +26,22 @@ namespace webrtc
             EXPECT_TRUE(ck(cuCtxDestroy(context_)));
         }
     protected:
-        std::unique_ptr<VideoEncoder> CreateEncoder() override
-        {
-            return NvEncoder::Create(
-                cricket::VideoCodec(cricket::kH264CodecName), context_,
-                CU_MEMORYTYPE_ARRAY, NV_ENC_BUFFER_FORMAT_ARGB);
-        }
+        //std::unique_ptr<VideoEncoder> CreateEncoder() override
+        //{
+        //    return NvEncoder::Create(
+        //        cricket::VideoCodec(cricket::kH264CodecName), context_,
+        //        CU_MEMORYTYPE_ARRAY, NV_ENC_BUFFER_FORMAT_ARGB);
+        //}
 
-        std::unique_ptr<VideoDecoder> CreateDecoder() override
-        {
-            return NvDecoder::Create();
-        }
+        //std::unique_ptr<VideoDecoder> CreateDecoder() override
+        //{
+        //    return NvDecoder::Create();
+        //}
 
-        void ModifyCodecSettings(VideoCodec * codec_settings) override
-        {
-            webrtc::test::CodecSettings(kVideoCodecH264, codec_settings);
-        }
+        //void ModifyCodecSettings(VideoCodec * codec_settings) override
+        //{
+        //    webrtc::test::CodecSettings(kVideoCodecH264, codec_settings);
+        //}
         CUdevice device_;
         CUcontext context_;
     };

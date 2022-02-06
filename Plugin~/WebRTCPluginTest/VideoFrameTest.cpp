@@ -15,7 +15,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
     GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
     Size size(1280, 720);
     auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        size, std::move(gmb), timestamp);
+        size, std::move(gmb), nullptr, timestamp);
 
 
     //EXPECT_EQ(frame->layout().format(), PIXEL_FORMAT_NV12);

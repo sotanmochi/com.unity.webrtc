@@ -48,6 +48,8 @@ target_sources(WebRTCLib
     VideoFrame.h
     GpuMemoryBuffer.cpp
     GpuMemoryBuffer.h
+    GpuMemoryBufferPool.cpp
+    GpuMemoryBufferPool.h
 )
 
 if(Windows OR Linux)

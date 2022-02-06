@@ -303,7 +303,7 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
                         device, ptr, size, encodeData->format);
 
                 auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
-                    size, std::move(buffer), webrtc::TimeDelta::Micros(timestamp_us));
+                    size, std::move(buffer), nullptr, webrtc::TimeDelta::Micros(timestamp_us));
                 source->OnFrameCaptured(frame);
             }
             return;

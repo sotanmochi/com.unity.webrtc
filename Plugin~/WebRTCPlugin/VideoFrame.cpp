@@ -15,7 +15,7 @@ namespace webrtc
         TimeDelta timestamp)
         : size_(size)
         , gpu_memory_buffer_(std::move(buffer))
-        , returnBufferToPoolCallback_(std::move(returnBufferToPoolCallback))
+        , returnBufferToPoolCallback_(returnBufferToPoolCallback)
         , timestamp_(timestamp)
     {
     }

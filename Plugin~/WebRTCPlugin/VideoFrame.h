@@ -16,7 +16,7 @@ namespace webrtc
     class VideoFrame : public rtc::RefCountInterface
     {
     public:
-        using ReturnBufferToPoolCallback = void (*)(std::unique_ptr<GpuMemoryBuffer>);
+        using ReturnBufferToPoolCallback = std::function<void(std::unique_ptr<GpuMemoryBuffer>)>;
 
         VideoFrame() = delete;
         VideoFrame(const VideoFrame&) = delete;
