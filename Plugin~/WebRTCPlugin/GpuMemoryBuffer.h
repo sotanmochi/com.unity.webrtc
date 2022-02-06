@@ -1,55 +1,51 @@
 #pragma once
-#include <shared_mutex>
-#include "Size.h"
 #include "GraphicsDevice/GraphicsDevice.h"
+#include "IUnityRenderingExtensions.h"
+#include "Size.h"
 #include "common_video/include/video_frame_buffer.h"
+#include <shared_mutex>
 
 namespace unity
 {
 namespace webrtc
 {
-using namespace ::webrtc;
+    using namespace ::webrtc;
 
-class GpuMemoryBuffer
-{
-public:
-    virtual ~GpuMemoryBuffer() {}
+    class GpuMemoryBuffer
+    {
+    public:
+        virtual ~GpuMemoryBuffer() { }
+        virtual Size GetSize() const = 0;
+        virtual rtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
+    };
 
-    //std::shared_timed_mutex* mutex() const;
-    int index() const;
+    class GpuMemoryBufferFromUnity : public GpuMemoryBuffer
+    {
+    public:
+        GpuMemoryBufferFromUnity(
+            IGraphicsDevice* device,
+            NativeTexPtr ptr,
+            Size& size,
+            UnityRenderingExtTextureFormat format);
+        GpuMemoryBufferFromUnity(const GpuMemoryBufferFromUnity&) = delete;
+        GpuMemoryBufferFromUnity& operator=(const GpuMemoryBufferFromUnity&) = delete;
+        ~GpuMemoryBufferFromUnity() override;
 
+        Size GetSize() const override;
+        rtc::scoped_refptr<I420BufferInterface> ToI420() override;
 
-    //
-    // todo::(kazuki)
-    // type member always return Type::kI420 but not support I420
-    // should return Type::kNative
-    // but memory in this class is broken when return Type::kNative
-    //Type type() const final;
-    //int width() const final;
-    //int height() const final;
-    virtual rtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
-private:
-    //std::shared_timed_mutex* m_mutex;
-};
+    private:
+        IGraphicsDevice* device_;
+        std::unique_ptr<ITexture2D> texture_;
+        Size size_;
+    };
 
-class GpuMemoryBufferFromUnity : public GpuMemoryBuffer
-{
-public:
-    GpuMemoryBufferFromUnity(
-        IGraphicsDevice* device, NativeTexPtr ptr,
-        Size& size, UnityRenderingExtTextureFormat format);
-    rtc::scoped_refptr<I420BufferInterface> ToI420() override;
-    ~GpuMemoryBufferFromUnity() override;
-private:
-    IGraphicsDevice* device_;
-    std::unique_ptr<ITexture2D> texture_;
-};
-
-class FakeGpuMemoryBuffer : public GpuMemoryBuffer
-{
-public:
-    rtc::scoped_refptr<I420BufferInterface> ToI420() override { return nullptr; }
-};
+    class FakeGpuMemoryBuffer : public GpuMemoryBuffer
+    {
+    public:
+        Size GetSize() const override { return Size(0, 0); }
+        rtc::scoped_refptr<I420BufferInterface> ToI420() override { return nullptr; }
+    };
 
 }
 }
