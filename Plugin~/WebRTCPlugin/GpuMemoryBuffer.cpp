@@ -11,7 +11,7 @@ namespace webrtc
     GpuMemoryBufferFromUnity::GpuMemoryBufferFromUnity(
         IGraphicsDevice* device,
         NativeTexPtr ptr,
-        Size& size,
+        const Size& size,
         UnityRenderingExtTextureFormat format)
         : device_(device)
         , size_(size)

@@ -25,7 +25,7 @@ namespace webrtc
         GpuMemoryBufferFromUnity(
             IGraphicsDevice* device,
             NativeTexPtr ptr,
-            Size& size,
+            const Size& size,
             UnityRenderingExtTextureFormat format);
         GpuMemoryBufferFromUnity(const GpuMemoryBufferFromUnity&) = delete;
         GpuMemoryBufferFromUnity& operator=(const GpuMemoryBufferFromUnity&) = delete;

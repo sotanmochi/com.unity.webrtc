@@ -11,8 +11,13 @@ namespace webrtc
     {
     }
 
+    GpuMemoryBufferPool::~GpuMemoryBufferPool() {}
+
     rtc::scoped_refptr<VideoFrame> GpuMemoryBufferPool::CreateFrame(
-        NativeTexPtr ptr, Size& size, UnityRenderingExtTextureFormat format, int64_t timestamp)
+        NativeTexPtr ptr,
+        const Size& size,
+        UnityRenderingExtTextureFormat format,
+        int64_t timestamp)
     {
         GpuMemoryBuffer* buffer = GetOrCreateFrameResources(ptr, size, format);
         VideoFrame::ReturnBufferToPoolCallback callback =
@@ -26,7 +31,7 @@ namespace webrtc
     }
 
     GpuMemoryBuffer* GpuMemoryBufferPool::GetOrCreateFrameResources(
-        NativeTexPtr ptr, Size& size, UnityRenderingExtTextureFormat format)
+        NativeTexPtr ptr, const Size& size, UnityRenderingExtTextureFormat format)
     {
         auto it = resourcesPool_.begin();
         while (it != resourcesPool_.end())
@@ -44,9 +49,11 @@ namespace webrtc
         }
 
         auto buffer = std::make_unique<GpuMemoryBufferFromUnity>(device_, ptr, size, format);
+        GpuMemoryBuffer* ret = buffer.get();
         std::unique_ptr<FrameReources> resources =
             std::make_unique<FrameReources>(std::move(buffer));
         resourcesPool_.push_back(std::move(resources));
+        return ret;
     }
 
     bool GpuMemoryBufferPool::AreFrameResourcesCompatible(

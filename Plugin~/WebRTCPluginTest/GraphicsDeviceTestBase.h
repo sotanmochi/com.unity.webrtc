@@ -17,7 +17,7 @@ class GraphicsDeviceTestBase
     UnityRenderingExtTextureFormat> >
 {
 public:
-    GraphicsDeviceTestBase();
+    explicit GraphicsDeviceTestBase();
     virtual ~GraphicsDeviceTestBase();
     void SetUp() override;
     void TearDown() override;

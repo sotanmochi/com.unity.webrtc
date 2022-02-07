@@ -63,11 +63,23 @@ namespace webrtc
     std::vector<SdpVideoFormat> SupportedNvEncoderCodecs(CUcontext context)
     {
         const H264Level levels[] = {
-            H264Level::kLevel1_b, H264Level::kLevel1,   H264Level::kLevel1_1, H264Level::kLevel1_2,
-            H264Level::kLevel1_3, H264Level::kLevel2,   H264Level::kLevel2_1, H264Level::kLevel2_2,
-            H264Level::kLevel3,   H264Level::kLevel3_1, H264Level::kLevel3_2, H264Level::kLevel4,
-            H264Level::kLevel4_1, H264Level::kLevel4_2, H264Level::kLevel5,   H264Level::kLevel5_1,
-            H264Level::kLevel5_2
+            H264Level::kLevel1_b,
+            H264Level::kLevel1,
+            H264Level::kLevel1_1,
+            H264Level::kLevel1_2,
+            H264Level::kLevel1_3,
+            H264Level::kLevel2,
+            H264Level::kLevel2_1,
+            H264Level::kLevel2_2,
+            H264Level::kLevel3,
+            H264Level::kLevel3_1,
+            H264Level::kLevel3_2,
+            H264Level::kLevel4,
+            H264Level::kLevel4_1,
+            H264Level::kLevel4_2,
+            H264Level::kLevel5,
+            H264Level::kLevel5_1,
+            H264Level::kLevel5_2,
         };
 
         auto encoder = std::make_unique<NvEncoderCudaCapability>(context);

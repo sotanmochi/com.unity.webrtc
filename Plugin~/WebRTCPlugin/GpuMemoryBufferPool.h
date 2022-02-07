@@ -17,8 +17,12 @@ namespace webrtc
         virtual ~GpuMemoryBufferPool();
 
         rtc::scoped_refptr<VideoFrame> CreateFrame(
-            NativeTexPtr ptr, Size& size, UnityRenderingExtTextureFormat format, int64_t timestamp);
+            NativeTexPtr ptr,
+            const Size& size,
+            UnityRenderingExtTextureFormat format,
+            int64_t timestamp);
 
+        uint32_t bufferCount() { return resourcesPool_.size(); }
     private:
         struct FrameReources
         {
@@ -33,7 +37,7 @@ namespace webrtc
             bool isUsed_;
         };
         GpuMemoryBuffer* GetOrCreateFrameResources(
-            NativeTexPtr ptr, Size& size, UnityRenderingExtTextureFormat format);
+            NativeTexPtr ptr, const Size& size, UnityRenderingExtTextureFormat format);
         void OnReturnBuffer(std::unique_ptr<GpuMemoryBuffer> buffer);
         void CopyBuffer();
 
