@@ -10,6 +10,7 @@
 #include "GraphicsDevice/GraphicsDevice.h"
 #include "GraphicsDevice/GraphicsUtility.h"
 #include "VideoFrame.h"
+#include "GpuMemoryBufferPool.h"
 
 #if defined(SUPPORT_VULKAN)
 #include "GraphicsDevice/Vulkan/UnityVulkanInitCallback.h"
@@ -38,6 +39,7 @@ namespace webrtc
     const UnityProfilerMarkerDesc* s_MarkerEncode = nullptr;
     const UnityProfilerMarkerDesc* s_MarkerDecode = nullptr;
     std::unique_ptr<IGraphicsDevice> s_gfxDevice;
+    std::unique_ptr<GpuMemoryBufferPool> s_pool;
 
     IGraphicsDevice* GraphicsUtility::GetGraphicsDevice()
     {
@@ -289,7 +291,7 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             UnityVideoTrackSource* source = encodeData->source;
             if (source == nullptr)
                 return;
-            int64_t timestamp_us = s_clock->TimeInMicroseconds();
+            Timestamp timestamp = s_clock->CurrentTime();
             IGraphicsDevice* device = GraphicsUtility::GetGraphicsDevice();
             UnityGfxRenderer gfxRenderer = GraphicsUtility::GetGfxRenderer();
             void* ptr = GraphicsUtility::TextureHandleToNativeGraphicsPtr(
@@ -298,13 +300,9 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
             {
                 ScopedProfiler profiler(*s_MarkerEncode);
 
-                std::unique_ptr<GpuMemoryBuffer> buffer =
-                    std::make_unique<GpuMemoryBufferFromUnity>(
-                        device, ptr, size, encodeData->format);
-
-                auto frame = ::unity::webrtc::VideoFrame::WrapExternalGpuMemoryBuffer(
-                    size, std::move(buffer), nullptr, webrtc::TimeDelta::Micros(timestamp_us));
-                source->OnFrameCaptured(frame);
+                auto frame =
+                    s_pool->CreateFrame(ptr, size, encodeData->format, timestamp.us());
+                source->OnFrameCaptured(std::move(frame));
             }
             return;
         }

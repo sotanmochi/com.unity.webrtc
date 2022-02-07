@@ -16,7 +16,7 @@ namespace webrtc
     class VideoFrame : public rtc::RefCountInterface
     {
     public:
-        using ReturnBufferToPoolCallback = std::function<void(std::unique_ptr<GpuMemoryBuffer>)>;
+        using ReturnBufferToPoolCallback = std::function<void(rtc::scoped_refptr<GpuMemoryBuffer>)>;
 
         VideoFrame() = delete;
         VideoFrame(const VideoFrame&) = delete;
@@ -31,7 +31,7 @@ namespace webrtc
 
         static rtc::scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
             const Size& size,
-            std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
+            rtc::scoped_refptr<GpuMemoryBuffer> gpu_memory_buffer,
             ReturnBufferToPoolCallback returnBufferToPoolCallback,
             TimeDelta timestamp);
         static rtc::scoped_refptr<VideoFrame>
@@ -40,14 +40,14 @@ namespace webrtc
     protected:
         VideoFrame(
             const Size& size,
-            std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer,
+            rtc::scoped_refptr<GpuMemoryBuffer> buffer,
             ReturnBufferToPoolCallback returnBufferToPoolCallback,
             TimeDelta timestamp);
         virtual ~VideoFrame();
 
     private:
         Size size_;
-        std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer_;
+        rtc::scoped_refptr<GpuMemoryBuffer> gpu_memory_buffer_;
         ReturnBufferToPoolCallback returnBufferToPoolCallback_;
         TimeDelta timestamp_;
     };

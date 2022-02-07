@@ -10,7 +10,7 @@ namespace webrtc
 
     VideoFrame::VideoFrame(
         const Size& size,
-        std::unique_ptr<GpuMemoryBuffer> buffer,
+        rtc::scoped_refptr<GpuMemoryBuffer> buffer,
         ReturnBufferToPoolCallback returnBufferToPoolCallback,
         TimeDelta timestamp)
         : size_(size)
@@ -30,7 +30,7 @@ namespace webrtc
 
     rtc::scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
         const Size& size,
-        std::unique_ptr<GpuMemoryBuffer> buffer,
+        rtc::scoped_refptr<GpuMemoryBuffer> buffer,
         ReturnBufferToPoolCallback returnBufferToPoolCallback,
         TimeDelta timestamp)
     {

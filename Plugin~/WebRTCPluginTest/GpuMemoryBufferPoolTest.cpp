@@ -15,7 +15,9 @@ namespace webrtc
         explicit GpuMemoryBufferPoolTest()
             : GraphicsDeviceTestBase()
             , timestamp_(Timestamp::Zero())
-        {}
+        {
+        }
+
     protected:
         void SetUp() override
         {

@@ -9,14 +9,12 @@ namespace webrtc
 
     rtc::scoped_refptr<VideoFrame> CreateTestFrame(const Size& size)
     {
-
-        std::unique_ptr<GpuMemoryBuffer> gpu_memory_buffer =
-            std::make_unique<FakeGpuMemoryBuffer>();
+        rtc::scoped_refptr<GpuMemoryBuffer> gmb = new rtc::RefCountedObject<FakeGpuMemoryBuffer>();
 
         const int64_t timestamp_us = webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds();
 
         return VideoFrame::WrapExternalGpuMemoryBuffer(
-            size, std::move(gpu_memory_buffer), nullptr, webrtc::TimeDelta::Micros(timestamp_us));
+            size, std::move(gmb), nullptr, webrtc::TimeDelta::Micros(timestamp_us));
     }
 
 } // end namespace webrtc

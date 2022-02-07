@@ -23,22 +23,23 @@ namespace webrtc
             int64_t timestamp);
 
         uint32_t bufferCount() { return resourcesPool_.size(); }
+
     private:
         struct FrameReources
         {
-            FrameReources(std::unique_ptr<GpuMemoryBuffer> buffer)
+            FrameReources(rtc::scoped_refptr<GpuMemoryBuffer> buffer)
                 : buffer_(std::move(buffer))
             {
             }
-            std::unique_ptr<GpuMemoryBuffer> buffer_;
+            rtc::scoped_refptr<GpuMemoryBuffer> buffer_;
             bool IsUsed() { return isUsed_; }
             void MarkUsed() { isUsed_ = true; }
             void MarkUnused() { isUsed_ = false; }
             bool isUsed_;
         };
-        GpuMemoryBuffer* GetOrCreateFrameResources(
+        rtc::scoped_refptr<GpuMemoryBuffer> GetOrCreateFrameResources(
             NativeTexPtr ptr, const Size& size, UnityRenderingExtTextureFormat format);
-        void OnReturnBuffer(std::unique_ptr<GpuMemoryBuffer> buffer);
+        void OnReturnBuffer(rtc::scoped_refptr<GpuMemoryBuffer> buffer);
         void CopyBuffer();
 
         static bool AreFrameResourcesCompatible(const FrameReources* resources, const Size& size);

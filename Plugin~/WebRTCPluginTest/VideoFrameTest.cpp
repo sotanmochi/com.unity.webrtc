@@ -10,8 +10,8 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
     auto timestamp = webrtc::TimeDelta::Micros(
         webrtc::Clock::GetRealTimeClock()->TimeInMicroseconds());
 
-    std::unique_ptr<GpuMemoryBuffer> gmb =
-        std::make_unique<FakeGpuMemoryBuffer>();
+    rtc::scoped_refptr<GpuMemoryBuffer> gmb =
+        new rtc::RefCountedObject<FakeGpuMemoryBuffer>();
     GpuMemoryBuffer* gmb_raw_ptr = gmb.get();
     Size size(1280, 720);
     auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(

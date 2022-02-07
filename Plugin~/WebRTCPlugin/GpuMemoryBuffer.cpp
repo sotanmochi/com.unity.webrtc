@@ -18,6 +18,11 @@ namespace webrtc
         , texture_(nullptr)
     {
         texture_.reset(device_->CreateCPUReadTextureV(size.width(), size.height(), format));
+        CopyBuffer(ptr);
+    }
+
+    void GpuMemoryBufferFromUnity::CopyBuffer(NativeTexPtr ptr)
+    {
         device_->CopyResourceFromNativeV(texture_.get(), ptr);
     }
 
