@@ -14,6 +14,7 @@ namespace webrtc
         const Size& size,
         UnityRenderingExtTextureFormat format)
         : device_(device)
+        , format_(format)
         , size_(size)
         , texture_(nullptr)
     {
@@ -25,6 +26,8 @@ namespace webrtc
     {
         device_->CopyResourceFromNativeV(texture_.get(), ptr);
     }
+
+    UnityRenderingExtTextureFormat GpuMemoryBufferFromUnity::GetFormat() const { return format_; }
 
     Size GpuMemoryBufferFromUnity::GetSize() const { return size_; }
 

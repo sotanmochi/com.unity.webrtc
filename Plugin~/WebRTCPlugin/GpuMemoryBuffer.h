@@ -17,6 +17,7 @@ namespace webrtc
     public:
         virtual ~GpuMemoryBuffer() { }
         virtual Size GetSize() const = 0;
+        virtual UnityRenderingExtTextureFormat GetFormat() const = 0;
         virtual rtc::scoped_refptr<I420BufferInterface> ToI420() = 0;
     };
 
@@ -33,11 +34,13 @@ namespace webrtc
         ~GpuMemoryBufferFromUnity() override;
 
         void CopyBuffer(NativeTexPtr ptr);
+        UnityRenderingExtTextureFormat GetFormat() const override;
         Size GetSize() const override;
         rtc::scoped_refptr<I420BufferInterface> ToI420() override;
 
     private:
         IGraphicsDevice* device_;
+        UnityRenderingExtTextureFormat format_;
         Size size_;
         std::unique_ptr<ITexture2D> texture_;
     };
@@ -46,6 +49,10 @@ namespace webrtc
     {
     public:
         Size GetSize() const override { return Size(0, 0); }
+        UnityRenderingExtTextureFormat GetFormat() const override
+        {
+            return kUnityRenderingExtFormatR8G8B8A8_SRGB;
+        }
         rtc::scoped_refptr<I420BufferInterface> ToI420() override { return nullptr; }
     };
 

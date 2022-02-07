@@ -2,6 +2,7 @@
 
 #include "GpuMemoryBufferPool.h"
 #include "rtc_base/ref_counted_object.h"
+#include "media/base/video_common.h"
 
 namespace unity
 {
@@ -35,7 +36,7 @@ namespace webrtc
         while (it != resourcesPool_.end())
         {
             FrameReources* resources = it->get();
-            if (!resources->IsUsed() && AreFrameResourcesCompatible(resources, size))
+            if (!resources->IsUsed() && AreFrameResourcesCompatible(resources, size, format))
             {
                 resources->MarkUsed();
                 // copy texture
@@ -56,9 +57,9 @@ namespace webrtc
     }
 
     bool GpuMemoryBufferPool::AreFrameResourcesCompatible(
-        const FrameReources* resources, const Size& size)
+        const FrameReources* resources, const Size& size, UnityRenderingExtTextureFormat format)
     {
-        return resources->buffer_->GetSize() == size;
+        return resources->buffer_->GetSize() == size && resources->buffer_->GetFormat();
     }
 
     void GpuMemoryBufferPool::OnReturnBuffer(rtc::scoped_refptr<GpuMemoryBuffer> buffer)

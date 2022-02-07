@@ -42,7 +42,10 @@ namespace webrtc
         void OnReturnBuffer(rtc::scoped_refptr<GpuMemoryBuffer> buffer);
         void CopyBuffer();
 
-        static bool AreFrameResourcesCompatible(const FrameReources* resources, const Size& size);
+        static bool AreFrameResourcesCompatible(
+            const FrameReources* resources,
+            const Size& size,
+            UnityRenderingExtTextureFormat format);
 
         IGraphicsDevice* device_;
         std::list<std::unique_ptr<FrameReources>> resourcesPool_;
