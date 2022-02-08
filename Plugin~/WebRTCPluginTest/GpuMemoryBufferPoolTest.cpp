@@ -25,6 +25,14 @@ namespace webrtc
             bufferPool_ = std::make_unique<GpuMemoryBufferPool>(m_device);
             timestamp_ = Clock::GetRealTimeClock()->CurrentTime();
         }
+
+        std::unique_ptr<ITexture2D>
+        CreateTexture(const Size& size, UnityRenderingExtTextureFormat format)
+        {
+            ITexture2D* tex = m_device->CreateDefaultTextureV(size.width(), size.height(), format);
+            return std::unique_ptr<ITexture2D>(tex);
+        }
+
         std::unique_ptr<GpuMemoryBufferPool> bufferPool_;
         Timestamp timestamp_;
     };
@@ -33,10 +41,10 @@ namespace webrtc
     {
         const Size kSize(256, 256);
         const UnityRenderingExtTextureFormat kFormat = m_textureFormat;
-        ITexture2D* tex = m_device->CreateDefaultTextureV(kSize.width(), kSize.height(), kFormat);
+        auto tex = CreateTexture(kSize, kFormat);
         void* ptr = tex->GetNativeTexturePtrV();
-        auto frame = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.ms());
 
+        auto frame = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.ms());
         EXPECT_EQ(frame->size(), kSize);
         EXPECT_EQ(kFormat, frame->format());
         EXPECT_EQ(1u, bufferPool_->bufferCount());
@@ -46,7 +54,7 @@ namespace webrtc
     {
         const Size kSize(256, 256);
         const UnityRenderingExtTextureFormat kFormat = m_textureFormat;
-        ITexture2D* tex = m_device->CreateDefaultTextureV(kSize.width(), kSize.height(), kFormat);
+        auto tex = CreateTexture(kSize, kFormat);
         void* ptr = tex->GetNativeTexturePtrV();
 
         auto frame1 = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.us());
@@ -58,6 +66,26 @@ namespace webrtc
         frame1 = nullptr;
         frame2 = nullptr;
         auto frame3 = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.us());
+        EXPECT_EQ(2u, bufferPool_->bufferCount());
+    }
+
+    TEST_P(GpuMemoryBufferPoolTest, DropResourceWhenSizeIsDifferent)
+    {
+        const Size kSize1(256, 256);
+        const UnityRenderingExtTextureFormat kFormat = m_textureFormat;
+        auto tex1 = CreateTexture(kSize1, kFormat);
+        void* ptr1 = tex1->GetNativeTexturePtrV();
+
+        auto frame1 = bufferPool_->CreateFrame(ptr1, kSize1, kFormat, timestamp_.us());
+        EXPECT_EQ(1u, bufferPool_->bufferCount());
+
+        frame1 = nullptr;
+
+        const Size kSize2(512, 512);
+        auto tex2 = CreateTexture(kSize2, kFormat);
+        void* ptr2 = tex2->GetNativeTexturePtrV();
+
+        auto frame2 = bufferPool_->CreateFrame(ptr2, kSize2, kFormat, timestamp_.us());
         EXPECT_EQ(2u, bufferPool_->bufferCount());
     }
 

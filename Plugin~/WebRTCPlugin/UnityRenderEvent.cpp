@@ -39,7 +39,7 @@ namespace webrtc
     const UnityProfilerMarkerDesc* s_MarkerEncode = nullptr;
     const UnityProfilerMarkerDesc* s_MarkerDecode = nullptr;
     std::unique_ptr<IGraphicsDevice> s_gfxDevice;
-    std::unique_ptr<GpuMemoryBufferPool> s_pool;
+    std::unique_ptr<GpuMemoryBufferPool> s_bufferPool;
 
     IGraphicsDevice* GraphicsUtility::GetGraphicsDevice()
     {
@@ -148,6 +148,7 @@ static void UNITY_INTERFACE_API OnGraphicsDeviceEvent(UnityGfxDeviceEventType ev
         {
             s_gfxDevice->InitV();
         }
+        s_bufferPool = std::make_unique<GpuMemoryBufferPool>(s_gfxDevice.get());
         break;
     }
     case kUnityGfxDeviceEventShutdown:
@@ -301,7 +302,7 @@ static void UNITY_INTERFACE_API OnRenderEvent(int eventID, void* data)
                 ScopedProfiler profiler(*s_MarkerEncode);
 
                 auto frame =
-                    s_pool->CreateFrame(ptr, size, encodeData->format, timestamp.us());
+                    s_bufferPool->CreateFrame(ptr, size, encodeData->format, timestamp.us());
                 source->OnFrameCaptured(std::move(frame));
             }
             return;

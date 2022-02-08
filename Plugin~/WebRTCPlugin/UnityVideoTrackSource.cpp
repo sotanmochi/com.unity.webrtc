@@ -72,8 +72,8 @@ absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
 
 void UnityVideoTrackSource::SendFeedback()
 {
-    float maxFramerate = video_adapter()->GetMaxFramerate();
-    //RTC_LOG(LS_INFO)
+    //float maxFramerate = video_adapter()->GetMaxFramerate();
+    // todo(kazuki):
 }
 
 void UnityVideoTrackSource::OnFrameCaptured(
