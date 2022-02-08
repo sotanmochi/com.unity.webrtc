@@ -71,6 +71,7 @@ class UnityVideoTrackSource :
     using ::webrtc::VideoTrackSourceInterface::RemoveSink;
 
 private:
+    void SendFeedback();
     //FrameAdaptationParams ComputeAdaptationParams(int width,
     //                                            int height,
     //                                            int64_t time_us);

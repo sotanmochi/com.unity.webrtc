@@ -38,8 +38,27 @@ namespace webrtc
         auto frame = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.ms());
 
         EXPECT_EQ(frame->size(), kSize);
-        // EXPECT_EQ(PIXEL_FORMAT_I420, frame->format());
+        EXPECT_EQ(kFormat, frame->format());
         EXPECT_EQ(1u, bufferPool_->bufferCount());
+    }
+
+    TEST_P(GpuMemoryBufferPoolTest, ReuseFirstResource)
+    {
+        const Size kSize(256, 256);
+        const UnityRenderingExtTextureFormat kFormat = m_textureFormat;
+        ITexture2D* tex = m_device->CreateDefaultTextureV(kSize.width(), kSize.height(), kFormat);
+        void* ptr = tex->GetNativeTexturePtrV();
+
+        auto frame1 = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.us());
+        EXPECT_EQ(1u, bufferPool_->bufferCount());
+
+        auto frame2 = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.us());
+        EXPECT_EQ(2u, bufferPool_->bufferCount());
+
+        frame1 = nullptr;
+        frame2 = nullptr;
+        auto frame3 = bufferPool_->CreateFrame(ptr, kSize, kFormat, timestamp_.us());
+        EXPECT_EQ(2u, bufferPool_->bufferCount());
     }
 
     INSTANTIATE_TEST_CASE_P(

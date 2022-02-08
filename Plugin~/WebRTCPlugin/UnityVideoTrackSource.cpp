@@ -70,6 +70,12 @@ absl::optional<bool> UnityVideoTrackSource::needs_denoising() const
     return needs_denoising_;
 }
 
+void UnityVideoTrackSource::SendFeedback()
+{
+    float maxFramerate = video_adapter()->GetMaxFramerate();
+    //RTC_LOG(LS_INFO)
+}
+
 void UnityVideoTrackSource::OnFrameCaptured(
     rtc::scoped_refptr<VideoFrame> frame)
 {
@@ -79,6 +85,8 @@ void UnityVideoTrackSource::OnFrameCaptured(
         // currently encoding
         return;
     }
+
+    SendFeedback();
 
     const int64_t now_us = rtc::TimeMicros();
     const int64_t translated_camera_time_us =

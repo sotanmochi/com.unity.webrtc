@@ -23,6 +23,7 @@ namespace webrtc
         VideoFrame& operator=(const VideoFrame&) = delete;
 
         Size size() const { return size_; }
+        UnityRenderingExtTextureFormat format() const { return gpu_memory_buffer_->GetFormat(); }
         TimeDelta timestamp() const { return timestamp_; }
         void set_timestamp(TimeDelta timestamp) { timestamp_ = timestamp; }
 
