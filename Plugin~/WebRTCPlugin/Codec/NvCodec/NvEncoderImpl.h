@@ -80,6 +80,9 @@ namespace webrtc
         std::unique_ptr<BitrateAdjuster> m_bitrateAdjuster;
         RateStatistics m_encode_fps;
         Clock* const m_clock;
+        GUID m_profileGuid;
+        NV_ENC_LEVEL m_level;
+        
         bool m_keyframeRequest;
 
         int64_t prev;

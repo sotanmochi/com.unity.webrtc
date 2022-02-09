@@ -60,28 +60,21 @@ namespace webrtc
         return absl::nullopt;
     }
 
+    absl::optional<GUID> ProfileToGuid(H264Profile profile)
+    {
+        if (profile == H264Profile::kProfileBaseline)
+            return NV_ENC_H264_PROFILE_BASELINE_GUID;
+        if (profile == H264Profile::kProfileMain)
+            return NV_ENC_H264_PROFILE_MAIN_GUID;
+        if (profile == H264Profile::kProfileHigh)
+            return NV_ENC_H264_PROFILE_HIGH_GUID;
+        if (profile == H264Profile::kProfileConstrainedHigh)
+            return NV_ENC_H264_PROFILE_CONSTRAINED_HIGH_GUID;
+        return absl::nullopt;
+    }
+
     std::vector<SdpVideoFormat> SupportedNvEncoderCodecs(CUcontext context)
     {
-        const H264Level levels[] = {
-            H264Level::kLevel1_b,
-            H264Level::kLevel1,
-            H264Level::kLevel1_1,
-            H264Level::kLevel1_2,
-            H264Level::kLevel1_3,
-            H264Level::kLevel2,
-            H264Level::kLevel2_1,
-            H264Level::kLevel2_2,
-            H264Level::kLevel3,
-            H264Level::kLevel3_1,
-            H264Level::kLevel3_2,
-            H264Level::kLevel4,
-            H264Level::kLevel4_1,
-            H264Level::kLevel4_2,
-            H264Level::kLevel5,
-            H264Level::kLevel5_1,
-            H264Level::kLevel5_2,
-        };
-
         auto encoder = std::make_unique<NvEncoderCudaCapability>(context);
 
         int maxLevel = encoder->GetLevelMax(NV_ENC_CODEC_H264_GUID);

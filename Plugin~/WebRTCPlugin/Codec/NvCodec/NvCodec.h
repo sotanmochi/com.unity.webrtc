@@ -3,12 +3,16 @@
 #include "nvEncodeAPI.h"
 #include <cuda.h>
 #include <vector>
+#include "api/video_codecs/h264_profile_level_id.h"
 
 namespace unity
 {
 namespace webrtc
 {
     using namespace ::webrtc;
+
+    absl::optional<H264Profile> GuidToProfile(GUID& guid);
+    absl::optional<GUID> ProfileToGuid(H264Profile profile);
 
     std::vector<SdpVideoFormat> SupportedNvEncoderCodecs(CUcontext context);
     std::vector<SdpVideoFormat> SupportedNvDecoderCodecs(CUcontext context);

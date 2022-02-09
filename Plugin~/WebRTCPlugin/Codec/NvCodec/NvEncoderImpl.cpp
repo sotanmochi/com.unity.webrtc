@@ -1,13 +1,16 @@
 #include "pch.h"
 
-#include "NvEncoderImpl.h"
 #include "../Utils/NvCodecUtils.h"
 #include "Codec/NvCodec/NvEncoderCudaWithCUarray.h"
 #include "CudaMemoryBuffer.h"
 #include "NvEncoder/NvEncoder.h"
 #include "NvEncoder/NvEncoderCuda.h"
+#include "NvEncoderImpl.h"
 #include "UnityVideoTrackSource.h"
+#include "absl/strings/match.h"
 #include "api/video/video_codec_type.h"
+#include "api/video_codecs/h264_profile_level_id.h"
+#include "media/base/media_constants.h"
 
 using namespace webrtc;
 
@@ -29,20 +32,23 @@ namespace webrtc
         , m_encode_fps(1000, 1000)
         , m_clock(Clock::GetRealTimeClock())
     {
+        RTC_CHECK(absl::EqualsIgnoreCase(codec.name, cricket::kH264CodecName));
         // not implemented for host memory
         RTC_CHECK_NE(memoryType, CU_MEMORYTYPE_HOST);
+        std::string profileLevelIdString;
+        if (codec.GetParam(cricket::kH264FmtpProfileLevelId, &profileLevelIdString))
+        {
+            auto profileLevelId = ParseH264ProfileLevelId(profileLevelIdString.c_str());
+            m_profileGuid = ProfileToGuid(profileLevelId.value().profile).value();
+            m_level = static_cast<NV_ENC_LEVEL>(profileLevelId.value().level);
+        }
     }
 
     NvEncoderImpl::~NvEncoderImpl() { Release(); }
 
     int NvEncoderImpl::InitEncode(const VideoCodec* codec, const VideoEncoder::Settings& settings)
     {
-        if (codec == nullptr)
-        {
-            return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
-        }
-
-        if (codec->codecType != kVideoCodecH264)
+        if (!codec || codec->codecType != kVideoCodecH264)
         {
             return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
         }
@@ -53,6 +59,12 @@ namespace webrtc
         if (codec->width < 1 || codec->height < 1)
         {
             return WEBRTC_VIDEO_CODEC_ERR_PARAMETER;
+        }
+
+        int32_t ret = Release();
+        if (ret != WEBRTC_VIDEO_CODEC_OK)
+        {
+            return ret;
         }
 
         m_codec = *codec;
@@ -76,17 +88,17 @@ namespace webrtc
 
         m_bitrateAdjuster = std::make_unique<BitrateAdjuster>(0.5f, 0.95f);
 
-        m_nvEncInitializeParams = { NV_ENC_INITIALIZE_PARAMS_VER };
-        m_nvEncConfig = { NV_ENC_CONFIG_VER };
-        m_nvEncInitializeParams.encodeConfig = &m_nvEncConfig;
-        m_nvEncInitializeParams.frameRateNum = m_codec.maxFramerate;
         m_encoder->CreateDefaultEncoderParams(
             &m_nvEncInitializeParams,
             NV_ENC_CODEC_H264_GUID,
             NV_ENC_PRESET_LOW_LATENCY_DEFAULT_GUID);
-        m_nvEncConfig.profileGUID = NV_ENC_H264_PROFILE_BASELINE_GUID;
+
+        m_nvEncInitializeParams.frameRateNum = m_codec.maxFramerate;
+
+        m_nvEncConfig.profileGUID = m_profileGuid;
         m_nvEncConfig.gopLength = NVENC_INFINITE_GOPLENGTH;
         m_nvEncConfig.frameIntervalP = 1;
+        m_nvEncConfig.encodeCodecConfig.h264Config.level = m_level;
         m_nvEncConfig.encodeCodecConfig.h264Config.idrPeriod = NVENC_INFINITE_GOPLENGTH;
         m_nvEncConfig.rcParams.rateControlMode = NV_ENC_PARAMS_RC_CBR_LOWDELAY_HQ;
         // m_nvEncConfig.rcParams.averageBitRate = (static_cast<unsigned int>(5.0f *
@@ -115,7 +127,6 @@ namespace webrtc
     int32_t NvEncoderImpl::Release()
     {
         this->m_encodedCompleteCallback = nullptr;
-
         return WEBRTC_VIDEO_CODEC_OK;
     }
 
