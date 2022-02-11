@@ -1,5 +1,8 @@
 #pragma once
 #include "NvCodec.h"
+#include "media/base/codec.h"
+#include "api/video_codecs/video_codec.h"
+#include "api/video_codecs/video_encoder.h"
 #include <NvEncoder/NvEncoderCuda.h>
 #include <cuda.h>
 
@@ -70,8 +73,8 @@ namespace webrtc
         VideoCodec m_codec;
 
         NV_ENC_BUFFER_FORMAT m_format;
-        NV_ENC_INITIALIZE_PARAMS m_nvEncInitializeParams;
-        NV_ENC_CONFIG m_nvEncConfig;
+        NV_ENC_INITIALIZE_PARAMS m_initializeParams;
+        NV_ENC_CONFIG m_encodeConfig;
 
         EncodedImageCallback* m_encodedCompleteCallback = nullptr;
         EncodedImage m_encodedImage;
@@ -82,7 +85,7 @@ namespace webrtc
         Clock* const m_clock;
         GUID m_profileGuid;
         NV_ENC_LEVEL m_level;
-        
+
         bool m_keyframeRequest;
 
         int64_t prev;

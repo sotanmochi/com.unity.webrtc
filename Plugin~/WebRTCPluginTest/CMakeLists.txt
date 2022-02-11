@@ -10,6 +10,8 @@ target_sources(WebRTCLibTest
     GpuMemoryBufferPoolTest.cpp
     GraphicsDeviceTestBase.cpp
     GraphicsDeviceTestBase.h
+    VideoCodecTest.cpp
+    VideoCodecTest.h
     VideoFrameTest.cpp
     VideoFrameUtil.cpp
     VideoFrameUtil.h
@@ -47,6 +49,21 @@ if(NOT googletest_POPULATED)
 endif()
 
 include(GoogleTest)
+
+target_compile_options(WebRTCLibTest
+  PRIVATE
+    -Wall
+    -Wextra
+    -Wno-missing-field-initializers
+    -Wno-c++98-compat
+    -Wno-c++98-compat-pedantic
+    -Wno-padded
+)
+
+target_compile_definitions(WebRTCLibTest
+  PRIVATE 
+    "$<$<CONFIG:Debug>:DEBUG>"
+)
 
 if(NOT iOS)
   target_include_directories(WebRTCLibTest

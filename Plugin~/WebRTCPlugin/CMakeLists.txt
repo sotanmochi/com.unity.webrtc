@@ -52,6 +52,22 @@ target_sources(WebRTCLib
     GpuMemoryBufferPool.h
 )
 
+target_compile_options(WebRTCLib
+  PRIVATE 
+    -Wall
+    -Wextra
+    -Wno-missing-field-initializers
+    -Wno-c++98-compat
+    -Wno-c++98-compat-pedantic
+    -Wno-padded
+)
+
+target_compile_definitions(WebRTCLib
+  PRIVATE 
+    "$<$<CONFIG:Debug>:DEBUG>"
+)
+
+
 if(Windows OR Linux)
   target_sources(WebRTCLib
     PRIVATE
@@ -85,13 +101,6 @@ if(Windows)
                    CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
     string(REPLACE /GR /GR- "${flag_var}" "${${flag_var}}")
   endforeach()
-endif()
-
-if(UNIX)
-  target_compile_options(WebRTCLib 
-    PUBLIC
-      -Wall -Wextra -Wno-unknown-pragmas -Wno-unused-parameter -Wno-missing-field-initializers -Wno-long-long
-  )
 endif()
 
 if(Windows)
@@ -307,6 +316,21 @@ if(Android)
       Jni.cpp
   )
 endif()
+
+target_compile_options(WebRTCPlugin
+  PRIVATE 
+    -Wall
+    -Wextra
+    -Wno-missing-field-initializers
+    -Wno-c++98-compat
+    -Wno-c++98-compat-pedantic
+    -Wno-padded
+)
+
+target_compile_definitions(WebRTCPlugin
+  PRIVATE 
+    "$<$<CONFIG:Debug>:DEBUG>"
+)
 
 # rename dll/framework filename
 set_target_properties(WebRTCPlugin

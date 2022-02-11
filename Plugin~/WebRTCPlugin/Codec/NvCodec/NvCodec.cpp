@@ -1,4 +1,5 @@
 #include "pch.h"
+
 #include "NvCodec.h"
 #include "NvEncoder/NvEncoderCuda.h"
 #include "NvEncoderImpl.h"
@@ -12,16 +13,15 @@ namespace webrtc
     class NvEncoderCudaCapability : public NvEncoderCuda
     {
     public:
-        NvEncoderCudaCapability(
-            CUcontext cuContext)
+        NvEncoderCudaCapability(CUcontext cuContext)
             : NvEncoderCuda(cuContext, 0, 0, NV_ENC_BUFFER_FORMAT_UNDEFINED)
-        {}
+        {
+        }
 
         std::vector<GUID> GetEncodeProfileGUIDs(GUID encodeGUID)
         {
             uint32_t count = 0;
-            m_nvenc.nvEncGetEncodeProfileGUIDCount(
-                m_hEncoder, encodeGUID, &count);
+            m_nvenc.nvEncGetEncodeProfileGUIDCount(m_hEncoder, encodeGUID, &count);
             uint32_t validCount = 0;
             std::vector<GUID> guids(count);
             m_nvenc.nvEncGetEncodeProfileGUIDs(
@@ -47,7 +47,7 @@ namespace webrtc
         }
     };
 
-    absl::optional<H264Profile> GuidToProfile(GUID& guid)
+    constexpr absl::optional<H264Profile> GuidToProfile(GUID& guid)
     {
         if (guid == NV_ENC_H264_PROFILE_BASELINE_GUID)
             return H264Profile::kProfileBaseline;
@@ -60,7 +60,7 @@ namespace webrtc
         return absl::nullopt;
     }
 
-    absl::optional<GUID> ProfileToGuid(H264Profile profile)
+    constexpr absl::optional<GUID> ProfileToGuid(H264Profile profile)
     {
         if (profile == H264Profile::kProfileBaseline)
             return NV_ENC_H264_PROFILE_BASELINE_GUID;
@@ -80,20 +80,20 @@ namespace webrtc
         int maxLevel = encoder->GetLevelMax(NV_ENC_CODEC_H264_GUID);
         H264Level supportedMaxLevel = static_cast<H264Level>(maxLevel);
 
-        std::vector<GUID> profileGUIDs =
-            encoder->GetEncodeProfileGUIDs(NV_ENC_CODEC_H264_GUID);
+        std::vector<GUID> profileGUIDs = encoder->GetEncodeProfileGUIDs(NV_ENC_CODEC_H264_GUID);
 
         std::vector<H264Profile> supportedProfiles;
-        for (auto& guid : profileGUIDs) {
-            absl::optional <H264Profile> profile = GuidToProfile(guid);
+        for (auto& guid : profileGUIDs)
+        {
+            absl::optional<H264Profile> profile = GuidToProfile(guid);
             if (profile.has_value())
                 supportedProfiles.push_back(profile.value());
         }
 
         std::vector<SdpVideoFormat> supportedFormats;
-        for (auto& profile : supportedProfiles) {
-            supportedFormats.push_back(
-                CreateH264Format(profile, supportedMaxLevel, "1"));
+        for (auto& profile : supportedProfiles)
+        {
+            supportedFormats.push_back(CreateH264Format(profile, supportedMaxLevel, "1"));
         }
         return supportedFormats;
     }
@@ -107,10 +107,14 @@ namespace webrtc
 
     std::unique_ptr<NvEncoder> NvEncoder::Create(
         const cricket::VideoCodec& codec,
-        CUcontext context, CUmemorytype memoryType, NV_ENC_BUFFER_FORMAT format)
+        CUcontext context,
+        CUmemorytype memoryType,
+        NV_ENC_BUFFER_FORMAT format)
     {
-        return std::make_unique<NvEncoderImpl>(
-            codec, context, memoryType, format);
+        return std::make_unique<NvEncoderImpl>(codec, context, memoryType, format);
     }
+
+    std::unique_ptr<NvDecoder> NvDecoder::Create() { return nullptr; }
+
 }
 }

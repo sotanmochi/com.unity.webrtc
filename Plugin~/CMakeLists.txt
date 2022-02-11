@@ -48,8 +48,6 @@ endif()
 
 # enable debug output 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-#set(CMAKE_CXX_FLAGS "-Wall -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D_DEBUG")
 
 # set iterator debug level
 if(Windows)
