@@ -55,6 +55,9 @@ namespace Unity.WebRTC
             }
         }
 
+        // [Note: 2022/03/02] Allow external libraries to get the ID of VideoRenderer.
+        public uint RendererId => m_renderer.id;
+
         /// <summary>
         /// encoded / decoded texture
         /// </summary>
